@@ -1,0 +1,17 @@
+# IDE
+/.idea
+# Infra
+/infra/.env
+/infra/logs/*
+!infra/logs/.gitkeep
+
+# Logs /
+/snowtricks/var/cache/*
+/snowtricks/var/log/*
+!snowtricks/var/log/.gitkeep
+# env
+/snowtricks/.env
+/snowtricks/.env.test
+#vendor node_module
+/snowtricks/vendor/*
+/snowtricks/node_modules/*

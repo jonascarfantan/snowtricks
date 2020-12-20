@@ -1,3 +1,0 @@
-<?php //%255BApp%255CHome%255CAction%255CHomePage%255D%255B1%255D
-
-return [PHP_INT_MAX, []];
