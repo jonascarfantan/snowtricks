@@ -1,0 +1,11 @@
+index:
+    path: /
+    controller: App\Home\Action\HomePage
+
+login:
+  path: /login
+  controller: App\Auth\Action\Login
+  methods: GET
+
+#  controller: App\Auth\Action\Login
+
