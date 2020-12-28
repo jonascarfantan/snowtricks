@@ -6,11 +6,14 @@ use App\_Core\Action\ActionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
-class HomePage extends AbstractController implements ActionInterface {
-
+final class HomePage extends AbstractController implements ActionInterface {
+    
+    #[Route(path: '/', name: 'home')]
     public function __invoke(): Response {
-        return $this->render('base/index.html.twig', [
+        return $this->render('public/index.html.twig', [
+            'title' => 'Snowtricks - Communoté de Free Rider',
             'action_name' => 'HomePage',
         ]);
     }
