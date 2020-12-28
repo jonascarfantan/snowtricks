@@ -8,9 +8,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class Login extends AbstractController implements ActionInterface {
+    #[NoReturn]
     #[Route(path: '/login', name: 'login')]
     public function __invoke(): Response {
-        // TODO: Implement __invoke() method.
         dd('hi');
     }
 }

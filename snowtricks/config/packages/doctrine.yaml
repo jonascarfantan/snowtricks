@@ -28,3 +28,9 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Chat/Domain/Entity/'
                 prefix: 'App\Chat\Domain'
                 alias: Chat
+            Media:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/src/Media/Domain/Entity/'
+                prefix: 'App\Media\Domain'
+                alias: media

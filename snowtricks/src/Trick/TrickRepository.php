@@ -1,22 +1,22 @@
 <?php
 
-namespace App\Repository;
+namespace App\Trick;
 
-use App\Entity\Tricks;
+use App\Trick\Domain\Entity\Trick;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method Tricks|null find($id, $lockMode = null, $lockVersion = null)
- * @method Tricks|null findOneBy(array $criteria, array $orderBy = null)
- * @method Tricks[]    findAll()
- * @method Tricks[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Trick|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Trick|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Trick[]    findAll()
+ * @method Trick[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class TricksRepository extends ServiceEntityRepository
+class TrickRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Tricks::class);
+        parent::__construct($registry, Trick::class);
     }
 
     // /**

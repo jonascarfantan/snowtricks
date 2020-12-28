@@ -2,7 +2,7 @@
 
 namespace App\Auth\Domain\Entity;
 
-use App\Repository\UserRepository;
+use App\Auth\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -54,9 +54,10 @@ class User implements UserInterface
     private ?\DateTimeInterface $updated_at;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\OneToOne(targetEntity="App\Auth\Domain\Entity\Role", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="role_id", referencedColumnName="id", nullable=false)
      */
-    private int $profile;
+    private int $role;
     
     public function __construct(array $user_info)
     {
@@ -78,7 +79,7 @@ class User implements UserInterface
     }
     
     public function getRoles() {
-        // TODO: Implement getRoles() method.
+        return $this->role;
     }
     
     public function getSalt() {

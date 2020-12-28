@@ -10,7 +10,9 @@ trick:
 chat:
     resource: ../../src/Chat/Action/
     type: annotation
-
+media:
+    resource: ../../src/Media/Action/
+    type: annotation
 kernel:
     resource: ../../src/Kernel.php
     type: annotation
