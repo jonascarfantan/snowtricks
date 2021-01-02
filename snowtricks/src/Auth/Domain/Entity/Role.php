@@ -25,4 +25,24 @@ class Role {
      * @ORM\Column(type="string")
      */
     private string $slug;
+    
+    public function __construct(array $role_info) {
+        foreach($role_info as $attr => $value) {
+            if (property_exists(self::class, $attr)) {
+                $this->$attr = $value;
+            }
+        }
+    }
+    
+    public function get(string $attribute): mixed
+    {
+        return $this->$attribute;
+    }
+    
+    public function set(string $attribute, mixed $value): self
+    {
+        $this->$attribute = $value;
+        
+        return $this;
+    }
 }

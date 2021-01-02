@@ -42,7 +42,7 @@ class Authenticator implements AuthenticatorInterface
     public function supports(Request $request): ?bool
     {
         return self::LOGIN_ROUTE === $request->attributes->get('_route')
-            && $request->isMethod('GET');
+            && $request->isMethod('POST');
     }
 
     public function getCredentials(Request $request)

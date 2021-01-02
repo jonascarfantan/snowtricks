@@ -5,6 +5,7 @@ namespace App\Auth;
 use App\Auth\Domain\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use JetBrains\PhpStorm\NoReturn;
 
 /**
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
@@ -18,7 +19,7 @@ class UserRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, User::class);
     }
-
+    
     // /**
     //  * @return User[] Returns an array of User objects
     //  */

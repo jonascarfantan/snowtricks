@@ -4,7 +4,9 @@ namespace App\Auth\Domain\Entity;
 
 use App\Auth\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use phpDocumentor\Reflection\Types\Collection;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -42,6 +44,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255)
      */
     private string $password;
+    private string $confirm_password;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -57,12 +60,14 @@ class User implements UserInterface
      * @ORM\OneToOne(targetEntity="App\Auth\Domain\Entity\Role", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="role_id", referencedColumnName="id", nullable=false)
      */
-    private int $role;
+    private Role $role;
     
     public function __construct(array $user_info)
     {
         foreach($user_info as $attr => $value) {
-            $this->$attr = $value;
+            if (property_exists(self::class, $attr)) {
+                $this->$attr = $value;
+            }
         }
     }
     
@@ -77,24 +82,34 @@ class User implements UserInterface
 
         return $this;
     }
-    
-    public function getRoles() {
+    public function addRole(Role $role): self
+    {
+        $this->role = $role;
+        
+        return $this;
+    }
+    public function getRoles()
+    {
         return $this->role;
     }
     
-    public function getSalt() {
+    public function getSalt()
+    {
         // TODO: Implement getSalt() method.
     }
     
-    public function getUsername() {
+    public function getUsername()
+    {
         // TODO: Implement getUsername() method.
     }
     
-    public function eraseCredentials() {
+    public function eraseCredentials()
+    {
         // TODO: Implement eraseCredentials() method.
     }
     
-    public function getPassword() {
+    public function getPassword()
+    {
         // TODO: Implement getPassword() method.
     }
 }

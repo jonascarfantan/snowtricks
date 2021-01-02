@@ -1,0 +1,40 @@
+{% block form_label %}
+	<label class="mb-2 text-md font-medium text-gray-800 block">{{ label }}</label>
+{% endblock %}
+
+{%- block repeated_row -%}
+	{{- block('form_rows') -}}
+{%- endblock repeated_row -%}
+
+{%- block form_row -%}
+	{%- set widget_attr = {} -%}
+	{%- if help is not empty -%}
+		{%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
+	{%- endif -%}
+	<div{% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %} class="mb-6 border-l-4 pr-8 pl-4  border-gray-300">
+		{{- form_label(form) -}}
+		<div class="">
+			{{- form_widget(form, widget_attr) -}}
+			{% block form_errors %}
+				<ul class="mx-auto">
+					{% for error in errors %}
+						<li class="text-sm text-pink-500 mb-1"><span class=" mr-2 badge badge-error">ERR</span>{{ error.message }}</li>
+					{% endfor %}
+				</ul>
+			{% endblock %}
+			{{- form_help(form) -}}
+		</div>
+	</div>
+{%- endblock form_row -%}
+
+{%- block button_row -%}
+	<div{% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}>
+		{{- form_widget(form) -}}
+	</div>
+{%- endblock button_row -%}
+
+{%- block hidden_row -%}
+	{{ form_widget(form) }}
+{%- endblock hidden_row -%}
+
+
