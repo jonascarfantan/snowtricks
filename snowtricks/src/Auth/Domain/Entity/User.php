@@ -4,14 +4,21 @@ namespace App\Auth\Domain\Entity;
 
 use App\Auth\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
-use phpDocumentor\Reflection\Types\Collection;
+
+use JetBrains\PhpStorm\Pure;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotNull;
+use Symfony\Component\Validator\Constraints\Regex;
+use Symfony\Component\Validator\Constraints\Unique;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  */
-class User implements UserInterface
+class User implements UserInterface, UserPasswordEncoderInterface
 {
     /**
      * @ORM\Id
@@ -21,28 +28,25 @@ class User implements UserInterface
     private int $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      */
-    private string $pseudo;
+//    #[UniqueEntity(message: 'Pseudo déjà utilisé.')]
+    #[Length(min: 4, minMessage: 'Pseudo doit contenir au moins 4 caractères.')]
+    #[NotNull(message: 'Pseudo requis.')]
+    private string $username;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255, unique=true)
      */
-    private ?string $name;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true, nullable=true)
-     */
-    private ?string $lastname;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[Email(message: 'Adresse email invalide.')]
+    #[NotNull(message: 'Adresse email requise.')]
     private string $email;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[NotNull(message: 'Mot de passe requis.')]
+    #[Regex(pattern:'/^(?=.*[!@#$%^&*-])(?=.*[0-9])(?=.*[A-Z]).{8,20}$/' , message: 'Le mot de passe doit contenir 3 type de caractères dont une majuscules un nombres et un spéciale.')]
     private string $password;
     private string $confirm_password;
 
@@ -50,66 +54,65 @@ class User implements UserInterface
      * @ORM\Column(type="datetime", nullable=true)
      */
     private ?\DateTimeInterface $created_at;
-
+    
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
     private ?\DateTimeInterface $updated_at;
-
+    
     /**
-     * @ORM\OneToOne(targetEntity="App\Auth\Domain\Entity\Role", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(name="role_id", referencedColumnName="id", nullable=false)
+     * @ORM\ManyToOne(targetEntity="App\Auth\Domain\Entity\Role", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="role_id", referencedColumnName="id", onDelete="cascade", nullable=false)
      */
     private Role $role;
+    private $salt;
+//    BORING GETTER & SETTER
+    public function getUsername(): string { return $this->username; }
+    public function setUsername(string $username): self { $this->username = $username; return $this; }
+    public function getEmail(): string { return $this->email; }
+    public function setEmail(string $email): self { $this->email = $email; return $this; }
+    public function getPassword(): string { return $this->password; }
+    public function setPassword(string $password): self { $this->password = $password; return $this; }
+    public function getRole(): Role { return $this->role; }
+    public function getRoles() { } //Symfony intrusif stuff
+    public function addRole(Role $role): self { $this->role = $role; return $this; }
+    public function getSalt(): ?string { return $this->salt; }
     
-    public function __construct(array $user_info)
+    public function create($user_info)
     {
-        foreach($user_info as $attr => $value) {
-            if (property_exists(self::class, $attr)) {
-                $this->$attr = $value;
+        if(null !== $user_info) {
+            foreach($user_info as $attr => $value) {
+                if (property_exists(self::class, $attr)) {
+                    $this->$attr = $value;
+                }
             }
+            return $this;
         }
     }
-    
     public function get(string $attribute): mixed
     {
         return $this->$attribute;
     }
-    
     public function set(string $attribute, mixed $value): self
     {
         $this->$attribute = $value;
 
         return $this;
     }
-    public function addRole(Role $role): self
+    public function eraseCredentials(): void
     {
-        $this->role = $role;
-        
-        return $this;
-    }
-    public function getRoles()
-    {
-        return $this->role;
+    
     }
     
-    public function getSalt()
-    {
-        // TODO: Implement getSalt() method.
+    public function encodePassword(UserInterface $user, string $plainPassword) {
+        // TODO: Implement encodePassword() method.
     }
     
-    public function getUsername()
-    {
-        // TODO: Implement getUsername() method.
+    public function isPasswordValid(UserInterface $user, string $raw) {
+        // TODO: Implement isPasswordValid() method.
     }
     
-    public function eraseCredentials()
-    {
-        // TODO: Implement eraseCredentials() method.
-    }
-    
-    public function getPassword()
-    {
-        // TODO: Implement getPassword() method.
+    public function needsRehash(UserInterface $user): bool {
+        // TODO: Implement needsRehash() method.
     }
 }

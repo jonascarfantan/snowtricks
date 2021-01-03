@@ -10,17 +10,21 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 final class Register extends AbstractController
 {
     #[Route('/register', name: 'register', methods: ['GET', 'POST'])]
-    public function __invoke(Request $request, EntityManagerInterface $em): Response
+    public function __invoke(Request $request, EntityManagerInterface $em, UserPasswordEncoderInterface $encoder): Response
     {
-        $form = $this->createForm(RegistrationType::class);
+        $form = $this->createForm(RegistrationType::class, new User());
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
-            $user = new User($data);
+            $user = new User();
+            $user = $user->create($data);
+            $encoded = $encoder->encodePassword($user, $data->get('password'));
+            $user->set('password', $encoded);
             $role = $em->getRepository(Role::class)->findOneBy(['slug' => 'user']);
             $user->addRole($role);
             $em->persist($user);

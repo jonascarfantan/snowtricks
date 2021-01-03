@@ -3,6 +3,7 @@
 namespace App\Auth\Domain\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 
 /**
  * Class Role
@@ -25,11 +26,16 @@ class Role {
      * @ORM\Column(type="string")
      */
     private string $slug;
+//    BORING GETTER & SETTER
+    public function getTitle(): string { return $this->title; }
+    public function getSlug(): string { return $this->slug; }
     
-    public function __construct(array $role_info) {
-        foreach($role_info as $attr => $value) {
-            if (property_exists(self::class, $attr)) {
-                $this->$attr = $value;
+    #[Pure] public function __construct(?array $role_info = null) {
+        if (null !== $role_info) {
+            foreach($role_info as $attr => $value) {
+                if (property_exists(self::class, $attr)) {
+                    $this->$attr = $value;
+                }
             }
         }
     }

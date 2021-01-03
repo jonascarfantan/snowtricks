@@ -9,7 +9,7 @@
         {{ form_start(form,
             {'attr': { 'class': '', 'novalidate': true }})
         }}
-            {{ form_row(form.pseudo,
+            {{ form_row(form.username,
                 {
                     'label': 'Pseudo :',
                     'attr': {'placeholder': 'un pseudo original',
@@ -20,7 +20,7 @@
             {{ form_row(form.email,
                 {
                     'label': 'Adresse email :',
-                    'attr': {'placeholder': 'email',
+                    'attr': {'placeholder': 'votre email',
                     'class': 'input-txt'
                 }})
             }}
@@ -28,19 +28,11 @@
             {{ form_row(form.password,
                 {
                     'label': 'Mot de passe :',
-                    'attr': {'placeholder': 'mot de passe',
+                    'attr': {'placeholder': 'un mdp solide',
                     'class': 'input-txt'
                 }})
             }}
-{#            {{ form_errors(form.password,{'class': 'input-error'}) }}#}
-{#            {{ form_row(form.confirm_password,#}
-{#                {#}
-{#                    'label': 'Confirmation :',#}
-{#                    'attr': {'placeholder': 'confirmer le mot de passe',#}
-{#                    'class': 'input-txt'#}
-{#                }})#}
-{#            }}#}
-{#            {{ form_errors(form.confirm_password,{'class': 'input-error'}) }}#}
+
         <div class="mx-6 mt-6 mx-auto">
             <button class="cancel_btn mr-4 " id="cancel" name="cancel" >annuler</button>
             <button class="submit_btn " id="submit" type="submit" name="submit" >envoyer !</button>
