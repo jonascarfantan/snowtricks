@@ -10,6 +10,7 @@
     </head>
     <body class="body">
     {% include 'layout/header.html.twig' %}
+    {% include 'layout/partials/flash_messages.html.twig' %}
         {% block body %}{% endblock %}
         {% block javascripts %}{% endblock %}
         <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.0/dist/alpine.min.js" defer></script>

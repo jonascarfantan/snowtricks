@@ -18,6 +18,8 @@ use Symfony\Component\Validator\Constraints\Unique;
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  */
+#[UniqueEntity(fields: 'username' ,message: 'Pseudo déjà utilisé.')]
+#[UniqueEntity(fields: 'email' ,message: 'Adresse email déjà utilisé.')]
 class User implements UserInterface, UserPasswordEncoderInterface
 {
     /**
@@ -30,7 +32,6 @@ class User implements UserInterface, UserPasswordEncoderInterface
     /**
      * @ORM\Column(type="string", length=255, unique=true)
      */
-//    #[UniqueEntity(message: 'Pseudo déjà utilisé.')]
     #[Length(min: 4, minMessage: 'Pseudo doit contenir au moins 4 caractères.')]
     #[NotNull(message: 'Pseudo requis.')]
     private string $username;
@@ -74,7 +75,6 @@ class User implements UserInterface, UserPasswordEncoderInterface
     public function getPassword(): string { return $this->password; }
     public function setPassword(string $password): self { $this->password = $password; return $this; }
     public function getRole(): Role { return $this->role; }
-    public function getRoles() { } //Symfony intrusif stuff
     public function addRole(Role $role): self { $this->role = $role; return $this; }
     public function getSalt(): ?string { return $this->salt; }
     
@@ -99,6 +99,13 @@ class User implements UserInterface, UserPasswordEncoderInterface
 
         return $this;
     }
+    public function getRoles(): array
+    {
+        $roles = (array)$this->role->getSlug();
+        $roles[] = 'ROLE_USER';
+        return array_unique($roles);
+    } //Symfony intrusif stuff
+    
     public function eraseCredentials(): void
     {
     

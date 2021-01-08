@@ -3,7 +3,9 @@
 namespace App\Auth\Security;
 
 use App\Auth\Domain\Entity\User;
+use App\Auth\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use JetBrains\PhpStorm\ArrayShape;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,32 +14,36 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
+use Symfony\Component\Security\Core\Exception\LogicException;
+use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
-use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
+use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\AuthenticatorInterface;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
+use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
+use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\PassportInterface;
+use Symfony\Component\Security\Http\Authenticator\Passport\UserPassportInterface;
+use Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
-class Authenticator implements AuthenticatorInterface
+class Authenticator extends AbstractAuthenticator implements AuthenticatorInterface
 {
     use TargetPathTrait;
 
     public const LOGIN_ROUTE = 'login';
 
-    private EntityManagerInterface $entityManager;
-    private UrlGeneratorInterface $urlGenerator;
-    private CsrfTokenManagerInterface $csrfTokenManager;
-
-    public function __construct(EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager)
-    {
-        $this->entityManager = $entityManager;
-        $this->urlGenerator = $urlGenerator;
-        $this->csrfTokenManager = $csrfTokenManager;
-    }
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private UrlGeneratorInterface $urlGenerator,
+        private CsrfTokenManagerInterface $csrfTokenManager,
+        private UserRepository $userRepository
+    ) { }
 
     public function supports(Request $request): ?bool
     {
@@ -45,8 +51,8 @@ class Authenticator implements AuthenticatorInterface
             && $request->isMethod('POST');
     }
 
-    public function getCredentials(Request $request)
-    {
+    #[ArrayShape(['email' => "mixed", 'password' => "mixed", 'csrf_token' => "mixed"])]
+    public function getCredentials(Request $request): array {
         $credentials = [
             'email' => $request->request->get('email'),
             'password' => $request->request->get('password'),
@@ -84,14 +90,13 @@ class Authenticator implements AuthenticatorInterface
         throw new \Exception('TODO: check the credentials inside '.__FILE__);
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $providerKey): ?Response
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        if ($targetPath = $this->getTargetPath($request->getSession(), $providerKey)) {
+        if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);
         }
-
-        // For example : return new RedirectResponse($this->urlGenerator->generate('some_route'));
-        throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
+    
+        return new RedirectResponse($this->urlGenerator->generate('home'));
     }
 
     protected function getLoginUrl()
@@ -99,16 +104,35 @@ class Authenticator implements AuthenticatorInterface
         return $this->urlGenerator->generate(self::LOGIN_ROUTE);
     }
     
-    public function authenticate(Request $request): PassportInterface {
-        // TODO: Implement authenticate() method.
-        dd('authenticate');
+    public function authenticate(Request $request): PassportInterface
+    {
+        $login = $request->request->get('login');
+        $username = $login['username'];
+        $password = $login['password'];
+        $csrf_token = $login['csrf_token'];
+        
+        $user = $this->userRepository->findOneByUsername($username);
+        if (!$user) {
+            throw new UsernameNotFoundException();
+        }
+        $userBadge = new UserBadge($username);
+        return new Passport($userBadge, new PasswordCredentials($password), [
+//            new CsrfTokenBadge('login_csrf_form', $csrf_token),
+        ]);
     }
     
-    public function createAuthenticatedToken(PassportInterface $passport, string $firewallName): TokenInterface {
-        // TODO: Implement createAuthenticatedToken() method.
+    public function createAuthenticatedToken(PassportInterface $passport, string $firewallName): TokenInterface
+    {
+        if (!$passport instanceof UserPassportInterface) {
+            throw new LogicException(sprintf('Passport does not contain a user, overwrite "createAuthenticatedToken()" in "%s" to create a custom authenticated token.', \get_class($this)));
+        }
+        return new PostAuthenticationToken($passport->getUser(), $firewallName, $passport->getUser()->getRoles());
+        
     }
     
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response {
-        // TODO: Implement onAuthenticationFailure() method.
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
+    {
+        $request->getSession()->getFlashBag()->add('error','Informations de connexion erronés.');
+        return new RedirectResponse($this->urlGenerator->generate('login'));
     }
 }

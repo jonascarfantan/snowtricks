@@ -19,10 +19,18 @@
         <div class="col-span-2 pr-8">
             <nav class="class">
                 <ul class="class text-right">
-                    <li class="inline-block mr-4">
-                        <a href="/login">connexion</a></li>
-                    <li class="inline-block mr-4">
-                        <a href="/register" class="register_link">inscription</a></li>
+                    {% if app.user %}
+                        <li class="inline-block mr-4">
+                            <a href="/logout">déconnexion</a>
+                        </li>
+                    {% else %}
+                        <li class="inline-block mr-4">
+                            <a href="/login">connexion</a>
+                        </li>
+                        <li class="inline-block mr-4">
+                            <a href="/register" class="register_link">inscription</a>
+                        </li>
+                    {% endif %}
                 </ul>
             </nav>
         </div>

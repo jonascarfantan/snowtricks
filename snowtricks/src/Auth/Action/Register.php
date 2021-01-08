@@ -29,7 +29,6 @@ final class Register extends AbstractController
             $user->addRole($role);
             $em->persist($user);
             $em->flush();
-            
         }
         return $this->render('security/register.html.twig', [
             'form' => $form->createView(),
