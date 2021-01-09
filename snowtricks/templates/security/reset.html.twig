@@ -7,9 +7,9 @@
         {{ form_start(form,
             {'attr': { 'class': '', 'novalidate': true }})
         }}
-            {{ form_row(form.username,
+            {{ form_row(form.email,
                 {
-                    'label': 'Pseudo :',
+                    'label': 'Adresse email :',
                     'attr': {'placeholder': 'votre pseudo',
                     'class': 'input-txt',
                 }})
@@ -21,6 +21,13 @@
                     'class': 'input-txt'
                 }})
             }}
+        {{ form_row(form.new_password,
+            {
+                'label': 'Mot de passe :',
+                'attr': {'placeholder': 'votre mot de passe',
+                'class': 'input-txt'
+            }})
+        }}
             <div class="mx-6 mt-6 mx-auto">
                 <button class="submit_btn " id="submit" type="submit" name="submit" >envoyer !</button>
                 <ul class="my-4">

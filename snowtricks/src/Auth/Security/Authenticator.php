@@ -6,6 +6,7 @@ use App\Auth\Domain\Entity\User;
 use App\Auth\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\NoReturn;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,7 +43,7 @@ class Authenticator extends AbstractAuthenticator implements AuthenticatorInterf
         private EntityManagerInterface $entityManager,
         private UrlGeneratorInterface $urlGenerator,
         private CsrfTokenManagerInterface $csrfTokenManager,
-        private UserRepository $userRepository
+        private UserRepository $userRepository,
     ) { }
 
     public function supports(Request $request): ?bool
@@ -51,35 +52,32 @@ class Authenticator extends AbstractAuthenticator implements AuthenticatorInterf
             && $request->isMethod('POST');
     }
 
-    #[ArrayShape(['email' => "mixed", 'password' => "mixed", 'csrf_token' => "mixed"])]
+    #[ArrayShape(['username' => "mixed", 'password' => "mixed", 'csrf_token' => "mixed"])]
     public function getCredentials(Request $request): array {
+        $login = $request->request->get('login');
         $credentials = [
-            'email' => $request->request->get('email'),
-            'password' => $request->request->get('password'),
-            'csrf_token' => $request->request->get('_csrf_token'),
+            'username' => $login['username'],
+            'password' => $login['password'],
+            'csrf_token' => $login['_token'],
         ];
-        $request->getSession()->set(
+         $request->getSession()->set(
             Security::LAST_USERNAME,
-            $credentials['email']
+            $credentials['username']
         );
 
         return $credentials;
     }
 
-    public function getUser($credentials, UserProviderInterface $userProvider)
-    {
-        $token = new CsrfToken('authenticate', $credentials['csrf_token']);
+    public function getUser(array $credentials): User {
+        $token = new CsrfToken('login', $credentials['csrf_token']);
         if (!$this->csrfTokenManager->isTokenValid($token)) {
             throw new InvalidCsrfTokenException();
         }
-
-        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $credentials['email']]);
-
+        $user = $this->userRepository->findOneByUsername($credentials['username']);
         if (!$user) {
             // fail authentication with a custom error
             throw new CustomUserMessageAuthenticationException('Email could not be found.');
         }
-
         return $user;
     }
 
@@ -98,26 +96,17 @@ class Authenticator extends AbstractAuthenticator implements AuthenticatorInterf
     
         return new RedirectResponse($this->urlGenerator->generate('home'));
     }
-
-    protected function getLoginUrl()
-    {
-        return $this->urlGenerator->generate(self::LOGIN_ROUTE);
-    }
     
     public function authenticate(Request $request): PassportInterface
     {
-        $login = $request->request->get('login');
-        $username = $login['username'];
-        $password = $login['password'];
-        $csrf_token = $login['csrf_token'];
-        
-        $user = $this->userRepository->findOneByUsername($username);
+        $credentials = $this->getCredentials($request);
+        $user = $this->userRepository->findOneByUsername($credentials['username']);
         if (!$user) {
             throw new UsernameNotFoundException();
         }
-        $userBadge = new UserBadge($username);
-        return new Passport($userBadge, new PasswordCredentials($password), [
-//            new CsrfTokenBadge('login_csrf_form', $csrf_token),
+        $userBadge = new UserBadge($credentials['username']);
+        return new Passport($userBadge, new PasswordCredentials($credentials['password']), [
+            new CsrfTokenBadge('login', $credentials['csrf_token']),
         ]);
     }
     
@@ -126,6 +115,7 @@ class Authenticator extends AbstractAuthenticator implements AuthenticatorInterf
         if (!$passport instanceof UserPassportInterface) {
             throw new LogicException(sprintf('Passport does not contain a user, overwrite "createAuthenticatedToken()" in "%s" to create a custom authenticated token.', \get_class($this)));
         }
+        
         return new PostAuthenticationToken($passport->getUser(), $firewallName, $passport->getUser()->getRoles());
         
     }

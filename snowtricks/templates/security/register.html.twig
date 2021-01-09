@@ -1,9 +1,7 @@
 {% extends 'layout/base.html.twig' %}
 
 {% block title %}{{ title }}{% endblock %}
-{% form_theme form with [
-    'form_themes/form_errors.html.twig'
-    ] %}
+{% form_theme form with ['form_themes/form_errors.html.twig'] %}
 {% block body %}
     <div class="font-sans w-10/12 md:w-4/12 mx-auto">
         {{ form_start(form,
@@ -16,7 +14,6 @@
                     'class': 'input-txt'
                 }})
             }}
-{#            {{ form_errors(form.pseudo,{'class': 'input-error'}) }}#}
             {{ form_row(form.email,
                 {
                     'label': 'Adresse email :',
@@ -24,7 +21,6 @@
                     'class': 'input-txt'
                 }})
             }}
-{#            {{ form_errors(form.email,{'class': 'input-error'}) }}#}
             {{ form_row(form.password,
                 {
                     'label': 'Mot de passe :',
@@ -32,9 +28,7 @@
                     'class': 'input-txt'
                 }})
             }}
-
         <div class="mx-6 mt-6 mx-auto">
-            <button class="cancel_btn mr-4 " id="cancel" name="cancel" >annuler</button>
             <button class="submit_btn " id="submit" type="submit" name="submit" >envoyer !</button>
         </div>
         {{ form_end(form) }}

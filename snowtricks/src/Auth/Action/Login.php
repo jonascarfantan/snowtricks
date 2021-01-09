@@ -14,14 +14,9 @@ final class Login extends AbstractController {
     #[Route(path: '/login', name: 'login', methods: ['GET', 'POST'])]
     public function __invoke(Request $request, UserRepository $user_repository): Response {
         $form = $this->createForm(LoginType::class, new User());
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-//            $repo = $em->
-        }
         return $this->render('security/login.html.twig', [
             'form' => $form->createView(),
-            'title' => 'Inscription',
+            'title' => 'Connexion',
         ]);
     }
 }
