@@ -5,15 +5,14 @@ namespace App\Auth\Domain\Entity;
 use App\Auth\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-use JetBrains\PhpStorm\Pure;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Regex;
-use Symfony\Component\Validator\Constraints\Unique;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -49,6 +48,8 @@ class User implements UserInterface, UserPasswordEncoderInterface
     #[NotNull(message: 'Mot de passe requis.')]
     #[Regex(pattern:'/^(?=.*[!@#$%^&*-])(?=.*[0-9])(?=.*[A-Z]).{8,20}$/' , message: 'Le mot de passe doit contenir 3 type de caractères dont une majuscules un nombres et un spéciale.')]
     private string $password;
+    #[UserPassword(message: 'Mot de passe incorect.')]
+    private string $old_password;
     private string $confirm_password;
 
     /**
@@ -78,7 +79,7 @@ class User implements UserInterface, UserPasswordEncoderInterface
     public function addRole(Role $role): self { $this->role = $role; return $this; }
     public function getSalt(): ?string { return $this->salt; }
     
-    public function create($user_info)
+    public function create($user_info): User
     {
         if(null !== $user_info) {
             foreach($user_info as $attr => $value) {

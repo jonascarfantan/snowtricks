@@ -7,25 +7,19 @@
         {{ form_start(form,
             {'attr': { 'class': '', 'novalidate': true }})
         }}
-            {{ form_row(form.email,
+            {{ form_row(form.old_password,
                 {
-                    'label': 'Adresse email :',
-                    'attr': {'placeholder': 'votre pseudo',
-                    'class': 'input-txt',
+                    'label': 'Mot de passe actuel :',
+                    'attr': {
+                        'placeholder': 'ancien mot de passe',
+                        'class': 'input-txt'
                 }})
             }}
-            {{ form_row(form.password,
-                {
-                    'label': 'Mot de passe :',
-                    'attr': {'placeholder': 'votre mot de passe',
-                    'class': 'input-txt'
-                }})
-            }}
-        {{ form_row(form.new_password,
+        {{ form_row(form.password,
             {
-                'label': 'Mot de passe :',
-                'attr': {'placeholder': 'votre mot de passe',
-                'class': 'input-txt'
+                'label': 'Nouveau mot de passe :',
+                'attr': {
+                    'class': 'input-txt'
             }})
         }}
             <div class="mx-6 mt-6 mx-auto">
