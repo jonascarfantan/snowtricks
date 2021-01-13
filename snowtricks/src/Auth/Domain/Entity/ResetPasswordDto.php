@@ -4,9 +4,9 @@ namespace App\Auth\Domain\Entity;
 
 use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 
-class ResetPasswordDto
+class UpdatePasswordDto
 {
-    #[UserPassword(message: "Mot de passe incorrect")]
+    #[UserPassword(message: "Mot de passe incorrect.")]
     private $old_password;
     private $password;
     

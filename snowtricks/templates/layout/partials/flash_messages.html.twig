@@ -1,6 +1,6 @@
 		{% for type, messages in app.flashes %}
 			{% for message in messages %}
-				<div class="class" x-data="flash()" x-init>
+				<div class="class" x-data="flash()" x-init="setTimeout(() => show = false, 3000)">
 					<div x-show="show" class="fixed bottom-10 right-0 m-6">
 						<div
 							:class="{

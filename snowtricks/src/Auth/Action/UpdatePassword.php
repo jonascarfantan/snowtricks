@@ -2,8 +2,8 @@
 
 namespace App\Auth\Action;
 
-use App\Auth\Domain\Entity\ResetPasswordDto;
-use App\Auth\Domain\Form\ResetType;
+use App\Auth\Domain\Entity\UpdatePasswordDto;
+use App\Auth\Domain\Form\UpdatePasswordType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -14,18 +14,19 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Security;
 
-final class Reset extends AbstractController
+final class UpdatePassword extends AbstractController
 {
-    #[Route('/reset', name: 'reset', methods: ['GET', 'POST'])]
+    #[Route('/password/update', name: 'password.update', methods: ['GET', 'POST'])]
     public function __invoke(Request $request,
                              EntityManagerInterface $em,
                              UserPasswordEncoderInterface $encoder,
                              Security $security,
-                             UrlGeneratorInterface $url_generator
+                             UrlGeneratorInterface $url_generator,
                              ): Response
     {
-        $reset_password = new ResetPasswordDto();
-        $form = $this->createForm(ResetType::class, $reset_password);
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        $reset_password = new UpdatePasswordDto();
+        $form = $this->createForm(UpdatePasswordType::class, $reset_password);
         $form->handleRequest($request);
         $form->getErrors(true);
         if ($form->isSubmitted() && $form->isValid()) {
