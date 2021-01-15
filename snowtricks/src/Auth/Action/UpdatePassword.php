@@ -16,7 +16,7 @@ use Symfony\Component\Security\Core\Security;
 
 final class UpdatePassword extends AbstractController
 {
-    #[Route('/password/update', name: 'password.update', methods: ['GET', 'POST'])]
+    #[Route('/password/update', name: 'update_password', methods: ['GET', 'POST'])]
     public function __invoke(Request $request,
                              EntityManagerInterface $em,
                              UserPasswordEncoderInterface $encoder,
@@ -24,7 +24,7 @@ final class UpdatePassword extends AbstractController
                              UrlGeneratorInterface $url_generator,
                              ): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_USER');
+//        $this->denyAccessUnlessGranted('ROLE_USER');
         $reset_password = new UpdatePasswordDto();
         $form = $this->createForm(UpdatePasswordType::class, $reset_password);
         $form->handleRequest($request);
@@ -41,7 +41,7 @@ final class UpdatePassword extends AbstractController
             return new RedirectResponse($url_generator->generate('home'));
         }
         
-        return $this->render('security/reset.html.twig', [
+        return $this->render('security/update.html.twig', [
             'form' => $form->createView(),
             'title' => 'Modifier le mot de passe',
         ]);

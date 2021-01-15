@@ -2,7 +2,7 @@
 
 namespace App\Auth\Domain\Entity;
 
-use App\Auth\UserRepository;
+use App\Auth\Domain\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;

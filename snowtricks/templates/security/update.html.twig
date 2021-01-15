@@ -7,22 +7,21 @@
         {{ form_start(form,
             {'attr': { 'class': '', 'novalidate': true }})
         }}
-            {{ form_row(form.username,
+            {{ form_row(form.old_password,
                 {
-                    'label': 'Pseudo :',
+                    'label': 'Mot de passe actuel :',
                     'attr': {
-                        'placeholder': 'votre pseudo',
-                        'class': 'input-txt',
-                }})
-            }}
-            {{ form_row(form.password,
-                {
-                    'label': 'Mot de passe :',
-                    'attr': {
-                        'placeholder': 'votre mot de passe',
+                        'placeholder': 'ancien mot de passe',
                         'class': 'input-txt'
                 }})
             }}
+        {{ form_row(form.password,
+            {
+                'label': 'Nouveau mot de passe :',
+                'attr': {
+                    'class': 'input-txt'
+            }})
+        }}
             <div class="mx-6 mt-6 mx-auto">
                 <button class="submit_btn " id="submit" type="submit" name="submit" >envoyer !</button>
                 <ul class="my-4">
@@ -30,7 +29,7 @@
                         <a href="/register">inscription</a>
                     </li>
                     <li class="class">
-                        <a href="/password/forgot">mot de passe oubliée ?</a>
+                        <a href="/reset">mot de passe oubliée ?</a>
                     </li>
                 </ul>
             </div>

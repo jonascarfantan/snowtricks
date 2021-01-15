@@ -7,14 +7,6 @@
         {{ form_start(form,
             {'attr': { 'class': '', 'novalidate': true }})
         }}
-            {{ form_row(form.old_password,
-                {
-                    'label': 'Mot de passe actuel :',
-                    'attr': {
-                        'placeholder': 'ancien mot de passe',
-                        'class': 'input-txt'
-                }})
-            }}
         {{ form_row(form.password,
             {
                 'label': 'Nouveau mot de passe :',

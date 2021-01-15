@@ -2,7 +2,7 @@
 
 namespace App\Auth\Domain\Form;
 
-use App\Auth\Domain\Entity\UpdatePasswordDto;
+use App\Auth\Domain\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -21,7 +21,6 @@ class ForgotPasswordType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-//            'data_class'      => UpdatePasswordDto::class,
             'csrf_protection' => true,
         ]);
     }
