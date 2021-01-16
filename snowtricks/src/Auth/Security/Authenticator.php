@@ -114,7 +114,18 @@ class Authenticator extends AbstractAuthenticator implements AuthenticatorInterf
         if (!$passport instanceof UserPassportInterface) {
             throw new LogicException(sprintf('Passport does not contain a user, overwrite "createAuthenticatedToken()" in "%s" to create a custom authenticated token.', \get_class($this)));
         }
-        
+        $user_id = $passport->getUser()->getId();
+        $user = $this->userRepository->findWithAll();
+        dd($user);
+        $user_role = [];
+        foreach( $user->getRoles() as $role) {
+            $user_role[] = [
+                'id'    => $role->getId(),
+                'title' => $role->getTitle(),
+                'slug'  => $role->getslug(),
+            ];
+        }
+            dd($user_role);
         return new PostAuthenticationToken($passport->getUser(), $firewallName, $passport->getUser()->getRoles());
         
     }

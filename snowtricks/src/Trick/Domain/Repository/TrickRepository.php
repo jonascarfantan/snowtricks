@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Trick;
+namespace App\Trick\Domain\Repository;
 
 use App\Trick\Domain\Entity\Trick;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;

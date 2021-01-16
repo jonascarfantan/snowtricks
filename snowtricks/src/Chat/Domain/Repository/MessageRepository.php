@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Chat;
+namespace App\Chat\Domain\Repository;
 
 use App\Chat\Domain\Entity\Message;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;

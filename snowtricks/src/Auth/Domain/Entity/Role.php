@@ -2,14 +2,19 @@
 
 namespace App\Auth\Domain\Entity;
 
+use App\Auth\Domain\Repository\RoleRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\JoinColumn;
 use JetBrains\PhpStorm\Pure;
 
 /**
  * Class Role
  *
  * @package App\Auth\Domain\Entity
- * @ORM\Entity
+ *@ORM\Entity(repositoryClass=RoleRepository::class)
  */
 class Role {
     /**
@@ -26,28 +31,49 @@ class Role {
      * @ORM\Column(type="string")
      */
     private string $slug;
+    
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Auth\Domain\Entity\User", inversedBy="roles", cascade={"persist", "remove"}, fetch="EAGER")
+     * @JoinTable(name="user_role",
+     * joinColumns={@JoinColumn(name="role_id", referencedColumnName="id")},
+     * inverseJoinColumns={@JoinColumn(name="user_id", referencedColumnName="id")}
+     * )
+     */
+    private Collection $users;
 //    BORING GETTER & SETTER
     public function getTitle(): string { return $this->title; }
     public function getSlug(): string { return $this->slug; }
+    public function setTitle(string $title): string { $this->title = $title; return $this; }
+    public function setSlug(string $slug): string { $this->slug = $slug; return $this; }
     
-    #[Pure] public function __construct(?array $role_info = null) {
-        if (null !== $role_info) {
-            foreach($role_info as $attr => $value) {
-                if (property_exists(self::class, $attr)) {
-                    $this->$attr = $value;
-                }
-            }
+    #[Pure] public function __construct(?array $role_info = null)
+    {
+        if (!isset($role_info)) {
+            $this->users = new ArrayCollection();
         }
     }
     
-    public function get(string $attribute): mixed
+    public function getUsers(): Collection
     {
-        return $this->$attribute;
+        return $this->users;
     }
     
-    public function set(string $attribute, mixed $value): self
+    public function addUser(User $user): self
     {
-        $this->$attribute = $value;
+        if(!$this->users->contains($user)) {
+            $this->users[] = $user;
+            $user->addRole($this);
+        }
+        
+        return $this;
+    }
+    
+    public function removeUser(User $user): self
+    {
+        if(!$this->users->contains($user)) {
+            $this->users->removeElement($user);
+            $user->removeRole($this);
+        }
         
         return $this;
     }

@@ -15,19 +15,17 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 final class Register extends AbstractController
 {
     #[Route('/register', name: 'register', methods: ['GET', 'POST'])]
-    public function __invoke(Request $request, EntityManagerInterface $em, UserPasswordEncoderInterface $encoder): Response
+    public function __invoke(Request $request, EntityManagerInterface $em, UserPasswordEncoderInterface $password_encoder): Response
     {
-        $form = $this->createForm(RegistrationType::class, new User());
+        $form = $this->createForm(RegistrationType::class, new User($password_encoder));
         $form->handleRequest($request);
+        $form->getErrors(true);
         if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $user = new User();
-            $user = $user->create($data);
-            $encoded = $encoder->encodePassword($user, $data->get('password'));
-            $user->set('password', $encoded);
-            $role = $em->getRepository(Role::class)->findOneBy(['slug' => 'user']);
-            $user->addRole($role);
-            $em->persist($user);
+            $new_user = $form->getData();
+            $new_user->encodePassword($new_user, $new_user->getPassword());
+            $role = $em->getRepository(Role::class)->findOneBy(['slug' => 'ROLE_USER']);
+            $new_user->addRole($role);
+            $em->persist($new_user);
             $em->flush();
         }
         return $this->render('security/register.html.twig', [

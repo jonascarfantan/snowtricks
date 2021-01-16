@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Auth\Domain\Entity;
+namespace App\Auth\Domain\Dto;
 
 use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 

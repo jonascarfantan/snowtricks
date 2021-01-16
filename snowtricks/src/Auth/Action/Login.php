@@ -4,7 +4,7 @@ namespace App\Auth\Action;
 
 use App\Auth\Domain\Entity\User;
 use App\Auth\Domain\Form\LoginType;
-use App\Auth\UserRepository;
+use App\Auth\Domain\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

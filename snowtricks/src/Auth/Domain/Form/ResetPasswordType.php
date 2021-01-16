@@ -2,9 +2,7 @@
 
 namespace App\Auth\Domain\Form;
 
-use App\Auth\Domain\Entity\ResetPasswordDto;
-use App\Auth\Domain\Entity\UpdatePasswordDto;
-use App\Auth\Domain\Entity\User;
+use App\Auth\Domain\Dto\UpdatePasswordDto;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;

@@ -2,7 +2,7 @@
 
 namespace App\Auth\Action;
 
-use App\Auth\Domain\Entity\UpdatePasswordDto;
+use App\Auth\Domain\Dto\UpdatePasswordDto;
 use App\Auth\Domain\Form\UpdatePasswordType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

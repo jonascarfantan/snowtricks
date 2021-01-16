@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Media;
+namespace App\Media\Domain\Repository;
 
 use App\Media\Domain\Entity\Media;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
