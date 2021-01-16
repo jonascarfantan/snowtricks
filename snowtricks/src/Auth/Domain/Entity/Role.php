@@ -34,26 +34,26 @@ class Role {
     
     /**
      * @ORM\ManyToMany(targetEntity="App\Auth\Domain\Entity\User", inversedBy="roles", cascade={"persist", "remove"}, fetch="EAGER")
-     * @JoinTable(name="user_role",
+     * @JoinTable(name="role_user",
      * joinColumns={@JoinColumn(name="role_id", referencedColumnName="id")},
      * inverseJoinColumns={@JoinColumn(name="user_id", referencedColumnName="id")}
      * )
      */
-    private Collection $users;
+    public Collection $users;
 //    BORING GETTER & SETTER
     public function getTitle(): string { return $this->title; }
     public function getSlug(): string { return $this->slug; }
     public function setTitle(string $title): string { $this->title = $title; return $this; }
     public function setSlug(string $slug): string { $this->slug = $slug; return $this; }
     
-    #[Pure] public function __construct(?array $role_info = null)
+    #[Pure] public function __construct()
     {
-        if (!isset($role_info)) {
+        if (!isset($this->users)) {
             $this->users = new ArrayCollection();
         }
     }
     
-    public function getUsers(): Collection
+    public function getUsers()
     {
         return $this->users;
     }

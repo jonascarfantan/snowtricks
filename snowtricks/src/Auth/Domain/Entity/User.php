@@ -82,19 +82,23 @@ class User implements UserInterface, UserPasswordEncoderInterface
     
     /**
      * @ORM\ManyToMany(targetEntity="App\Auth\Domain\Entity\Role", mappedBy="users", cascade={"persist", "remove"}, fetch="EAGER")
-     */
-    private Collection $roles;
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Trick\Domain\Entity\Trick", mappedBy="contributors", cascade={"persist", "remove"})
-     * @JoinTable(name="user_role",
+     * @JoinTable(name="role_user",
      * joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
      * inverseJoinColumns={@JoinColumn(name="trick_id", referencedColumnName="id")}
      * )
      */
-    private Collection $tricks;
+    public Collection $roles;
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Trick\Domain\Entity\Trick", mappedBy="contributors", cascade={"persist", "remove"})
+     * @JoinTable(name="trick_user",
+     * joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
+     * inverseJoinColumns={@JoinColumn(name="trick_id", referencedColumnName="id")}
+     * )
+     */
+    public Collection $tricks;
     private $salt;
     
-    public function __construct(private ?UserPasswordEncoderInterface $encoder = null)
+    #[Pure] public function __construct(private ?UserPasswordEncoderInterface $encoder = null)
     {
         if(!isset($this->roles)){
             $this->roles = new ArrayCollection();
@@ -110,18 +114,6 @@ class User implements UserInterface, UserPasswordEncoderInterface
     public function setUsername(string $username): self { $this->username = $username; return $this; }
     public function setEmail(string $email): self { $this->email = $email; return $this; }
     public function setPassword(string $password): self { $this->password = $password; return $this; }
-    
-    public function create($user_info): User
-    {
-        if(null !== $user_info) {
-            foreach($user_info as $attr => $value) {
-                if (property_exists(self::class, $attr)) {
-                    $this->$attr = $value;
-                }
-            }
-            return $this;
-        }
-    }
     
     public function getRoles()
     {
