@@ -81,13 +81,10 @@ class User implements UserInterface, UserPasswordEncoderInterface
     private ?\DateTimeInterface $updated_at;
     
     /**
-     * @ORM\ManyToMany(targetEntity="App\Auth\Domain\Entity\Role", mappedBy="users", cascade={"persist", "remove"}, fetch="EAGER")
-     * @JoinTable(name="role_user",
-     * joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-     * inverseJoinColumns={@JoinColumn(name="trick_id", referencedColumnName="id")}
-     * )
+     * @ORM\ManyToOne(targetEntity="App\Auth\Domain\Entity\Role", cascade={"persist", "remove"}, fetch="EAGER")
      */
-    public Collection $roles;
+    public $role;
+    
     /**
      * @ORM\ManyToMany(targetEntity="App\Trick\Domain\Entity\Trick", mappedBy="contributors", cascade={"persist", "remove"})
      * @JoinTable(name="trick_user",
@@ -100,8 +97,8 @@ class User implements UserInterface, UserPasswordEncoderInterface
     
     #[Pure] public function __construct(private ?UserPasswordEncoderInterface $encoder = null)
     {
-        if(!isset($this->roles)){
-            $this->roles = new ArrayCollection();
+        if(!isset($this->role)){
+            $this->roles = ['ROLE_USER'];
         }
     }
     
@@ -115,27 +112,14 @@ class User implements UserInterface, UserPasswordEncoderInterface
     public function setEmail(string $email): self { $this->email = $email; return $this; }
     public function setPassword(string $password): self { $this->password = $password; return $this; }
     
-    public function getRoles()
+    public function getRoles(): array
     {
-        return $this->roles;
+        return [$this->role->getSlug()];
     }
     
-    public function addRole(Role $role): self
+    public function promote(Role $role): self
     {
-        if(!$this->roles->contains($role)) {
-            $this->roles[] = $role;
-            $role->addUser($this);
-        }
-    
-        return $this;
-    }
-    
-    public function removeRole(Role $role): self
-    {
-        if(!$this->roles->contains($role)) {
-            $this->roles->removeElement($role);
-            $role->removeUser($this);
-        }
+        $this->role = $role;
         
         return $this;
     }

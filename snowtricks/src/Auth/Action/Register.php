@@ -24,7 +24,7 @@ final class Register extends AbstractController
             $new_user = $form->getData();
             $new_user->encodePassword($new_user, $new_user->getPassword());
             $role = $em->getRepository(Role::class)->findOneBy(['slug' => 'ROLE_USER']);
-            $new_user->addRole($role);
+            $new_user->promote($role);
             $em->persist($new_user);
             $em->flush();
         }

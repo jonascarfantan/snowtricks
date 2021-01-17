@@ -32,7 +32,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\UserPassportInterface
 use Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
-class Authenticator extends AbstractAuthenticator implements AuthenticatorInterface
+class Authenticator extends AbstractAuthenticator
 {
     use TargetPathTrait;
 
@@ -113,12 +113,7 @@ class Authenticator extends AbstractAuthenticator implements AuthenticatorInterf
         if (!$passport instanceof UserPassportInterface) {
             throw new LogicException(sprintf('Passport does not contain a user, overwrite "createAuthenticatedToken()" in "%s" to create a custom authenticated token.', \get_class($this)));
         }
-        $user_roles = [];
-        foreach( $passport->getUser()->getRoles() as $role) {
-            $user_roles = [$role->getSlug()];
-        }
-        return new PostAuthenticationToken($passport->getUser(), $firewallName, $user_roles);
-        
+        return new PostAuthenticationToken($passport->getUser(), $firewallName, $passport->getUser()->getRoles());
     }
     
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
