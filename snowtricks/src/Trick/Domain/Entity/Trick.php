@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\JoinColumn;
+use JetBrains\PhpStorm\Pure;
 
 /**
  * @ORM\Entity(repositoryClass=TrickRepository::class)
@@ -34,6 +35,12 @@ class Trick
      * @ORM\Column(type="text")
      */
     private $description;
+    
+    /**
+     * @ORM\Column(type="text") // [published, draft, deleted]
+     */
+    private $state;
+    
     /**
      * @ORM\ManyToMany(targetEntity="App\Auth\Domain\Entity\User", inversedBy="tricks", cascade={"persist", "remove"})
      * @JoinTable(name="trick_user",
@@ -55,7 +62,7 @@ class Trick
      */
     private Collection $medias;
     
-    public function __construct()
+    #[Pure] public function __construct()
     {
         $this->contributors = new ArrayCollection();
         $this->medias = new ArrayCollection();
@@ -113,13 +120,15 @@ class Trick
     public function getId() {
         return $this->id;
     }
-    public function setId($id): void {
+    public function setId($id): void
+    {
         $this->id = $id;
     }
     public function getTitle() {
         return $this->title;
     }
-    public function setTitle(string $title): self {
+    public function setTitle(string $title): self
+    {
         $this->title = $title;
         
         return $this;
@@ -128,44 +137,60 @@ class Trick
     public function getSlug() {
         return $this->slug;
     }
-    public function setSlug($slug): self {
+    
+    public function setSlug($slug): self
+    {
         $this->slug = $slug;
         
         return $this;
     }
     
     
-    /**
-     * @return mixed
-     */
-    public function getDescription() {
+    public function getDescription()
+    {
         return $this->description;
     }
     
-    public function setDescription($description): self {
+    public function setDescription($description): self
+    {
         $this->description = $description;
         
         return $this;
     }
 
-    public function getCreatedAt() {
+    public function getCreatedAt()
+    {
         return $this->created_at;
     }
     
-    public function setCreatedAt($created_at): self {
+    public function setCreatedAt($created_at): self
+    {
         $this->created_at = $created_at;
         
         return $this;
     }
     
-    public function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updated_at;
     }
     
-    public function setUpdatedAt($updated_at): self {
+    public function setUpdatedAt($updated_at): self
+    {
         $this->updated_at = $updated_at;
         
         return $this;
+    }
+    
+    public function setState(string $state): self
+    {
+        $this->state = $state;
+        
+        return $this;
+    }
+    
+    public function getState() {
+        return $this->state;
     }
     
 }

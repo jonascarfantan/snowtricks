@@ -23,12 +23,13 @@ class TricksFixtures extends Fixture implements DependentFixtureInterface
         $carbon = new Carbon();
         $faker = Factory::create('fr_FR');
     
-        for ($count = 0; $count < 10; $count++) {
+        for ($count = 0; $count < 50; $count++) {
             $now = $carbon->now();
             $trick = new Trick();
             $trick->setTitle($faker->word());
             $trick->setSlug($faker->word());
             $trick->setDescription($faker->word());
+            $trick->setState('published');
             $trick->setCreatedAt($now);
             $trick->addContributor($this->getReference(UsersFixtures::USER_REFERENCE));
             $manager->persist($trick);
