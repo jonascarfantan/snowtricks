@@ -29,7 +29,7 @@ use Symfony\Component\Validator\Constraints\Regex;
     UniqueEntity(fields: 'username' ,message: 'Pseudo déjà utilisé.'),
     UniqueEntity(fields: 'email' ,message: 'Adresse email déjà utilisé.')
 ]
-class User implements UserInterface, UserPasswordEncoderInterface
+class User implements UserInterface
 {
     /**
      * @ORM\Id
@@ -95,7 +95,7 @@ class User implements UserInterface, UserPasswordEncoderInterface
     public Collection $tricks;
     private $salt;
     
-    #[Pure] public function __construct(private ?UserPasswordEncoderInterface $encoder = null)
+    #[Pure] public function __construct()
     {
         if(!isset($this->role)){
             $this->roles = ['ROLE_USER'];
@@ -157,10 +157,6 @@ class User implements UserInterface, UserPasswordEncoderInterface
     public function eraseCredentials(): void
     {
     
-    }
-    
-    public function encodePassword(UserInterface $user, string $plainPassword) {
-        $this->setPassword($this->encoder->encodePassword($user, $plainPassword));
     }
     
     public function isPasswordValid(UserInterface $user, string $raw) {

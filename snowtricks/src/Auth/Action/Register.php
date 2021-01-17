@@ -17,12 +17,13 @@ final class Register extends AbstractController
     #[Route('/register', name: 'register', methods: ['GET', 'POST'])]
     public function __invoke(Request $request, EntityManagerInterface $em, UserPasswordEncoderInterface $password_encoder): Response
     {
-        $form = $this->createForm(RegistrationType::class, new User($password_encoder));
+        $form = $this->createForm(RegistrationType::class, new User());
         $form->handleRequest($request);
         $form->getErrors(true);
         if ($form->isSubmitted() && $form->isValid()) {
             $new_user = $form->getData();
-            $new_user->encodePassword($new_user, $new_user->getPassword());
+            $encoded = $password_encoder->encodePassword($new_user, $new_user->getPassword());
+            $new_user->setPassword('password', $encoded);
             $role = $em->getRepository(Role::class)->findOneBy(['slug' => 'ROLE_USER']);
             $new_user->promote($role);
             $em->persist($new_user);
