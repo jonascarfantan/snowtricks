@@ -1,29 +1,36 @@
 security:
+    encoders:
+        # use your user class name here
+        App\Auth\Domain\Entity\User: argon2id
+            # Use native password encoder
+            # This value auto-selects the best possible hashing algorithm
+            # (i.e. Sodium when available).
+            algorithm: argon2id
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
-        users_in_memory: { memory: null }
+        users:
+            entity:
+                class: 'App\Auth\Domain\Entity\User'
+                property: 'username'
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
-            anonymous: true
             lazy: true
-            provider: users_in_memory
-            guard:
-                authenticators:
-                    - App\Auth\Security\Authenticator
-#            logout:
-#                path: app_logout
-#                # where to redirect after logout
-#                 target: app_any_route
-
+            provider: users
+            custom_authenticators:
+                - App\Auth\Security\Authenticator
+            logout:
+                path: logout
+                # where to redirect after logout
+                target: home
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication
 
             # https://symfony.com/doc/current/security/impersonating_user.html
             # switch_user: true
-
+    enable_authenticator_manager: true
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:

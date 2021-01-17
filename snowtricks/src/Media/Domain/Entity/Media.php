@@ -2,8 +2,10 @@
 
 namespace App\Media\Domain\Entity;
 
-use App\Repository\TrickRepository;
+use App\Trick\Domain\Repository\TrickRepository;
+use App\Media\Domain\Repository\MediaRepository;
 use App\Trick\Domain\Entity\Trick;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -58,6 +60,27 @@ class Media
     public function set(string $attribute, mixed $value): self
     {
         $this->$attribute = $value;
+        
+        return $this;
+    }
+    
+    public function getTrick()
+    {
+        return $this->trick;
+    }
+    
+    public function addTrick(Trick $trick): self
+    {
+        $this->trick = $trick;
+        $trick->addMedia($this);
+        
+        return $this;
+    }
+    
+    public function removeTrick(Trick $trick): self
+    {
+        $this->trick->removeElement($trick);
+        $trick->removeMedia($this);
         
         return $this;
     }

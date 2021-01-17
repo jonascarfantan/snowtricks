@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Auth;
+namespace App\Auth\Domain\Repository;
 
 use App\Auth\Domain\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -18,7 +18,35 @@ class UserRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, User::class);
     }
-
+    
+    public function findWithAll() {
+        return $this->createQueryBuilder('u')
+            ->leftJoin('u.roles', 'r')
+            ->addSelect('r')
+            ->getQuery()
+            ->getResult();
+    }
+    public function findOneByUsername($username)
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.username = :val')
+            ->setParameter('val', $username)
+            ->orderBy('u.id', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getResult();
+    }
+    
+    public function findOneByEmail($email)
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.email = :val')
+            ->setParameter('val', $email)
+            ->orderBy('u.id', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getResult();
+    }
     // /**
     //  * @return User[] Returns an array of User objects
     //  */

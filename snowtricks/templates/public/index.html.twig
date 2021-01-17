@@ -10,13 +10,13 @@
 <main class="grid grid-cols-12">
     <section class="col-span-12">
         <div class="w-full h-screen website-img-banner">
-            <div class="ml-48 pl-4 pt-16 text-blue-50 border-l-8">
-                <h1 class=" text-4xl font-black">Snowtricks</h1>
+            <div class="slogan ml-48 pl-4 pt-12 text-blue-50 border-l-8">
+                <h1 class="text-6xl font-black">Snowtricks</h1>
                 <ul class="text-2xl font-bold">
                     <li class="class">Speak</li>
-                    <li class="class">Learn</li>
-                    <li class="class">Take your line</li>
-                    <li class="class">Share</li>
+                    <li class="class">Apprend</li>
+                    <li class="class">Ride</li>
+                    <li class="class">Partage</li>
                 </ul>
             </div>
         </div>
@@ -24,7 +24,6 @@
 </main>
 <div class="example-wrapper" x-data="{">
     <h1 class="text-6xl text-indigo-500 font-black tracking-tight">Hello {{ action_name }}! ✅</h1>
-
     This friendly message is coming from:
     <ul>
         <li>Your controller at <code><a href="{{ 'C:/Users/jcarfantan/Documents/www/snowtricks/snowtricks/src/Controller/BaseController.php'|file_link(0) }}">src/Home/Action/HomePage.php</a></code></li>
@@ -33,7 +32,7 @@
 </div>
 
     <div class="antialiased sans-serif bg-gray-200">
-    <div x-data="app()" x-cloak>
+    <div x-data="app()">
         <div class="max-w-sm mx-auto py-16">
 
             <div class="mb-5">
@@ -98,7 +97,7 @@
         function app() {
             return {
                 isOpen: false,
-                colors: ['#2196F3', '#009688', '#9C27B0', '#FFEB3B', '#afbbc9', '#4CAF50', '#2d3748', '#f56565', '#ed64a6'],
+                colors: ['#2196F3', '#009688', '#9c27b0', '#e9cd18', '#afbbc9', '#4CAF50', '#2d3748', '#f56565', '#ed64a6'],
                 colorSelected: '#2196F3'
             }
         }

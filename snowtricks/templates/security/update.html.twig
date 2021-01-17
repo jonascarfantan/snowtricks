@@ -1,0 +1,40 @@
+{% extends 'layout/base.html.twig' %}
+{% block title %}{{ title }}{% endblock %}
+{% form_theme form with ['form_themes/form_errors.html.twig'] %}
+{% block body %}
+    <div class="font-sans w-10/12 mx-auto md:w-4/12 px-40">
+        {{ form_start(form,
+            {'attr': { 'class': '', 'novalidate': true }})
+        }}
+            {{ form_row(form.old_password,
+                {
+                    'label': 'Mot de passe actuel :',
+                    'attr': {
+                        'placeholder': 'ancien mot de passe',
+                        'class': 'input-txt'
+                }})
+            }}
+        {{ form_row(form.password,
+            {
+                'label': 'Nouveau mot de passe :',
+                'attr': {
+                    'class': 'input-txt'
+            }})
+        }}
+            <div class="mt-6">
+                <button class="submit_btn " id="submit" type="submit" name="submit" >envoyer !</button>
+            </div>
+        {{ form_end(form) }}
+    </div>
+
+{#
+Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
+See https://symfony.com/doc/current/security/remember_me.html
+
+<div class="checkbox mb-3">
+    <label>
+        <input type="checkbox" name="_remember_me"> Remember me
+    </label>
+</div>
+#}
+{% endblock %}
