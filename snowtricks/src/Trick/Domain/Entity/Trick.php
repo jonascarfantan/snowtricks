@@ -5,6 +5,7 @@ namespace App\Trick\Domain\Entity;
 use App\Auth\Domain\Entity\User;
 use App\Media\Domain\Entity\Media;
 use App\Trick\Domain\Repository\TrickRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinTable;
@@ -53,12 +54,12 @@ class Trick
      * @ORM\OneToMany(targetEntity="App\Media\Domain\Entity\Media", mappedBy="trick", orphanRemoval=true, cascade={"persist", "remove"})
      */
     private Collection $medias;
-    /**
-     * @ORM\OneToOne(targetEntity="App\Chat\Domain\Entity\ChatRoom", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(name="chat_room_id", referencedColumnName="id", nullable=true)
-     */
-    private $chat_room;
     
+    public function __construct()
+    {
+        $this->contributors = new ArrayCollection();
+        $this->medias = new ArrayCollection();
+    }
     public function getMedias(): Collection
     {
         return $this->medias;

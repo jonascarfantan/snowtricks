@@ -77,11 +77,129 @@ class Media
         return $this;
     }
     
-    public function removeTrick(Trick $trick): self
-    {
-        $this->trick->removeElement($trick);
-        $trick->removeMedia($this);
+    /**
+     * @param string $type
+     *
+     * @return Media
+     */
+    public function setType(string $type): Media {
+        $this->type = $type;
         
         return $this;
+}
+    
+    /**
+     * @return string
+     */
+    public function getType(): string {
+        return $this->type;
     }
+    
+    /**
+     * @return string
+     */
+    public function getSlug(): string {
+        return $this->slug;
+    }
+    
+    /**
+     * @param string $slug
+     *
+     * @return Media
+     */
+    public function setSlug(string $slug): Media {
+        $this->slug = $slug;
+        
+        return $this;
+}
+    
+    /**
+     * @return string
+     */
+    public function getAlt(): string {
+        return $this->alt;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getPath(): string {
+        return $this->path;
+    }
+    
+    /**
+     * @param string $path
+     *
+     * @return Media
+     */
+    public function setPath(string $path): Media {
+        $this->path = $path;
+        
+        return $this;
+}
+    
+    /**
+     * @param string $alt
+     *
+     * @return Media
+     */
+    public function setAlt(string $alt): Media {
+        $this->alt = $alt;
+        
+        return $this;
+}
+    
+    /**
+     * @return string
+     */
+    public function getUrl(): string {
+        return $this->url;
+    }
+    
+    /**
+     * @param string $url
+     *
+     * @return Media
+     */
+    public function setUrl(string $url): Media {
+        $this->url = $url;
+        
+        return $this;
+}
+    
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt(): \DateTime {
+        return $this->created_at;
+    }
+    
+    /**
+     * @param \DateTime $created_at
+     *
+     * @return Media
+     */
+    public function setCreatedAt(\DateTime $created_at): Media {
+        $this->created_at = $created_at;
+        
+        return $this;
+}
+    
+    /**
+     * @return \DateTime
+     */
+    public function getUpdatedAt(): \DateTime {
+        return $this->updated_at;
+    }
+    
+    /**
+     * @param \DateTime $updated_at
+     *
+     * @return Media
+     */
+    public function setUpdatedAt(\DateTime $updated_at): Media {
+        $this->updated_at = $updated_at;
+        
+        return $this;
+}
 }

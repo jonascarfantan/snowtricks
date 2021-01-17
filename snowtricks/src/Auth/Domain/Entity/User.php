@@ -66,7 +66,6 @@ class User implements UserInterface
         NotNull(message: 'Mot de passe requis.')
     ]
     private string $password;
-//    #[UserPassword(message: 'Mot de passe incorect.')]
     private string $old_password;
     private string $confirm_password;
 
@@ -81,7 +80,7 @@ class User implements UserInterface
     private ?\DateTimeInterface $updated_at;
     
     /**
-     * @ORM\ManyToOne(targetEntity="App\Auth\Domain\Entity\Role", cascade={"persist", "remove"}, fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="App\Auth\Domain\Entity\Role", cascade={"persist", "remove"}, fetch="EXTRA_LAZY")
      */
     public $role;
     
@@ -100,6 +99,7 @@ class User implements UserInterface
         if(!isset($this->role)){
             $this->roles = ['ROLE_USER'];
         }
+        $this->tricks = new ArrayCollection();
     }
     
 //    BORING GETTER & SETTER
@@ -107,10 +107,14 @@ class User implements UserInterface
     public function getUsername(): string { return $this->username; }
     public function getEmail(): string { return $this->email; }
     public function getPassword(): string { return $this->password; }
+    public function getCreatedAt(): string { return $this->created_at; }
+    public function getUpdatedAt(): string { return $this->updated_at; }
     
     public function setUsername(string $username): self { $this->username = $username; return $this; }
     public function setEmail(string $email): self { $this->email = $email; return $this; }
     public function setPassword(string $password): self { $this->password = $password; return $this; }
+    public function setCreatedAt(\DateTime $date_time): self { $this->created_at = $date_time; return $this; }
+    public function setUpdatedAt(\DateTime $date_time): self { $this->created_at = $date_time; return $this; }
     
     public function getRoles(): array
     {

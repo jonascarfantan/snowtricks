@@ -23,7 +23,7 @@ final class Register extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $new_user = $form->getData();
             $encoded = $password_encoder->encodePassword($new_user, $new_user->getPassword());
-            $new_user->setPassword('password', $encoded);
+            $new_user->setPassword($encoded);
             $role = $em->getRepository(Role::class)->findOneBy(['slug' => 'ROLE_USER']);
             $new_user->promote($role);
             $em->persist($new_user);
