@@ -26,12 +26,11 @@
     <h1 class="text-6xl text-indigo-500 font-black tracking-tight">Les Tricks</h1>
     <p>Ces tricks sont publiés par la communotée, si vous voyez une correction à apporter connectez-vous et contribuez au partage de connaissance !</p>
     <div class="w-full">
-        <div class="flex flex-row flex-auto ">
+        <div class="flex flex-row flex-wrap ">
             {% for trick in tricks %}
-                <div class="trick-card w-28 h-28 mx-auto">
-                    <img src="http://lorempixel.com/640/480/?16519" alt="img">
+                <div class="trick-card mx-6">
+                    <img src="https://picsum.photos/seed/picsum/200/300" alt="img" class="rounded-t-md">
                     <h3>{{ trick.title }}</h3>
-                    <p>{{ trick.description }}</p>
                 </div>
             {% endfor %}
         </div>
