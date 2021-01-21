@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
 use JetBrains\PhpStorm\Pure;
 
 /**
@@ -58,39 +59,64 @@ class Trick
      */
     private $updated_at;
     /**
-     * @ORM\OneToMany(targetEntity="App\Media\Domain\Entity\Media", mappedBy="trick", orphanRemoval=true, cascade={"persist", "remove"})
+     * @OneToMany(targetEntity="App\Media\Domain\Entity\Media", mappedBy="trick", orphanRemoval=true, cascade={"persist", "remove"})
      */
-    private Collection $medias;
+    private Collection|Media $medias;
     
     #[Pure] public function __construct()
     {
         $this->contributors = new ArrayCollection();
         $this->medias = new ArrayCollection();
     }
-    public function getMedias(): Collection
+    
+    public function setMedias(iterable $medias): self
     {
-        return $this->medias;
+        $this->clearMedias();
+        foreach ($medias as $media) {
+            $this->addMedia($media);
+        }
+        
+        return $this;
     }
     
     public function addMedia(Media $media): self
     {
-        if(!$this->medias->contains($media)) {
-            $this->medias[] = $media;
-            $media->addTrick($this);
+        if ($this->medias->contains($media) === false) {
+            $this->medias->add($media);
+            $media->setTrick($this);
         }
         
         return $this;
     }
     
-    public function removeMedia(Media $media): self
+    public function getMedias(): iterable
     {
-        if(!$this->medias->contains($media)) {
+        return $this->medias;
+    }
+    
+    public function removeComment(Media $media): self
+    {
+        if ($this->medias->contains($media)) {
             $this->medias->removeElement($media);
-            $media->removeTrick($this);
+            $media->setTrick(null);
         }
         
         return $this;
     }
+    
+    public function clearMedias(): self
+    {
+        foreach ($this->getMedias() as $media) {
+            $this->removeComment($media);
+        }
+        $this->medias->clear();
+        
+        return $this;
+    }
+    
+    
+    
+    
     
     public function getContributors(): Collection
     {

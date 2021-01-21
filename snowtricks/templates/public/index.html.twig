@@ -3,110 +3,142 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block body %}
-<style xmlns:x-transition="http://www.w3.org/1999/xhtml">
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-<main class="grid grid-cols-12">
-    <section class="col-span-12">
-        <div class="w-full h-screen website-img-banner">
-            <div class="slogan ml-48 pl-4 pt-12 text-blue-50 border-l-8">
-                <h1 class="text-6xl font-black">Snowtricks</h1>
-                <ul class="text-2xl font-bold">
-                    <li class="class">Speak</li>
-                    <li class="class">Apprend</li>
-                    <li class="class">Ride</li>
-                    <li class="class">Partage</li>
-                </ul>
-            </div>
-        </div>
-    </section>
-</main>
-<div class="example-wrapper" x-data="{">
-    <h1 class="text-6xl text-indigo-500 font-black tracking-tight">Les Tricks</h1>
-    <p>Ces tricks sont publiés par la communotée, si vous voyez une correction à apporter connectez-vous et contribuez au partage de connaissance !</p>
-    <div class="w-full">
-        <div class="flex flex-row flex-wrap ">
-            {% for trick in tricks %}
-                <div class="trick-card mx-6">
-                    <img src="https://picsum.photos/seed/picsum/200/300" alt="img" class="rounded-t-md">
-                    <h3>{{ trick.title }}</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-</div>
+	<style xmlns:x-transition="http://www.w3.org/1999/xhtml">
+		.example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+		.example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+	</style>
+	<main class="grid grid-rows-col grid-cols-12">
+		<section class="col-span-12">
+			<div class="w-full h-screen website-img-banner">
+				<div class="slogan ml-48 pl-4 pt-12 text-blue-50 border-l-8">
+					<h1 class="text-6xl font-black">Snowtricks</h1>
+					<ul class="text-2xl font-bold">
+						<li class="class">Speak</li>
+						<li class="class">Apprend</li>
+						<li class="class">Ride</li>
+						<li class="class">Partage</li>
+					</ul>
+				</div>
+			</div>
+		</section>
+		<section x-data="displayTricks()"
+		         x-init="container = document.getElementById('trick-card-container');"
+		         class="col-start-2 col-span-10 mt-8 mx-auto">
+			<div class="-mt-28">
+				<h1 class="text-9xl font-snowtricks italic text-indigo-900 font-black tracking-tight">LES TRICKS</h1>
+				<p>Ces tricks sont publiés par la communotée, si vous voyez une correction à apporter connectez-vous et contribuez au partage de connaissance !</p>
+			</div>
+			<div class="mt-8"
+				@scroll.window="setInterval(scrollDisplayTricks(window.pageYOffset, last_limit, tricks), 2000);">
+				<div id="trick-card-container" class="flex flex-wrap content-start justify-start mt-8">
+{#					 Tricks appear here !#}
+				</div>
+			</div>
+		</section>
+	</main>
 
-    <div class="antialiased sans-serif bg-gray-200">
-    <div x-data="app()">
-        <div class="max-w-sm mx-auto py-16">
+		<script>
+			function displayTricks() {
 
-            <div class="mb-5">
-                <div class="flex items-center">
-                    <div>
-                        <label for="colorSelected" class="block font-bold mb-1">Select Color</label>
-                        <input id="colorSelected" type="text" placeholder="Pick a color"
-                               class="border border-transparent shadow px-4 py-2 leading-normal text-gray-700 bg-white rounded-md focus:outline-none focus:shadow-outline"
-                               readonly
-                               x-model="colorSelected">
-                    </div>
-                    <div class="relative ml-3 mt-8">
-                        <button type="button" @click="isOpen = !isOpen"
-                                class="w-10 h-10 rounded-full focus:outline-none focus:shadow-outline inline-flex p-2 shadow"
-                                :style="`background: ${colorSelected}; color: white`"
-                        >
-                            <svg class="w-6 h-6 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" d="M15.584 10.001L13.998 8.417 5.903 16.512 5.374 18.626 7.488 18.097z"/><path d="M4.03,15.758l-1,4c-0.086,0.341,0.015,0.701,0.263,0.949C3.482,20.896,3.738,21,4,21c0.081,0,0.162-0.01,0.242-0.03l4-1 c0.176-0.044,0.337-0.135,0.465-0.263l8.292-8.292l1.294,1.292l1.414-1.414l-1.294-1.292L21,7.414 c0.378-0.378,0.586-0.88,0.586-1.414S21.378,4.964,21,4.586L19.414,3c-0.756-0.756-2.072-0.756-2.828,0l-2.589,2.589l-1.298-1.296 l-1.414,1.414l1.298,1.296l-8.29,8.29C4.165,15.421,4.074,15.582,4.03,15.758z M5.903,16.512l8.095-8.095l1.586,1.584 l-8.096,8.096l-2.114,0.529L5.903,16.512z"/></svg>
-                        </button>
+			    return {
+			        tricks: [],
+			        base_scroll_limit: 180,
+			        last_limit: 180,
+				    ticking: false,
+				    nb_iteration: 0,
+                    container: document.getElementById('trick-card-container'),
 
-                        <div x-show="isOpen" @click.away="isOpen = false" x-transition:enter="transition ease-out duration-100 transform"
-                             x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
-                             x-transition:leave="transition ease-in duration-75 transform"
-                             x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-                             class="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg">
-                            <div class="rounded-md bg-white shadow-xs px-4 py-3">
-                                <div class="flex flex-wrap -mx-2">
-                                    <template x-for="(color, index) in colors" :key="index">
-                                        <div
-                                                class="px-2"
-                                        >
-                                            <template x-if="colorSelected === color">
-                                                <div
-                                                        class="w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white"
-                                                        :style="`background: ${color}; box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);`"
-                                                ></div>
-                                            </template>
+                    scrollDisplayTricks(actual_pos, actual_limit, already_fetched) {
 
-                                            <template x-if="colorSelected != color">
-                                                <div
-                                                        @click="colorSelected = color"
-                                                        @keydown.enter="colorSelected = color"
-                                                        role="checkbox"
-                                                        tabindex="0"
-                                                        aria-checked="colorSelected"
-                                                        class="w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white focus:outline-none focus:shadow-outline"
-                                                        :style="`background: ${color};`"
-                                                ></div>
-                                            </template>
-                                        </div>
-                                    </template>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                        if(actual_pos > actual_limit && actual_pos < actual_limit + 15) {
 
-        </div>
-    </div>
 
-    <script>
-        function app() {
-            return {
-                isOpen: false,
-                colors: ['#2196F3', '#009688', '#9c27b0', '#e9cd18', '#afbbc9', '#4CAF50', '#2d3748', '#f56565', '#ed64a6'],
-                colorSelected: '#2196F3'
-            }
-        }
-    </script>
-    </div>
+                            fetch('http://snowtricks.local/feed/' + this.nb_iteration + '/tricks')
+                                .then(response => response.json())
+                                .then(function(data) {
+                                    // this.tricks = JSON.stringify(data.tricks);
+                                    already_fetched.push(data.tricks);
+                                    console.log(already_fetched);
+                                    data.tricks.map((x) => displayTrick(x));
+
+                                    function displayTrick(current_trick) {
+                                        const div = document.createElement('div');
+                                        div.setAttribute('class','trick-card flex-none mx-8 mb-8 rounded-t-md h-52 w-72 shadow-sm '+
+                                            'transition duration-200 ease-out bg-gray-50 hover:bg-gray-200 hover:shadow-xl transform hover:-translate-y-1 hover:scale-110 hover:rotate-1 ');
+                                        // div.classList.add("position-absolute", "rounded", "border-rounded");
+                                        div.innerHTML = '<img src="' + current_trick.preview_path + '" alt="img" class="rounded-t-md h-40 w-72">'+
+                                            '<div class="flex justify-start pt-2 mb-24">'+
+                                            '<h3 class="mx-2 text-2xl font-black font-mono">' + current_trick.title + '</h3>'+
+                                            '<p class="ml-1">Trick n° ' + current_trick.id + '</p>'+
+                                            '</div>';
+                                        this.container = document.getElementById('trick-card-container');
+                                        this.container.appendChild(div)
+                                    }
+                                    // TODO faire un jolie data.map()
+	                                // data.tricks.map((x) => {displayTrick(x);})
+
+                                })
+	                            .then(() => {
+                                    this.nb_iteration++;
+                                    this.last_limit = (this.last_limit + this.base_scroll_limit * this.nb_iteration);
+                                    console.log(this.nb_iteration);
+                                    console.log(this.last_limit);
+                                },
+                            );
+                        }
+				    },
+
+			    } // Return
+			} // displayTricks()
+
+            // window.addEventListener('scroll', function(e) {
+            //     last_pos_known = window.scrollY;
+			//
+            //     if (!ticking) {
+            //         window.requestAnimationFrame(function() {
+            //             setTimeout(function () {
+            //                 fetchTricks(last_pos_known);
+            //             }, 300);
+            //             ticking = false;
+            //         });
+            //     }
+			//
+            //     ticking = true;
+            // });
+			//
+            // const target = document.getElementById('stat-solde-remmainig');
+            // fetch('http://snowtricks.local/feed/6/tricks')
+            // .then(response => response.json())
+            //     .then(function(data) {
+            //         if(data[0].solde_points_prochaine_expiration != "0") {
+            //             target.classList.add("position-relative");
+            //             const div = document.createElement('div');
+            //             div.setAttribute('style','height: 78px; width: 100px; top:35px; right:-20px; border: 2.8px solid #f9cb60; background-color: rgba(249, 208, 100, 0.34); z-index: 999;');
+            //             div.setAttribute('id','expire-tooltip');
+            //             div.classList.add("position-absolute", "rounded", "border-rounded");
+            //             div.setAttribute('hidden', 'hidden');
+            //             div.innerHTML = "<p class='text-primary fs-15 fw-700'>Dont " + data[0].solde_points_prochaine_expiration + " <?php echo $customer->get('currency_symbol') ?> expirent le <strong>" + data[0].date_prochaine_expiration + "</strong></p>";
+            //             target.appendChild(div)
+            //         }
+            //     });
+            // const sold = document.getElementById('lottie-restant');
+            // sold.addEventListener("mouseover", function() {
+            //     const expire_tooltip = document.getElementById('expire-tooltip');
+            //     if(!expire_tooltip) {
+			//
+            //     } else {
+            //         if(expire_tooltip.hasAttribute('hidden')) {
+            //             expire_tooltip.removeAttribute('hidden');
+            //         }
+            //     }
+            // });
+            // sold.addEventListener("mouseout", function() {
+            //     const expire_tooltip = document.getElementById('expire-tooltip');
+            //     if(expire_tooltip) {
+            //         if(!expire_tooltip.hasAttribute('hidden'))
+            //             expire_tooltip.setAttribute('hidden', 'hidden');
+            //     }
+            // }); // Fin infobulle du solde
+
+		</script>
 {% endblock %}

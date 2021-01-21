@@ -14,11 +14,9 @@ final class HomePage extends AbstractController {
     
     #[Route(path: '/', name: 'home', methods: ['GET'])]
     public function __invoke(Request $request, EntityManagerInterface $em): Response {
-        $tricks_manager = new TricksManager([Trick::class], $em);
-        $tricks = $tricks_manager->getAllTricks();
+        
         return $this->render('public/index.html.twig', [
             'title' => 'Snowtricks - Communoté de Free Rider',
-            'tricks' => $tricks,
             'action_name' => 'HomePage',
         ]);
     }

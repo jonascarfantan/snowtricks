@@ -2,14 +2,12 @@
 
 namespace App\Media\Domain\Entity;
 
-use App\Trick\Domain\Repository\TrickRepository;
-use App\Media\Domain\Repository\MediaRepository;
 use App\Trick\Domain\Entity\Trick;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=TricksRepository::class)
+ * @ORM\Entity(repositoryClass="App\Media\Domain\Repository\MediaRepository")
  */
 class Media
 {
@@ -47,11 +45,12 @@ class Media
      * @ORM\Column(type="datetime", nullable=true)
      */
     private \DateTime $updated_at;
+    
     /**
      * @ORM\ManyToOne(targetEntity="App\Trick\Domain\Entity\Trick", inversedBy="medias")
-     * @ORM\JoinColumn(nullable=false, name="trick_id")
+     * @ORM\JoinColumn(name="trick_id", referencedColumnName="id", nullable=false)
      */
-    private Trick $trick;
+    private ?Trick $trick;
     
     public function get(string $attribute): mixed
     {
@@ -69,7 +68,7 @@ class Media
         return $this->trick;
     }
     
-    public function addTrick(Trick $trick): self
+    public function setTrick(Trick $trick): self
     {
         $this->trick = $trick;
         $trick->addMedia($this);
