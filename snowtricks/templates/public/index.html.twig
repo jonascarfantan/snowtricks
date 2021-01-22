@@ -21,15 +21,12 @@
 				</div>
 			</div>
 		</section>
-		<section x-data="displayTricks()"
-		         x-init="container = document.getElementById('trick-card-container');"
-		         class="col-start-2 col-span-10 mt-8 mx-auto">
+		<section class="col-start-2 col-span-10 mt-8 mx-auto ">
 			<div class="-mt-28">
 				<h1 class="text-9xl font-snowtricks italic text-indigo-900 font-black tracking-tight">LES TRICKS</h1>
 				<p>Ces tricks sont publiés par la communotée, si vous voyez une correction à apporter connectez-vous et contribuez au partage de connaissance !</p>
 			</div>
-			<div class="mt-8"
-				@scroll.window="setInterval(scrollDisplayTricks(window.pageYOffset, last_limit, tricks), 2000);">
+			<div class="mt-8">
 				<div id="trick-card-container" class="flex flex-wrap content-start justify-start mt-8">
 {#					 Tricks appear here !#}
 				</div>
@@ -38,107 +35,148 @@
 	</main>
 
 		<script>
-			function displayTricks() {
+			const container = document.getElementById('trick-card-container');
+			let target;
+            let nbSteps = 4.0;
+            let prevRatio = 0.0;
+            window.nb_iteration = 0;
+            window.tricks = [];
 
-			    return {
-			        tricks: [],
-			        base_scroll_limit: 180,
-			        last_limit: 180,
-				    ticking: false,
-				    nb_iteration: 0,
-                    container: document.getElementById('trick-card-container'),
+            window.addEventListener("load", function(event) {
 
-                    scrollDisplayTricks(actual_pos, actual_limit, already_fetched) {
+                createObserver();
+            }, false);
 
-                        if(actual_pos > actual_limit && actual_pos < actual_limit + 15) {
+            function createObserver() {
+                let observer;
+
+                let options = {
+                    root: null,
+                    rootMargin: "0px",
+                    threshold: 0.5
+                    // threshold: buildThresholdList()
+                };
+
+                observer = new IntersectionObserver(handleIntersect, options);
+                observer.observe(container);
+            }
+
+            function buildThresholdList() {
+                let thresholds = [];
+
+                for (let i=1.0; i<=nbSteps; i++) {
+                    let ratio = i/nbSteps;
+                    thresholds.push(ratio);
+                }
+
+                thresholds.push(0);
+                return thresholds;
+            }
+
+            function handleIntersect(entries, observer) {
+                entries.forEach(function(entry) {
+                    if (entry.intersectionRatio > prevRatio) {
+                        fetchTricks(observer);
+                        // entry.target.style.backgroundColor = increasingColor.replace("ratio", entry.intersectionRatio);
+                    } else {
+                        // entry.target.style.backgroundColor = decreasingColor.replace("ratio", entry.intersectionRatio);
+                    }
+                    prevRatio = entry.intersectionRatio;
+                });
+            }
+
+            function fetchTricks(observer) {
+
+                fetch('http://snowtricks.local/feed/' + window.nb_iteration + '/tricks')
+                    .then(response => response.json())
+                    .then(function(data) {
+
+	                    let to_display = data.tricks.filter(function (trick) {
+	                        if ( !window.tricks.includes(JSON.stringify(trick)) ) {
+                                window.tricks.push(JSON.stringify(trick));
+
+                                return true;
+	                        }
+	                    });
+	                    let old_last_child = container.lastElementChild;
+	                    observer.unobserve(old_last_child ? old_last_child : container);
+                        to_display.map((x) => displayTrick(x, container));
+                        let last_child = container.lastElementChild;
+                        observer.observe(last_child);
+
+                        // window.tricks.push(data.tricks);
+                        window.nb_iteration ++;
+                    });
+	                // .then((to_display) => {return to_display;});
+
+            }
+
+            function displayTrick(current_trick, container) {
+                const div = document.createElement('div');
+                div.setAttribute('class','trick-card flex-none mx-8 mb-8 rounded-t-md h-52 w-72 shadow-sm '+
+                    'transition duration-200 ease-out bg-gray-50 hover:bg-gray-200 hover:shadow-xl transform hover:-translate-y-1 hover:scale-110 hover:rotate-1 ');
+                // div.classList.add("position-absolute", "rounded", "border-rounded");
+                div.innerHTML = '<img src="' + current_trick.preview_path + '" alt="img" class="rounded-t-md h-40 w-72">'+
+                    '<div class="flex justify-start pt-2 mb-24">'+
+                    '<h3 class="mx-2 text-2xl font-black font-mono">' + current_trick.title + '</h3>'+
+                    '<p class="ml-1">Trick n° ' + current_trick.id + '</p>'+
+                    '</div>';
+                container = document.getElementById('trick-card-container');
+                container.appendChild(div)
+            }
 
 
-                            fetch('http://snowtricks.local/feed/' + this.nb_iteration + '/tricks')
-                                .then(response => response.json())
-                                .then(function(data) {
-                                    // this.tricks = JSON.stringify(data.tricks);
-                                    already_fetched.push(data.tricks);
-                                    console.log(already_fetched);
-                                    data.tricks.map((x) => displayTrick(x));
-
-                                    function displayTrick(current_trick) {
-                                        const div = document.createElement('div');
-                                        div.setAttribute('class','trick-card flex-none mx-8 mb-8 rounded-t-md h-52 w-72 shadow-sm '+
-                                            'transition duration-200 ease-out bg-gray-50 hover:bg-gray-200 hover:shadow-xl transform hover:-translate-y-1 hover:scale-110 hover:rotate-1 ');
-                                        // div.classList.add("position-absolute", "rounded", "border-rounded");
-                                        div.innerHTML = '<img src="' + current_trick.preview_path + '" alt="img" class="rounded-t-md h-40 w-72">'+
-                                            '<div class="flex justify-start pt-2 mb-24">'+
-                                            '<h3 class="mx-2 text-2xl font-black font-mono">' + current_trick.title + '</h3>'+
-                                            '<p class="ml-1">Trick n° ' + current_trick.id + '</p>'+
-                                            '</div>';
-                                        this.container = document.getElementById('trick-card-container');
-                                        this.container.appendChild(div)
-                                    }
-                                    // TODO faire un jolie data.map()
-	                                // data.tricks.map((x) => {displayTrick(x);})
-
-                                })
-	                            .then(() => {
-                                    this.nb_iteration++;
-                                    this.last_limit = (this.last_limit + this.base_scroll_limit * this.nb_iteration);
-                                    console.log(this.nb_iteration);
-                                    console.log(this.last_limit);
-                                },
-                            );
-                        }
-				    },
-
-			    } // Return
-			} // displayTricks()
-
-            // window.addEventListener('scroll', function(e) {
-            //     last_pos_known = window.scrollY;
+			// function displayTricks() {
 			//
-            //     if (!ticking) {
-            //         window.requestAnimationFrame(function() {
-            //             setTimeout(function () {
-            //                 fetchTricks(last_pos_known);
-            //             }, 300);
-            //             ticking = false;
-            //         });
-            //     }
+			//     return {
+			//         tricks: [],
+			//         base_scroll_limit: 180,
+			//         last_limit: 180,
+			// 	    ticking: false,
+			// 	    window.nb_iteration: 0,
+            //         container: document.getElementById('trick-card-container'),
 			//
-            //     ticking = true;
-            // });
+            //         scrollDisplayTricks(actual_pos, actual_limit, already_fetched) {
 			//
-            // const target = document.getElementById('stat-solde-remmainig');
-            // fetch('http://snowtricks.local/feed/6/tricks')
-            // .then(response => response.json())
-            //     .then(function(data) {
-            //         if(data[0].solde_points_prochaine_expiration != "0") {
-            //             target.classList.add("position-relative");
-            //             const div = document.createElement('div');
-            //             div.setAttribute('style','height: 78px; width: 100px; top:35px; right:-20px; border: 2.8px solid #f9cb60; background-color: rgba(249, 208, 100, 0.34); z-index: 999;');
-            //             div.setAttribute('id','expire-tooltip');
-            //             div.classList.add("position-absolute", "rounded", "border-rounded");
-            //             div.setAttribute('hidden', 'hidden');
-            //             div.innerHTML = "<p class='text-primary fs-15 fw-700'>Dont " + data[0].solde_points_prochaine_expiration + " <?php echo $customer->get('currency_symbol') ?> expirent le <strong>" + data[0].date_prochaine_expiration + "</strong></p>";
-            //             target.appendChild(div)
-            //         }
-            //     });
-            // const sold = document.getElementById('lottie-restant');
-            // sold.addEventListener("mouseover", function() {
-            //     const expire_tooltip = document.getElementById('expire-tooltip');
-            //     if(!expire_tooltip) {
+            //             if(actual_pos > actual_limit && actual_pos < actual_limit + 15) {
 			//
-            //     } else {
-            //         if(expire_tooltip.hasAttribute('hidden')) {
-            //             expire_tooltip.removeAttribute('hidden');
-            //         }
-            //     }
-            // });
-            // sold.addEventListener("mouseout", function() {
-            //     const expire_tooltip = document.getElementById('expire-tooltip');
-            //     if(expire_tooltip) {
-            //         if(!expire_tooltip.hasAttribute('hidden'))
-            //             expire_tooltip.setAttribute('hidden', 'hidden');
-            //     }
-            // }); // Fin infobulle du solde
-
+			//
+            //                 fetch('http://snowtricks.local/feed/' + this.window.nb_iteration + '/tricks')
+            //                     .then(response => response.json())
+            //                     .then(function(data) {
+            //                         // this.tricks = JSON.stringify(data.tricks);
+            //                         already_fetched.push(data.tricks);
+            //                         console.log(already_fetched);
+            //                         data.tricks.map((x) => displayTrick(x));
+			//
+            //                         function displayTrick(current_trick) {
+            //                             const div = document.createElement('div');
+            //                             div.setAttribute('class','trick-card flex-none mx-8 mb-8 rounded-t-md h-52 w-72 shadow-sm '+
+            //                                 'transition duration-200 ease-out bg-gray-50 hover:bg-gray-200 hover:shadow-xl transform hover:-translate-y-1 hover:scale-110 hover:rotate-1 ');
+            //                             // div.classList.add("position-absolute", "rounded", "border-rounded");
+            //                             div.innerHTML = '<img src="' + current_trick.preview_path + '" alt="img" class="rounded-t-md h-40 w-72">'+
+            //                                 '<div class="flex justify-start pt-2 mb-24">'+
+            //                                 '<h3 class="mx-2 text-2xl font-black font-mono">' + current_trick.title + '</h3>'+
+            //                                 '<p class="ml-1">Trick n° ' + current_trick.id + '</p>'+
+            //                                 '</div>';
+            //                             this.container = document.getElementById('trick-card-container');
+            //                             this.container.appendChild(div)
+            //                         }
+            //                         // TODO faire un jolie data.map()
+	        //                         // data.tricks.map((x) => {displayTrick(x);})
+			//
+            //                     })
+	        //                     .then(() => {
+            //                         this.window.nb_iteration++;
+            //                         this.last_limit = (this.last_limit + this.base_scroll_limit * this.window.nb_iteration);
+            //                         console.log(this.window.nb_iteration);
+            //                         console.log(this.last_limit);
+            //                     },
+            //                 );
+            //             }
+			// 	    },
+			//
+			//     } // Return
+			// } // displayTricks()
 		</script>
 {% endblock %}

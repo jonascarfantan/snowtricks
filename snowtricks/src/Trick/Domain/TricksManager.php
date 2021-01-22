@@ -11,7 +11,7 @@ class TricksManager extends EntityManager {
     public function getTricksPreview(string $offset): array
     {
         $repo = $this->em->getRepository(Trick::class);
-        $segment = $repo->findBy(['state' => 'published'], null, 4, 4 * $offset);
+        $segment = $repo->findBy(['state' => 'published'], null, 8, 8 * $offset);
         
         $tricks = [];
         foreach($segment as $trick) {
