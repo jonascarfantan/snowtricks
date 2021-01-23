@@ -9,6 +9,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\Table;
+use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToMany;
 use JetBrains\PhpStorm\Pure;
@@ -43,7 +45,7 @@ class Trick
     private $state;
     
     /**
-     * @ORM\ManyToMany(targetEntity="App\Auth\Domain\Entity\User", inversedBy="tricks", cascade={"persist", "remove"})
+     * @ORM\ManyToMany(targetEntity=User::class, inversedBy="tricks", cascade={"persist", "remove"})
      * @JoinTable(name="trick_user",
      * joinColumns={@JoinColumn(name="trick_id", referencedColumnName="id")},
      * inverseJoinColumns={@JoinColumn(name="user_id", referencedColumnName="id")}
@@ -59,7 +61,7 @@ class Trick
      */
     private $updated_at;
     /**
-     * @OneToMany(targetEntity="App\Media\Domain\Entity\Media", mappedBy="trick", orphanRemoval=true, cascade={"persist", "remove"})
+     * @OneToMany(targetEntity=Media::class, mappedBy="trick", orphanRemoval=true, cascade={"persist", "remove"}, fetch="EAGER")
      */
     private Collection|Media $medias;
     

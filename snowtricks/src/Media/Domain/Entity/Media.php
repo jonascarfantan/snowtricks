@@ -17,30 +17,37 @@ class Media
      * @ORM\Column(type="integer")
      */
     private int $id;
+    
     /**
      * @ORM\Column(type="string", length=64)
      */
     private string $type;
+    
     /**
      * @ORM\Column(type="string", length=64)
      */
     private string $slug;
+    
     /**
      * @ORM\Column(type="string", nullable=true)
      */
     private string $alt;
+    
     /**
      * @ORM\Column(type="string", nullable=true)
      */
-    private string $path;
+    private ?string $path = null;
+    
     /**
      * @ORM\Column(type="string", nullable=true)
      */
-    private string $url;
+    private ?string $url = null;
+    
     /**
      * @ORM\Column(type="datetime")
      */
     private \DateTime $created_at;
+    
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
@@ -48,9 +55,15 @@ class Media
     
     /**
      * @ORM\ManyToOne(targetEntity="App\Trick\Domain\Entity\Trick", inversedBy="medias")
-     * @ORM\JoinColumn(name="trick_id", referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(name="trick_id", referencedColumnName="id", onDelete="CASCADE" ,nullable=false)
      */
     private ?Trick $trick;
+    
+    public function __construct()
+    {
+        $this->url = null;
+        $this->path = null;
+    }
     
     public function get(string $attribute): mixed
     {

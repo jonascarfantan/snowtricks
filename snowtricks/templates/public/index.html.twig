@@ -7,7 +7,7 @@
 		.example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
 		.example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
 	</style>
-	<main class="grid grid-rows-col grid-cols-12">
+	<main x-data="interact()" x-init="init()" class="grid grid-rows-col grid-cols-12">
 		<section class="col-span-12">
 			<div class="w-full h-screen website-img-banner">
 				<div class="slogan ml-48 pl-4 pt-12 text-blue-50 border-l-8">
@@ -36,29 +36,61 @@
 
 		<script>
 			const container = document.getElementById('trick-card-container');
+			const loader = document.getElementById('loader');
 			let target;
             let nbSteps = 4.0;
             let prevRatio = 0.0;
             window.nb_iteration = 0;
             window.tricks = [];
 
-            window.addEventListener("load", function(event) {
+            function interact(){
+                return {
+                    'visible': true,
 
+	                init() {
+						fetchTricks();
+	                },
+
+                    setVisible(event) {
+                        if (event.target.tagName == 'DIV') {
+                            var real_target = event.target.firstChild;
+                        } else if (event.target.tagName == 'A') {
+                            var real_target = event.target;
+                        } else if (event.target.tagName == 'I') {
+                            var real_target = event.target.parentElement;
+                        }
+                        real_target.classList.remove('opacity-0')
+                    },
+
+                    unsetVisible(event) {
+                        if (event.target.tagName == 'DIV') {
+                            var real_target = event.target.firstChild;
+                        } else if (event.target.tagName == 'A') {
+                            var real_target = event.target;
+                        } else if (event.target.tagName == 'I') {
+                            var real_target = event.target.parentElement;
+                        }
+                        if (!real_target.classList.contains('opacity-0')) {
+                            real_target.classList.add('opacity-0')
+                        }
+                    },
+                }
+            }
+
+            window.addEventListener("load", function(event) {
                 createObserver();
             }, false);
 
             function createObserver() {
-                let observer;
-
                 let options = {
                     root: null,
                     rootMargin: "0px",
-                    threshold: 0.5
+                    threshold: 0.01
                     // threshold: buildThresholdList()
                 };
 
-                observer = new IntersectionObserver(handleIntersect, options);
-                observer.observe(container);
+                window.observer = new IntersectionObserver(handleIntersect, options);
+                window.observer.observe(container);
             }
 
             function buildThresholdList() {
@@ -73,10 +105,10 @@
                 return thresholds;
             }
 
-            function handleIntersect(entries, observer) {
+            function handleIntersect(entries) {
                 entries.forEach(function(entry) {
                     if (entry.intersectionRatio > prevRatio) {
-                        fetchTricks(observer);
+                        fetchTricks();
                         // entry.target.style.backgroundColor = increasingColor.replace("ratio", entry.intersectionRatio);
                     } else {
                         // entry.target.style.backgroundColor = decreasingColor.replace("ratio", entry.intersectionRatio);
@@ -85,10 +117,11 @@
                 });
             }
 
-            function fetchTricks(observer) {
+            function fetchTricks() {
 
                 fetch('http://snowtricks.local/feed/' + window.nb_iteration + '/tricks')
                     .then(response => response.json())
+	                // .then(() => showLoader())
                     .then(function(data) {
 
 	                    let to_display = data.tricks.filter(function (trick) {
@@ -99,10 +132,10 @@
 	                        }
 	                    });
 	                    let old_last_child = container.lastElementChild;
-	                    observer.unobserve(old_last_child ? old_last_child : container);
+	                    window.observer.unobserve(old_last_child ? old_last_child : container);
                         to_display.map((x) => displayTrick(x, container));
                         let last_child = container.lastElementChild;
-                        observer.observe(last_child);
+                        window.observer.observe(last_child);
 
                         // window.tricks.push(data.tricks);
                         window.nb_iteration ++;
@@ -114,69 +147,21 @@
             function displayTrick(current_trick, container) {
                 const div = document.createElement('div');
                 div.setAttribute('class','trick-card flex-none mx-8 mb-8 rounded-t-md h-52 w-72 shadow-sm '+
-                    'transition duration-200 ease-out bg-gray-50 hover:bg-gray-200 hover:shadow-xl transform hover:-translate-y-1 hover:scale-110 hover:rotate-1 ');
-                // div.classList.add("position-absolute", "rounded", "border-rounded");
-                div.innerHTML = '<img src="' + current_trick.preview_path + '" alt="img" class="rounded-t-md h-40 w-72">'+
-                    '<div class="flex justify-start pt-2 mb-24">'+
-                    '<h3 class="mx-2 text-2xl font-black font-mono">' + current_trick.title + '</h3>'+
-                    '<p class="ml-1">Trick n° ' + current_trick.id + '</p>'+
-                    '</div>';
+                    'transition duration-200 ease-out bg-gray-50 hover:bg-gray-200 hover:shadow-xl transform hover:-translate-y-1 hover:scale-110 hover:rotate-1');
+                div.innerHTML = '<div class="tricks_img rounded-t-md h-40 w-72"' +
+                'x-on:mouseover="setVisible($event);" x-on:mouseout="unsetVisible($event);" ' +
+                'style="background-image:url(' + current_trick.preview_path + ')">' +
+                '<a href="trick/'+ current_trick.id+'" class="opacity-0" data-a="'+ current_trick.id +'">' +
+                '<i id="edit-ico-'+ current_trick.id + ' "' +
+                    'class="far fa-edit fa-2x float-right mr-4 mt-4 text-gray-50" data-i="'+ current_trick.id +'">' +
+                '</i></a>'+
+                '</div>'+
+                '<div class="flex justify-between pt-2 px-2 mb-24">'+
+                '<h3 class="mx-2 text-2xl font-black font-mono">' + current_trick.title + '</h3>'+
+                '<p class="">n° ' + current_trick.id + '</p>'+
+                '</div>';
                 container = document.getElementById('trick-card-container');
                 container.appendChild(div)
             }
-
-
-			// function displayTricks() {
-			//
-			//     return {
-			//         tricks: [],
-			//         base_scroll_limit: 180,
-			//         last_limit: 180,
-			// 	    ticking: false,
-			// 	    window.nb_iteration: 0,
-            //         container: document.getElementById('trick-card-container'),
-			//
-            //         scrollDisplayTricks(actual_pos, actual_limit, already_fetched) {
-			//
-            //             if(actual_pos > actual_limit && actual_pos < actual_limit + 15) {
-			//
-			//
-            //                 fetch('http://snowtricks.local/feed/' + this.window.nb_iteration + '/tricks')
-            //                     .then(response => response.json())
-            //                     .then(function(data) {
-            //                         // this.tricks = JSON.stringify(data.tricks);
-            //                         already_fetched.push(data.tricks);
-            //                         console.log(already_fetched);
-            //                         data.tricks.map((x) => displayTrick(x));
-			//
-            //                         function displayTrick(current_trick) {
-            //                             const div = document.createElement('div');
-            //                             div.setAttribute('class','trick-card flex-none mx-8 mb-8 rounded-t-md h-52 w-72 shadow-sm '+
-            //                                 'transition duration-200 ease-out bg-gray-50 hover:bg-gray-200 hover:shadow-xl transform hover:-translate-y-1 hover:scale-110 hover:rotate-1 ');
-            //                             // div.classList.add("position-absolute", "rounded", "border-rounded");
-            //                             div.innerHTML = '<img src="' + current_trick.preview_path + '" alt="img" class="rounded-t-md h-40 w-72">'+
-            //                                 '<div class="flex justify-start pt-2 mb-24">'+
-            //                                 '<h3 class="mx-2 text-2xl font-black font-mono">' + current_trick.title + '</h3>'+
-            //                                 '<p class="ml-1">Trick n° ' + current_trick.id + '</p>'+
-            //                                 '</div>';
-            //                             this.container = document.getElementById('trick-card-container');
-            //                             this.container.appendChild(div)
-            //                         }
-            //                         // TODO faire un jolie data.map()
-	        //                         // data.tricks.map((x) => {displayTrick(x);})
-			//
-            //                     })
-	        //                     .then(() => {
-            //                         this.window.nb_iteration++;
-            //                         this.last_limit = (this.last_limit + this.base_scroll_limit * this.window.nb_iteration);
-            //                         console.log(this.window.nb_iteration);
-            //                         console.log(this.last_limit);
-            //                     },
-            //                 );
-            //             }
-			// 	    },
-			//
-			//     } // Return
-			// } // displayTricks()
 		</script>
 {% endblock %}

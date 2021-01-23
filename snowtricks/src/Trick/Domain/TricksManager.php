@@ -17,16 +17,16 @@ class TricksManager extends EntityManager {
         foreach($segment as $trick) {
             
             $medias = $trick->getMedias();
-            $criteria = Criteria::create()->where(Criteria::expr()->eq("type", "img_preview"));
+            $criteria = Criteria::create()->where(Criteria::expr()->eq("type", "img"));
             $preview_img = $medias->matching($criteria)->first();
             if(!is_bool($preview_img)) {
-                $url = $preview_img->getUrl();
+                $path = $preview_img->getPath();
             }
             $tricks[] = [
                 'id' => $trick->getId(),
                 'title' => $trick->getTitle(),
                 'slug' => $trick->getSlug(),
-                'preview_path' => isset($url) ? $url : '../assets/images/contest.webp',
+                'preview_path' => isset($path) ? $path : '/build/images/home_page.webp',
                 ];
         }
     

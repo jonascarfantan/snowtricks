@@ -35,7 +35,7 @@
 	@apply h-8 px-2 rounded-md text-gray-800 tracking-tight font-medium border-2 border-gray-800;
 }
 
-/*ELEMENT*/
+/*ELEMENTS*/
 .badge {
 	@apply px-1 rounded-sm text-xs font-bold tracking-wide;
 }
@@ -50,4 +50,19 @@
 }
 .badge-info {
 	@apply bg-teal-600 text-yellow-50 ;
+}
+
+/*LOADING*/
+.loading {
+	opacity: 0;
+	display: flex;
+	position: fixed;
+	bottom: 50px;
+	left: 50%;
+	transform: translateX(-50%);
+	transition: opacity .3s ease-in;
+}
+/*IMAGES*/
+.tricks_img {
+	background-size: cover;
 }

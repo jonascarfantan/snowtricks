@@ -22,11 +22,52 @@ class TricksFixtures extends Fixture implements DependentFixtureInterface
     {
         $carbon = new Carbon();
         $faker = Factory::create('fr_FR');
-    
+        $img_path = [
+            '/build/images/chill3.webp',
+            '/build/images/chill1.webp',
+            '/build/images/chill2.webp',
+            '/build/images/fontgap1.webp',
+            '/build/images/fontgap2.webp',
+            '/build/images/backgap1.webp',
+            '/build/images/backgap2.webp',
+            '/build/images/contest.webp',
+            '/build/images/home_page.webp',
+            '/build/images/mountain1.webp',
+            '/build/images/slide1.webp',
+            '/build/images/slide2.webp',
+            '/build/images/slide3.webp',
+        ];
+        $trick_name = [
+            'Frontside',
+            'Backside air',
+            'Mc Twist',
+            'Crippler',
+            'Backside rodeo',
+            'Air to fakie',
+            'Handplant',
+            'Switch Method',
+            'Lobster Flip',
+            'Nuckle Tricks',
+            'Handplant',
+            '270',
+            'One Foot Tricks',
+            'BS540 Seatbelt',
+            'FS 720 Japan',
+        ];
+        $mov_url = [
+            'https://youtu.be/q-RAJnV1dfg',
+            'https://youtu.be/wlEY-D2F6Yk',
+            'https://youtu.be/tIW5dLjv3CM',
+            'https://youtu.be/2RlDSbxsnyc',
+            'https://youtu.be/BH42KlQ0QsE',
+            'https://youtu.be/yK5GFfqeYfU',
+            'https://youtu.be/h0UtyOX9p90',
+        ];
+        $type = ['img','mov'];
         for ($count = 0; $count < 50; $count++) {
             $now = $carbon->now();
             $trick = new Trick();
-            $trick->setTitle($faker->word());
+            $trick->setTitle($trick_name[rand(0, count($trick_name) - 1)]);
             $trick->setSlug($faker->word());
             $trick->setDescription($faker->word());
             $trick->setState('published');
@@ -37,10 +78,15 @@ class TricksFixtures extends Fixture implements DependentFixtureInterface
                 $now = $carbon->now();
                 $media = new Media();
                 $media->setSlug($faker->word);
-                $media->setAlt($faker->word);
-                $media->setUrl($faker->imageUrl());
-                $media->setType('img');
-                $media->addTrick($trick);
+                if('mov' === $type[rand(0, 1)]) {
+                    $media->setUrl($mov_url[rand(0, count($mov_url) - 1)]);
+                    $media->setType('mov');
+                } else {
+                    $media->setPath($img_path[rand(0, count($img_path) - 1)]);
+                    $media->setAlt($faker->word);
+                    $media->setType('img');
+                }
+                $media->setTrick($trick);
                 $media->setCreatedAt($now);
                 $manager->persist($media);
             }
