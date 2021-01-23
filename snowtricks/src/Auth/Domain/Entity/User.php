@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\Collection;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinTable;
-use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToMany;
 
 use JetBrains\PhpStorm\Pure;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -82,13 +82,12 @@ class User implements UserInterface
     public $role;
     
     /**
-     * @ORM\ManyToMany(targetEntity="App\Trick\Domain\Entity\Trick", mappedBy="contributors", cascade={"persist", "remove"})
-     * @JoinTable(name="trick_user",
-     * joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-     * inverseJoinColumns={@JoinColumn(name="trick_id", referencedColumnName="id")}
-     * )
+     * Many Users have Many Groups.
+     * @ManyToMany(targetEntity="App\Trick\Domain\Entity\Trick", inversedBy="contributors", cascade={"persist", "remove"}, fetch="EAGER")
+     * @JoinTable(name="tricks_users")
      */
-    public Collection $tricks;
+    public Collection|Trick $tricks;
+    
     private $salt;
     
     #[Pure] public function __construct()
@@ -130,11 +129,11 @@ class User implements UserInterface
         return $this->tricks;
     }
     
-    public function addTrick(Trick $trick): self
+    public function setTrick(Trick $trick): self
     {
         if(!$this->tricks->contains($trick)) {
             $this->tricks[] = $trick;
-            $trick->removeContributor($this);
+            $trick->addContributor($this);
         }
         
         return $this;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Home\Action;
+namespace App\Trick\Action;
 
 use App\Trick\Domain\Entity\Trick;
 use App\Trick\Domain\TricksManager;

@@ -33,4 +33,29 @@ class TricksManager extends EntityManager {
         return $tricks;
     }
     
+    public function getOneTrick(string $id): array
+    {
+        $repo = $this->em->getRepository(Trick::class);
+        $trick = $repo->find($id);
+        dd($trick);
+        $trick_stuff = [];
+        foreach($segment as $trick) {
+            
+            $medias = $trick->getMedias();
+            $criteria = Criteria::create()->where(Criteria::expr()->eq("type", "img"));
+            $preview_img = $medias->matching($criteria)->first();
+            if(!is_bool($preview_img)) {
+                $path = $preview_img->getPath();
+            }
+            $tricks[] = [
+                'id' => $trick->getId(),
+                'title' => $trick->getTitle(),
+                'slug' => $trick->getSlug(),
+                'preview_path' => isset($path) ? $path : '/build/images/home_page.webp',
+            ];
+        }
+        
+        return $tricks;
+    }
+    
 }

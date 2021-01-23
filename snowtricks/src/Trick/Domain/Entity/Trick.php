@@ -5,15 +5,18 @@ namespace App\Trick\Domain\Entity;
 use App\Auth\Domain\Entity\User;
 use App\Media\Domain\Entity\Media;
 use App\Trick\Domain\Repository\TrickRepository;
+
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\JoinTable;
-use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
+
 use JetBrains\PhpStorm\Pure;
+use phpDocumentor\Reflection\Types\Integer;
 
 /**
  * @ORM\Entity(repositoryClass=TrickRepository::class)
@@ -25,41 +28,53 @@ class Trick
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private int $id;
     /**
-     * @ORM\Column(type="string", length=64)
+     * @ORM\Column(type="string", length=32)
      */
-    private $title;
+    private string $title;
     /**
-     * @ORM\Column(type="string", length=64)
+     * @ORM\Column(type="string", length=32)
      */
-    private $slug;
+    private string $slug;
     /**
      * @ORM\Column(type="text")
      */
-    private $description;
-    
+    private string $description;
     /**
-     * @ORM\Column(type="text") // [published, draft, deleted]
+     * @ORM\Column(type="string", length=32) // [published, draft, deleted]
      */
-    private $state;
-    
+    private string $state;
     /**
-     * @ORM\ManyToMany(targetEntity=User::class, inversedBy="tricks", cascade={"persist", "remove"})
-     * @JoinTable(name="trick_user",
-     * joinColumns={@JoinColumn(name="trick_id", referencedColumnName="id")},
-     * inverseJoinColumns={@JoinColumn(name="user_id", referencedColumnName="id")}
-     * )
+     * @ORM\Column(type="integer")
      */
-    public Collection $contributors;
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $created_at;
+    private int $version;
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private $updated_at;
+    private ?\DateTimeInterface $created_at;
+    
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private ?\DateTimeInterface $updated_at;
+    
+    /**
+     * @ManyToOne(targetEntity="App\Trick\Domain\Entity\Trick", inversedBy="children")
+     * @JoinColumn(name="parent", referencedColumnName="id")
+     */
+    private ?Trick $parent;
+    
+    /**
+     * @OneToMany(targetEntity="App\Trick\Domain\Entity\Trick", mappedBy="parent")
+     */
+    private Collection|Trick $children;
+    
+    /**
+     * @ManyToMany(targetEntity="App\Auth\Domain\Entity\User", mappedBy="tricks", fetch="EAGER")
+     */
+    public Collection|User $contributors;
+    
     /**
      * @OneToMany(targetEntity=Media::class, mappedBy="trick", orphanRemoval=true, cascade={"persist", "remove"}, fetch="EAGER")
      */
@@ -96,7 +111,7 @@ class Trick
         return $this->medias;
     }
     
-    public function removeComment(Media $media): self
+    public function removeMedia(Media $media): self
     {
         if ($this->medias->contains($media)) {
             $this->medias->removeElement($media);
@@ -109,37 +124,76 @@ class Trick
     public function clearMedias(): self
     {
         foreach ($this->getMedias() as $media) {
-            $this->removeComment($media);
+            $this->removeMedia($media);
         }
         $this->medias->clear();
         
         return $this;
     }
     
-    
-    
-    
-    
-    public function getContributors(): Collection
+    public function setContributors(iterable $contributors): self
     {
-        return $this->contributors;
-    }
-    
-    public function addContributor(User $user): self
-    {
-        if(!$this->contributors->contains($user)) {
-            $this->contributors[] = $user;
-            $user->addTrick($this);
+        $this->clearContributors();
+        foreach ($contributors as $contributor) {
+            $this->addContributor($contributor);
         }
         
         return $this;
     }
     
-    public function removeContributor(User $user): self
+    public function addContributor(User $contributor): self
     {
-        if(!$this->contributors->contains($user)) {
-            $this->contributors->removeElement($user);
-            $user->removeTrick($this);
+        if ($this->contributors->contains($contributor) === false) {
+            $this->contributors->add($contributor);
+            $contributor->setTrick($this);
+        }
+        
+        return $this;
+    }
+    
+    public function getContributors(): iterable
+    {
+        return $this->contributors;
+    }
+    
+    public function removeContributor(User $contributor): self
+    {
+        if ($this->contributors->contains($contributor)) {
+            $this->contributors->removeElement($contributor);
+            $contributor->setTrick(null);
+        }
+        
+        return $this;
+    }
+    
+    public function clearContributors(): self
+    {
+        foreach ($this->getContributors() as $contributor) {
+            $this->removeContributor($contributor);
+        }
+        $this->contributors->clear();
+        
+        return $this;
+    }
+    
+    public function addChild(Trick $trick): self
+    {
+        if ($this->children->contains($trick) === false) {
+            $this->children->add($trick);
+        }
+        
+        return $this;
+    }
+    
+    public function getChildren(): iterable
+    {
+        return $this->children;
+    }
+    
+    public function removeChild(Trick $trick): self
+    {
+        if ($this->children->contains($trick)) {
+            $this->children->removeElement($trick);
         }
         
         return $this;
@@ -219,6 +273,26 @@ class Trick
     
     public function getState() {
         return $this->state;
+    }
+    
+    public function setParrent($parrent): self {
+        $this->parrent = $parrent;
+        
+        return $this;
+    }
+    
+    public function getParent(): trick {
+        return $this->parrent;
+    }
+    
+    public function setVersion(int $version): Trick {
+        $this->version = $version;
+        
+        return $this;
+    }
+    
+    public function getVersion(): string {
+        return $this->version;
     }
     
 }

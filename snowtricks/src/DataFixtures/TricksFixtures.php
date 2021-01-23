@@ -69,6 +69,7 @@ class TricksFixtures extends Fixture implements DependentFixtureInterface
             $trick = new Trick();
             $trick->setTitle($trick_name[rand(0, count($trick_name) - 1)]);
             $trick->setSlug($faker->word());
+            $trick->setVersion(1);
             $trick->setDescription($faker->word());
             $trick->setState('published');
             $trick->setCreatedAt($now);

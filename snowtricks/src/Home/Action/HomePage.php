@@ -2,8 +2,6 @@
 
 namespace App\Home\Action;
 
-use App\Trick\Domain\Entity\Trick;
-use App\Trick\Domain\TricksManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,7 +12,6 @@ final class HomePage extends AbstractController {
     
     #[Route(path: '/', name: 'home', methods: ['GET'])]
     public function __invoke(Request $request, EntityManagerInterface $em): Response {
-        
         return $this->render('public/index.html.twig', [
             'title' => 'Snowtricks - Communoté de Free Rider',
             'action_name' => 'HomePage',
