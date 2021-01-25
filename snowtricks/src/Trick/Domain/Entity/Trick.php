@@ -55,25 +55,21 @@ class Trick
     private ?\DateTimeInterface $created_at;
     
     /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    private ?\DateTimeInterface $updated_at;
-    
-    /**
      * @ManyToOne(targetEntity="App\Trick\Domain\Entity\Trick", inversedBy="children")
      * @JoinColumn(name="parent", referencedColumnName="id")
      */
     private ?Trick $parent;
     
     /**
-     * @OneToMany(targetEntity="App\Trick\Domain\Entity\Trick", mappedBy="parent")
+     * @OneToMany(targetEntity="App\Trick\Domain\Entity\Trick", mappedBy="parent", fetch="EAGER")
      */
     private Collection|Trick $children;
     
     /**
-     * @ManyToMany(targetEntity="App\Auth\Domain\Entity\User", mappedBy="tricks", fetch="EAGER")
+     * @ManyToOne(targetEntity=User::class, inversedBy="tricks", fetch="EAGER")
+     * @JoinColumn(name="contributor_id", referencedColumnName="id")
      */
-    public Collection|User $contributors;
+    public User $contributor;
     
     /**
      * @OneToMany(targetEntity=Media::class, mappedBy="trick", orphanRemoval=true, cascade={"persist", "remove"}, fetch="EAGER")
@@ -82,7 +78,6 @@ class Trick
     
     #[Pure] public function __construct()
     {
-        $this->contributors = new ArrayCollection();
         $this->medias = new ArrayCollection();
     }
     
@@ -131,55 +126,23 @@ class Trick
         return $this;
     }
     
-    public function setContributors(iterable $contributors): self
+    public function setContributor(User $contributor): self
     {
-        $this->clearContributors();
-        foreach ($contributors as $contributor) {
-            $this->addContributor($contributor);
-        }
+        $this->contributor = $contributor;
         
         return $this;
     }
     
-    public function addContributor(User $contributor): self
+    public function getContributor(): User
     {
-        if ($this->contributors->contains($contributor) === false) {
-            $this->contributors->add($contributor);
-            $contributor->setTrick($this);
-        }
-        
-        return $this;
-    }
-    
-    public function getContributors(): iterable
-    {
-        return $this->contributors;
-    }
-    
-    public function removeContributor(User $contributor): self
-    {
-        if ($this->contributors->contains($contributor)) {
-            $this->contributors->removeElement($contributor);
-            $contributor->setTrick(null);
-        }
-        
-        return $this;
-    }
-    
-    public function clearContributors(): self
-    {
-        foreach ($this->getContributors() as $contributor) {
-            $this->removeContributor($contributor);
-        }
-        $this->contributors->clear();
-        
-        return $this;
+        return $this->contributor;
     }
     
     public function addChild(Trick $trick): self
     {
         if ($this->children->contains($trick) === false) {
             $this->children->add($trick);
+            $trick->setParent($this);
         }
         
         return $this;
@@ -194,12 +157,26 @@ class Trick
     {
         if ($this->children->contains($trick)) {
             $this->children->removeElement($trick);
+            $trick->setParent(null);
         }
         
         return $this;
     }
     
-    public function getId() {
+    public function getParent(): self {
+        if($this->parent !== null ) {
+          return $this->parent;
+        } else {
+            return $this;
+        }
+    }
+    public function setParent(?Trick $parent): Trick {
+        $this->parent = $parent;
+        $parent->addChild($this);
+        return $this;
+    }
+    
+    public function getId(): int {
         return $this->id;
     }
     public function setId($id): void
@@ -273,16 +250,6 @@ class Trick
     
     public function getState() {
         return $this->state;
-    }
-    
-    public function setParrent($parrent): self {
-        $this->parrent = $parrent;
-        
-        return $this;
-    }
-    
-    public function getParent(): trick {
-        return $this->parrent;
     }
     
     public function setVersion(int $version): Trick {

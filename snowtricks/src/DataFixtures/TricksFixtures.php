@@ -26,8 +26,8 @@ class TricksFixtures extends Fixture implements DependentFixtureInterface
             '/build/images/chill3.webp',
             '/build/images/chill1.webp',
             '/build/images/chill2.webp',
-            '/build/images/fontgap1.webp',
-            '/build/images/fontgap2.webp',
+            '/build/images/frontgrab1.webp',
+            '/build/images/frontgrab2.webp',
             '/build/images/backgap1.webp',
             '/build/images/backgap2.webp',
             '/build/images/contest.webp',
@@ -73,7 +73,7 @@ class TricksFixtures extends Fixture implements DependentFixtureInterface
             $trick->setDescription($faker->word());
             $trick->setState('published');
             $trick->setCreatedAt($now);
-            $trick->addContributor($this->getReference(UsersFixtures::USER_REFERENCE));
+            $trick->setContributor($this->getReference(UsersFixtures::USER_REFERENCE));
             $manager->persist($trick);
             for ($k = 0; $k < 3; $k++) {
                 $now = $carbon->now();

@@ -8,15 +8,17 @@ use Doctrine\Common\Collections\Criteria;
 
 class TricksManager extends EntityManager {
     
-    public function getTricksPreview(string $offset): array
+    public function currentVersions(string $offset): array
     {
         $repo = $this->em->getRepository(Trick::class);
+        // TODO rename state in current
         $segment = $repo->findBy(['state' => 'published'], null, 8, 8 * $offset);
         
         $tricks = [];
         foreach($segment as $trick) {
             
             $medias = $trick->getMedias();
+            //Todo change type from img to img_preview
             $criteria = Criteria::create()->where(Criteria::expr()->eq("type", "img"));
             $preview_img = $medias->matching($criteria)->first();
             if(!is_bool($preview_img)) {
@@ -33,29 +35,61 @@ class TricksManager extends EntityManager {
         return $tricks;
     }
     
-    public function getOneTrick(string $id): array
+    public function trickWithTree(string $id): array
     {
         $repo = $this->em->getRepository(Trick::class);
         $trick = $repo->find($id);
-        dd($trick);
-        $trick_stuff = [];
-        foreach($segment as $trick) {
-            
-            $medias = $trick->getMedias();
-            $criteria = Criteria::create()->where(Criteria::expr()->eq("type", "img"));
-            $preview_img = $medias->matching($criteria)->first();
-            if(!is_bool($preview_img)) {
-                $path = $preview_img->getPath();
-            }
-            $tricks[] = [
-                'id' => $trick->getId(),
-                'title' => $trick->getTitle(),
-                'slug' => $trick->getSlug(),
-                'preview_path' => isset($path) ? $path : '/build/images/home_page.webp',
-            ];
-        }
+        $family_tree = [];
         
-        return $tricks;
+        // get the entire family tree with version information
+        $raw_family_tree = $trick->getParent()->getChildren();
+        $raw_family_tree->add($trick->getParent());
+        $raw_family_tree->map(function($version) use (&$family_tree) {
+            $family_tree[$version->getVersion()-1] = [
+                'id' => $version->getId(),
+                'version' => $version->getVersion(),
+                'created_at' => $version->getCreatedAt(),
+            ];
+        });
+        ksort($family_tree);
+        $family_tree = ['family_tree' => $family_tree];
+        
+        // Merge trick wi his tree
+        return array_merge($this->trick($id), $family_tree);
+    }
+    
+    public function trick(string $id): array
+    {
+        $repo = $this->em->getRepository(Trick::class);
+        $trick = $repo->find($id);
+    
+        // Retrieve media split by type img & mov
+        $medias = $trick->getMedias();
+        $criteria = Criteria::create()->where(Criteria::expr()->eq("type", "img"));
+        $img = $medias->matching($criteria);
+        $criteria = Criteria::create()->where(Criteria::expr()->eq("type", "mov"));
+        $mov = $medias->matching($criteria);
+    
+        // Prepare trick to being displayed
+        $prepared_trick = [
+            'id' => $trick->getId(),
+            'version' => $trick->getVersion(),
+            'title' => $trick->getTitle(),
+            'state' => $trick->getState(),
+            'slug' => $trick->getSlug(),
+            'img' => $img,
+            'mov' => $mov,
+            'description' => $trick->getDescription(),
+            'contributor' => $trick->getContributor(),
+            'preview_path' => isset($path) ? $path : '/build/images/home_page.webp',
+            'created_at' => $trick->getCreatedAt(),
+        ];
+    
+        return $prepared_trick;
+    }
+    
+    public function extractCurrentVersion(Trick $trick) {
+    
     }
     
 }

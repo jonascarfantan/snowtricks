@@ -15,10 +15,10 @@ final class ShowTrick extends AbstractController {
     #[Route(path: '/trick/{trick_id}', name: 'show.trick', methods: ['GET'])]
     public function __invoke(Request $request, EntityManagerInterface $em, $trick_id): Response {
         $tricks_manager = new TricksManager([Trick::class], $em);
-        $tricks = $tricks_manager->getOneTrick($trick_id);
-        return $this->render('public/index.html.twig', [
-            'title' => 'Snowtricks - Communoté de Free Rider',
-            'action_name' => 'HomePage',
+        $trick = $tricks_manager->trickWithTree($trick_id);
+        return $this->render('public/show.html.twig', [
+            'title' => 'Zoom - ' . $trick['title'],
+            'trick' => $trick,
         ]);
     }
 }

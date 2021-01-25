@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 
+use Doctrine\ORM\Mapping\OneToMany;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -83,8 +84,7 @@ class User implements UserInterface
     
     /**
      * Many Users have Many Groups.
-     * @ManyToMany(targetEntity="App\Trick\Domain\Entity\Trick", inversedBy="contributors", cascade={"persist", "remove"}, fetch="EAGER")
-     * @JoinTable(name="tricks_users")
+     * @OneToMany(targetEntity="App\Trick\Domain\Entity\Trick", mappedBy="contributor", cascade={"persist", "remove"})
      */
     public Collection|Trick $tricks;
     
@@ -133,17 +133,6 @@ class User implements UserInterface
     {
         if(!$this->tricks->contains($trick)) {
             $this->tricks[] = $trick;
-            $trick->addContributor($this);
-        }
-        
-        return $this;
-    }
-    
-    public function removeTrick(Trick $trick): self
-    {
-        if(!$this->tricks->contains($trick)) {
-            $this->tricks->removeElement($trick);
-            $trick->removeContributor($this);
         }
         
         return $this;
