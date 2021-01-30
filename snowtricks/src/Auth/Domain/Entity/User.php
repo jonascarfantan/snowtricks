@@ -66,7 +66,12 @@ class User implements UserInterface
     private string $password;
     private string $old_password;
     private string $confirm_password;
-
+    
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private string $avatar_path;
+    
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
@@ -80,7 +85,7 @@ class User implements UserInterface
     /**
      * @ORM\ManyToOne(targetEntity="App\Auth\Domain\Entity\Role", cascade={"persist", "remove"}, fetch="EXTRA_LAZY")
      */
-    public $role;
+    private $role;
     
     /**
      * Many Users have Many Groups.
@@ -155,4 +160,14 @@ class User implements UserInterface
     public function needsRehash(UserInterface $user): bool {
         // TODO: Implement needsRehash() method.
     }
+    
+    public function getAvatarPath(): string {
+        return $this->avatar_path;
+    }
+    
+    public function setAvatarPath(string $avatar_path): User {
+        $this->avatar_path = $avatar_path;
+        
+        return $this;
+}
 }

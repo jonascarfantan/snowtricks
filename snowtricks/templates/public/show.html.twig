@@ -1,0 +1,43 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block body %}
+	<div class="mt-6 grid grid-cols-12 grid-rows-2">
+		{% include 'layout/aside.html.twig' %}
+		<div class="row-span-2 col-start-2 col-span-8">
+			<header class="h-24">
+				<h1 class="ml-4 text-6xl font-black">{{ trick.title }}</h1>
+				<ul class="ml-4 mt-2 flex text-lg justify-start">
+					<li class="badge badge-warning mr-2">Rotation</li>
+					<li class="badge badge-warning mr-2">grab</li>
+				</ul>
+			</header>
+			<main class="">
+				<div style="" alt="frontgrab trick" class=" show-img-banner my-4 w-10/12 h-96 mx-auto rounded-md"></div>
+				<h2 class="ml-4 my-6 text-3xl font-bold tracking-wide ">Description</h2>
+				<div class="p-wrapper">
+					<p class="mx-6 text-justify ">{{ trick.description }}</p>
+				</div>
+				<div class="flex">
+					<div class="w-full my-4 flex justify-items-start">
+						{% for img in trick.img %}
+							<div class="media-img">
+								<div style="background-image: url({{ img.path }});" class="tricks_img rounded-md mr-4 w-44 h-32 "></div>
+							</div>
+						{% endfor %}
+					</div>
+					<div class="w-full my-4 flex justify-items-start">
+						{% for mov in trick.mov %}
+							<div class="media-img">
+								{{ mov.iframe|raw }}
+							</div>
+						{% endfor %}
+					</div>
+				</div>
+			</main>
+	</div>
+
+
+
+<script>
+</script>
+{% endblock %}

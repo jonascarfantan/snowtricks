@@ -41,7 +41,7 @@ class Media
     /**
      * @ORM\Column(type="string", nullable=true)
      */
-    private ?string $url = null;
+    private ?string $iframe = null;
     
     /**
      * @ORM\Column(type="datetime")
@@ -61,7 +61,7 @@ class Media
     
     public function __construct()
     {
-        $this->url = null;
+        $this->iframe = null;
         $this->path = null;
     }
     
@@ -69,6 +69,7 @@ class Media
     {
         return $this->$attribute;
     }
+    
     public function set(string $attribute, mixed $value): self
     {
         $this->$attribute = $value;
@@ -89,129 +90,75 @@ class Media
         return $this;
     }
     
-    /**
-     * @param string $type
-     *
-     * @return Media
-     */
     public function setType(string $type): Media {
         $this->type = $type;
         
         return $this;
-}
-    
-    /**
-     * @return string
-     */
+    }
+
     public function getType(): string {
         return $this->type;
     }
     
-    /**
-     * @return string
-     */
     public function getSlug(): string {
         return $this->slug;
     }
     
-    /**
-     * @param string $slug
-     *
-     * @return Media
-     */
     public function setSlug(string $slug): Media {
         $this->slug = $slug;
         
         return $this;
-}
-    
-    /**
-     * @return string
-     */
+    }
+
     public function getAlt(): string {
         return $this->alt;
     }
     
-    /**
-     * @return string
-     */
+    
     public function getPath(): string {
         return $this->path;
     }
     
-    /**
-     * @param string $path
-     *
-     * @return Media
-     */
+    
     public function setPath(string $path): Media {
         $this->path = $path;
         
         return $this;
-}
-    
-    /**
-     * @param string $alt
-     *
-     * @return Media
-     */
+    }
+
     public function setAlt(string $alt): Media {
         $this->alt = $alt;
         
         return $this;
-}
-    
-    /**
-     * @return string
-     */
-    public function getUrl(): string {
-        return $this->url;
+    }
+
+    public function getIframe(): string {
+        return $this->iframe;
     }
     
-    /**
-     * @param string $url
-     *
-     * @return Media
-     */
-    public function setUrl(string $url): Media {
-        $this->url = $url;
+    public function setIframe(string $iframe): Media {
+        $this->iframe = $iframe;
         
         return $this;
-}
-    
-    /**
-     * @return \DateTime
-     */
+    }
+
     public function getCreatedAt(): \DateTime {
         return $this->created_at;
     }
     
-    /**
-     * @param \DateTime $created_at
-     *
-     * @return Media
-     */
     public function setCreatedAt(\DateTime $created_at): Media {
         $this->created_at = $created_at;
         
         return $this;
-}
-    
-    /**
-     * @return \DateTime
-     */
+    }
+
     public function getUpdatedAt(): \DateTime {
         return $this->updated_at;
     }
     
-    /**
-     * @param \DateTime $updated_at
-     *
-     * @return Media
-     */
     public function setUpdatedAt(\DateTime $updated_at): Media {
         $this->updated_at = $updated_at;
         
         return $this;
-}
+    }
 }

@@ -54,14 +54,15 @@ class TricksFixtures extends Fixture implements DependentFixtureInterface
             'BS540 Seatbelt',
             'FS 720 Japan',
         ];
-        $mov_url = [
-            'https://youtu.be/q-RAJnV1dfg',
-            'https://youtu.be/wlEY-D2F6Yk',
-            'https://youtu.be/tIW5dLjv3CM',
-            'https://youtu.be/2RlDSbxsnyc',
-            'https://youtu.be/BH42KlQ0QsE',
-            'https://youtu.be/yK5GFfqeYfU',
-            'https://youtu.be/h0UtyOX9p90',
+        $mov_iframe = [
+            '<iframe src="https://www.youtube.com/embed/nqNIy8HkEQ8" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
+            '<iframe src="https://www.youtube.com/embed/q-RAJnV1dfg?start=13" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
+            '<iframe src="https://www.youtube.com/embed/wlEY-D2F6Yk?start=144" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
+            '<iframe src="https://www.youtube.com/embed/zeDUIgJ6yjM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
+            '<iframe src="https://www.youtube.com/embed/2RlDSbxsnyc?start=92" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
+            '<iframe src="https://www.youtube.com/embed/BH42KlQ0QsE" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
+            '<iframe src="https://www.youtube.com/embed/yK5GFfqeYfU" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
+            '<iframe src="https://www.youtube.com/embed/h0UtyOX9p90" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
         ];
         $type = ['img','mov'];
         for ($count = 0; $count < 50; $count++) {
@@ -80,7 +81,7 @@ class TricksFixtures extends Fixture implements DependentFixtureInterface
                 $media = new Media();
                 $media->setSlug($faker->word);
                 if('mov' === $type[rand(0, 1)]) {
-                    $media->setUrl($mov_url[rand(0, count($mov_url) - 1)]);
+                    $media->setIframe($mov_iframe[rand(0, count($mov_iframe) - 1)]);
                     $media->setType('mov');
                 } else {
                     $media->setPath($img_path[rand(0, count($img_path) - 1)]);

@@ -23,6 +23,21 @@ class UsersFixtures extends Fixture
     
     public function load(ObjectManager $manager)
     {
+        $avatar_path = [
+            '/build/images/fake/181989_fake.webp',
+            '/build/images/fake/898424_fake.webp',
+            '/build/images/fake/1087536_fake.webp',
+            '/build/images/fake/1394524_fake.webp',
+            '/build/images/fake/1564832_fake.webp',
+            '/build/images/fake/2102412_fake.webp',
+            '/build/images/fake/3550386_fake.webp',
+            '/build/images/fake/3765240_fake.webp',
+            '/build/images/fake/3944519_fake.webp',
+            '/build/images/fake/4402086_fake.webp',
+            '/build/images/fake/6092843_fake.webp',
+            '/build/images/fake/6957380_fake.webp',
+        ];
+        
         $carbon = new Carbon();
         $faker = Factory::create('fr_FR');
         $now = $carbon->now();
@@ -43,6 +58,7 @@ class UsersFixtures extends Fixture
         $encoded = $this->encoder->encodePassword($user, 'admin');
         $user->setPassword($encoded);
         $user->setCreatedAt($now);
+        $user->setAvatarPath($avatar_path[rand(0, count($avatar_path) - 1)]);
         $role = $this->role_repo->findOneBy(['slug' => 'ROLE_ADMIN']);
         $user->promote($role);
         $manager->persist($user);

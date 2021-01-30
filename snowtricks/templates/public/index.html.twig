@@ -1,6 +1,5 @@
 {% extends 'layout/base.html.twig' %}
 
-{% block title %}{{ title }}{% endblock %}
 
 {% block body %}
 	<style xmlns:x-transition="http://www.w3.org/1999/xhtml">
@@ -50,7 +49,7 @@
 	                init() {
 						fetchTricks();
 	                },
-
+// TODO maybe add a condition to target the second A link
                     setVisible(event) {
                         if (event.target.tagName == 'DIV') {
                             var real_target = event.target.firstChild;
@@ -86,23 +85,10 @@
                     root: null,
                     rootMargin: "0px",
                     threshold: 0.01
-                    // threshold: buildThresholdList()
                 };
 
                 window.observer = new IntersectionObserver(handleIntersect, options);
                 window.observer.observe(container);
-            }
-
-            function buildThresholdList() {
-                let thresholds = [];
-
-                for (let i=1.0; i<=nbSteps; i++) {
-                    let ratio = i/nbSteps;
-                    thresholds.push(ratio);
-                }
-
-                thresholds.push(0);
-                return thresholds;
             }
 
             function handleIntersect(entries) {
@@ -118,12 +104,11 @@
             }
 
             function fetchTricks() {
-
+                document.getElementById('body').classList.add('cursor-wait');
                 fetch('http://snowtricks.local/feed/' + window.nb_iteration + '/tricks')
                     .then(response => response.json())
 	                // .then(() => showLoader())
                     .then(function(data) {
-
 	                    let to_display = data.tricks.filter(function (trick) {
 	                        if ( !window.tricks.includes(JSON.stringify(trick)) ) {
                                 window.tricks.push(JSON.stringify(trick));
@@ -136,30 +121,36 @@
                         to_display.map((x) => displayTrick(x, container));
                         let last_child = container.lastElementChild;
                         window.observer.observe(last_child);
-
+                        document.getElementById('body').classList.remove('cursor-wait');
                         // window.tricks.push(data.tricks);
                         window.nb_iteration ++;
-                    });
+                    }).then(() => {
+
+                });
 	                // .then((to_display) => {return to_display;});
 
             }
 
             function displayTrick(current_trick, container) {
+                const trick_id = current_trick.id;
                 const div = document.createElement('div');
+
                 div.setAttribute('class','trick-card flex-none mx-8 mb-8 rounded-t-md h-52 w-72 shadow-sm '+
                     'transition duration-200 ease-out bg-gray-50 hover:bg-gray-200 hover:shadow-xl transform hover:-translate-y-1 hover:scale-110 hover:rotate-1');
+                // TODO DEBUG this <a> who are not wrapping card
                 div.innerHTML = '<div class="tricks_img rounded-t-md h-40 w-72"' +
-                'x-on:mouseover="setVisible($event);" x-on:mouseout="unsetVisible($event);" ' +
-                'style="background-image:url(' + current_trick.preview_path + ')">' +
-                '<a href="trick/'+ current_trick.id+'" class="opacity-0" data-a="'+ current_trick.id +'">' +
-                '<i id="edit-ico-'+ current_trick.id + ' "' +
-                    'class="far fa-edit fa-2x float-right mr-4 mt-4 text-gray-50" data-i="'+ current_trick.id +'">' +
-                '</i></a>'+
-                '</div>'+
-                '<div class="flex justify-between pt-2 px-2 mb-24">'+
-                '<h3 class="mx-2 text-2xl font-black font-mono">' + current_trick.title + '</h3>'+
-                '<p class="">n° ' + current_trick.id + '</p>'+
-                '</div>';
+                    'x-on:mouseover="setVisible($event);" x-on:mouseout="unsetVisible($event);" ' +
+                    'style="background-image:url(' + current_trick.preview_path + ')">' +
+                    '<a href="trick/update/'+ trick_id +'" class="opacity-0" data-a="'+ trick_id +'">' +
+                    '<i id="edit-ico-'+ trick_id + ' "' +
+                        'class="far fa-edit fa-2x float-right mr-4 mt-4 text-indigo-900" data-i="'+ trick_id +'"></i>' +
+                    '</a>'+
+                    '<a href="trick/'+ trick_id +'">' +
+                    '</div>'+
+                    '<div class="flex justify-between pt-2 px-2 mb-24">'+
+                    '<h3 class="mx-2 text-2xl font-black font-mono">' + current_trick.title + '</h3>'+
+                    '<p class="">n° ' + trick_id + '</p>'+
+                    '</div></a>';
                 container = document.getElementById('trick-card-container');
                 container.appendChild(div)
             }

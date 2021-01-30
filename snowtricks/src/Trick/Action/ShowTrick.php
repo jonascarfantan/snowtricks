@@ -16,8 +16,9 @@ final class ShowTrick extends AbstractController {
     public function __invoke(Request $request, EntityManagerInterface $em, $trick_id): Response {
         $tricks_manager = new TricksManager([Trick::class], $em);
         $trick = $tricks_manager->trickWithTree($trick_id);
+        
         return $this->render('public/show.html.twig', [
-            'title' => 'Zoom - ' . $trick['title'],
+            'title' => 'Zoom sur ' . $trick['title'],
             'trick' => $trick,
         ]);
     }

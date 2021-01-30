@@ -4,6 +4,7 @@ namespace App\Trick\Domain;
 
 use App\_Core\Domain\EntityManager;
 use App\Trick\Domain\Entity\Trick;
+use Carbon\Carbon;
 use Doctrine\Common\Collections\Criteria;
 
 class TricksManager extends EntityManager {
@@ -40,15 +41,17 @@ class TricksManager extends EntityManager {
         $repo = $this->em->getRepository(Trick::class);
         $trick = $repo->find($id);
         $family_tree = [];
-        
         // get the entire family tree with version information
         $raw_family_tree = $trick->getParent()->getChildren();
         $raw_family_tree->add($trick->getParent());
         $raw_family_tree->map(function($version) use (&$family_tree) {
+            $date = Carbon::parse(new Carbon($version->getCreatedAt()));
             $family_tree[$version->getVersion()-1] = [
                 'id' => $version->getId(),
                 'version' => $version->getVersion(),
-                'created_at' => $version->getCreatedAt(),
+                'state' => $version->getState(),
+                'created_at' => $date->toDateString(),
+                'contributor' => $version->getContributor(),
             ];
         });
         ksort($family_tree);
