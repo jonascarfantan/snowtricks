@@ -42,37 +42,14 @@
             window.nb_iteration = 0;
             window.tricks = [];
 
-            function interact(){
+            function interact()
+            {
                 return {
                     'visible': true,
 
 	                init() {
 						fetchTricks();
 	                },
-// TODO maybe add a condition to target the second A link
-                    setVisible(event) {
-                        if (event.target.tagName == 'DIV') {
-                            var real_target = event.target.firstChild;
-                        } else if (event.target.tagName == 'A') {
-                            var real_target = event.target;
-                        } else if (event.target.tagName == 'I') {
-                            var real_target = event.target.parentElement;
-                        }
-                        real_target.classList.remove('opacity-0')
-                    },
-
-                    unsetVisible(event) {
-                        if (event.target.tagName == 'DIV') {
-                            var real_target = event.target.firstChild;
-                        } else if (event.target.tagName == 'A') {
-                            var real_target = event.target;
-                        } else if (event.target.tagName == 'I') {
-                            var real_target = event.target.parentElement;
-                        }
-                        if (!real_target.classList.contains('opacity-0')) {
-                            real_target.classList.add('opacity-0')
-                        }
-                    },
                 }
             }
 
@@ -137,20 +114,23 @@
 
                 div.setAttribute('class','trick-card flex-none mx-8 mb-8 rounded-t-md h-52 w-72 shadow-sm '+
                     'transition duration-200 ease-out bg-gray-50 hover:bg-gray-200 hover:shadow-xl transform hover:-translate-y-1 hover:scale-110 hover:rotate-1');
-                // TODO DEBUG this <a> who are not wrapping card
-                div.innerHTML = '<div class="tricks_img rounded-t-md h-40 w-72"' +
-                    'x-on:mouseover="setVisible($event);" x-on:mouseout="unsetVisible($event);" ' +
+                div.innerHTML = '<div id="card-img-container" class="tricks_img rounded-t-md h-40 w-72"' +
                     'style="background-image:url(' + current_trick.preview_path + ')">' +
-                    '<a href="trick/update/'+ trick_id +'" class="opacity-0" data-a="'+ trick_id +'">' +
-                    '<i id="edit-ico-'+ trick_id + ' "' +
-                        'class="far fa-edit fa-2x float-right mr-4 mt-4 text-indigo-900" data-i="'+ trick_id +'"></i>' +
-                    '</a>'+
-                    '<a href="trick/'+ trick_id +'">' +
                     '</div>'+
-                    '<div class="flex justify-between pt-2 px-2 mb-24">'+
-                    '<h3 class="mx-2 text-2xl font-black font-mono">' + current_trick.title + '</h3>'+
-                    '<p class="">n° ' + trick_id + '</p>'+
-                    '</div></a>';
+                    '<div class="flex justify-between pt-2 px-2">'+
+	                    '<a href="trick/'+ trick_id +'">' +
+	                        '<h3 class="mx-2 text-xl font-medium font-mono">' + current_trick.title + '</h3>'+
+	                    '</a>' +
+	                    '<div>' +
+	                    '<a href="trick/delete/'+ trick_id +'" class="mr-3" data-a="'+ trick_id +'">' +
+	                        '<i class="far fa-1x fa-trash-alt mt-2 text-gray-300"></i>' +
+	                    '</a>' +
+                        '<a href="trick/update/'+ trick_id +'" class="mr-3" data-a="'+ trick_id +'">' +
+                            '<i id="edit-ico-'+ trick_id + ' "' +
+                            'class="far fa-edit fa-1x float-right mt-2 text-gray-300" data-i="'+ trick_id +'"></i>' +
+                        '</a>' +
+	                    '</div>' +
+                    '</div>';
                 container = document.getElementById('trick-card-container');
                 container.appendChild(div)
             }

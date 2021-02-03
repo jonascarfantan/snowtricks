@@ -6,7 +6,7 @@
 					<i id="v-arrow"
 					   class="fas fas-1x fa-greater-than mr-2 transition duration-500 ease-in-out transform hover:rotate-90 hover:scale-125" ></i>
 					<h3 class=" mr-4 font-black">Version {{ trick.version }}</h3>
-					<span class="h-5 pt-0.5 badge badge-success">{{ trick.state }}</span>
+					<span class="h-5 pt-0.5 badge badge-success" style="background-color: rebeccapurple ">{{ trick.state }}</span>
 
 				</div>
 				<ul id="version-list" class="ml-3 flex flex-col-reverse mb-3">
@@ -14,7 +14,7 @@
 						<li x-show="isOpen" class="" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0.5 transform-gpu scale-10 -translate-y-8"
 						    x-transition:enter-end="opacity-100 transform scale-100" x-transition:leave="transition ease-in duration-300"
 						    x-transition:leave-start="opacity-100 transform scale-100" x-transition:leave-end="opacity-0 transform scale-10 -translate-y-8">
-							<a href="{{ node.id }}"><strong class="font-black text-xl mr-1">V {{ node.version }}</strong> - {{ node.created_at }} <span class="h-5 ml-1 mr-2 badge badge-warning">{{ trick.state }}</span> </a>
+							<a href="{{ node.id }}"><strong class="font-black text-xl mr-1">V {{ node.version }}</strong> - {{ node.created_at }} <span class="h-5 ml-1 mr-2 badge badge-warning">{{ node.state }}</span> </a>
 						</li>
 					{%  endfor %}
 				</ul>
