@@ -72,7 +72,7 @@ class TricksFixtures extends Fixture implements DependentFixtureInterface
             $trick->setSlug($faker->word());
             $trick->setVersion(1);
             $trick->setDescription($faker->word());
-            $trick->setState('published');
+            $trick->setState('current');
             $trick->setCreatedAt($now);
             $trick->setContributor($this->getReference(UsersFixtures::USER_REFERENCE));
             $manager->persist($trick);

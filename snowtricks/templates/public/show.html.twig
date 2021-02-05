@@ -3,41 +3,52 @@
 {% block body %}
 	<div class="mt-6 grid grid-cols-12 grid-rows-2">
 		{% include 'layout/aside.html.twig' %}
-		<div class="row-span-2 col-start-2 col-span-8">
-			<header class="h-24">
-				<h1 class="ml-4 text-6xl font-black">{{ trick.title }}</h1>
-				<ul class="ml-4 mt-2 flex text-lg justify-start">
-					<li class="badge badge-warning mr-2">Rotation</li>
-					<li class="badge badge-warning mr-2">grab</li>
-				</ul>
-			</header>
-			<main class="">
-				<div style="" alt="frontgrab trick" class=" show-img-banner my-4 w-10/12 h-96 mx-auto rounded-md"></div>
-				<h2 class="ml-4 my-6 text-3xl font-bold tracking-wide ">Description</h2>
-				<div class="p-wrapper">
-					<p class="mx-6 text-justify ">{{ trick.description }}</p>
-				</div>
-				<div class="flex">
-					<div class="w-full my-4 flex justify-items-start">
-						{% for img in trick.img %}
-							<div class="media-img">
-								<div style="background-image: url({{ img.path }});" class="tricks_img rounded-md mr-4 w-44 h-32 "></div>
-							</div>
-						{% endfor %}
+		<div class="row-span-2 col-start-1 col-span-10">
+			<header class="">
+				<div alt="Snowboard trick" class="bg-no-repeat bg-cover mx-auto" style="height:600px;background-image:url({{ trick.preview_path }}); background-position: 0% 40%;">
+					<div class="w-full pt-56 relative">
+						<h1 class="mr-12 text-right text-7xl font-black font-snowtricks">{{ trick.title }}</h1>
+						<ul class="absolute right-0 mr-12 mt-2 flex text-lg justify-start">
+							<li class="badge badge-warning mr-2">Rotation</li>
+							<li class="badge badge-warning mr-2">grab</li>
+						</ul>
 					</div>
-					<div class="w-full my-4 flex justify-items-start">
-						{% for mov in trick.mov %}
-							<div class="media-img">
-								{{ mov.iframe|raw }}
+				</div>
+			</header>
+			<main class="grid grid-flow-row">
+				<div class=" w-11/12 mb-6 mx-auto">
+					<h2 class="mt-6 mb-4 text-3xl font-bold tracking-wide">Description</h2>
+					<div class="">
+						<p class="mx-6 text-justify ">{{ trick.description }}</p>
+					</div>
+				</div>
+				<div class="">
+					<div class="grid grid-cols-2 w-11/12 mx-auto gap-4">
+						<div class="class">
+							<h2 class="my-4 text-3xl font-bold tracking-wide">images</h2>
+							<div class="w-full flex flex-wrap justify-items-start ">
+								{% for img in trick.img %}
+									<div class="media-img">
+										<div style="background-image: url({{ img.path }});" class="tricks_img bg-contain rounded-md mr-6 mb-6 w-48 h-40"></div>
+									</div>
+								{% endfor %}
 							</div>
-						{% endfor %}
+						</div>
+						<div class="class">
+							<h2 class="my-4 text-3xl font-bold tracking-wide">vidéos</h2>
+							<div class="w-full flex flex-wrap justify-items-start">
+								{% for mov in trick.mov %}
+									<div class="media-mov mr-6 mb-6">
+										{{ mov.iframe|raw }}
+									</div>
+								{% endfor %}
+							</div>
+						</div>
 					</div>
 				</div>
 			</main>
 	</div>
+<script type="text/javascript">
 
-
-
-<script>
 </script>
 {% endblock %}

@@ -3,6 +3,7 @@
 namespace App\Trick\Domain;
 
 use App\_Core\Domain\EntityManager;
+use App\Media\Domain\Entity\Media;
 use App\Trick\Domain\Entity\Trick;
 use Carbon\Carbon;
 use Doctrine\Common\Collections\Criteria;
@@ -13,7 +14,7 @@ class TricksManager extends EntityManager {
     {
         $repo = $this->em->getRepository(Trick::class);
         // TODO rename state in current
-        $segment = $repo->findBy(['state' => 'published'], null, 8, 8 * $offset);
+        $segment = $repo->findBy(['state' => 'current'], ['id' => 'DESC'], 8, 8 * $offset);
         
         $tricks = [];
         foreach($segment as $trick) {
@@ -22,7 +23,7 @@ class TricksManager extends EntityManager {
             //Todo change type from img to img_preview
             $criteria = Criteria::create()->where(Criteria::expr()->eq("type", "img"));
             $preview_img = $medias->matching($criteria)->first();
-            if(!is_bool($preview_img)) {
+            if($preview_img instanceof Media) {
                 $path = $preview_img->getPath();
             }
             $tricks[] = [
@@ -72,7 +73,7 @@ class TricksManager extends EntityManager {
         $img = $medias->matching($criteria);
         $criteria = Criteria::create()->where(Criteria::expr()->eq("type", "mov"));
         $mov = $medias->matching($criteria);
-    
+        $path = $img[0] !== null ? $img[0]->getPath(): '/build/images/home_page.webp' ;
         // Prepare trick to being displayed
         $prepared_trick = [
             'id' => $trick->getId(),
@@ -84,10 +85,9 @@ class TricksManager extends EntityManager {
             'mov' => $mov,
             'description' => $trick->getDescription(),
             'contributor' => $trick->getContributor(),
-            'preview_path' => isset($path) ? $path : '/build/images/home_page.webp',
+            'preview_path' => $path,
             'created_at' => $trick->getCreatedAt(),
         ];
-    
         return $prepared_trick;
     }
     
