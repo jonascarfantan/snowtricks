@@ -10,14 +10,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-final class ShowTrick extends AbstractController {
+final class Update extends AbstractController {
     
-    #[Route(path: '/trick/{trick_id}', name: 'show.trick', methods: ['GET'])]
-    public function __invoke(Request $request, EntityManagerInterface $em, $trick_id): Response {
+    #[Route(path: '/trick/update/{id}', name: 'update.trick', methods: ['GET'])]
+    public function __invoke(Request $request, EntityManagerInterface $em, $id): Response {
         $tricks_manager = new TricksManager([Trick::class], $em);
-        $trick = $tricks_manager->trickWithTree($trick_id);
+        $trick = $tricks_manager->trickWithTree($id);
         
-        return $this->render('trick/show.html.twig', [
+        return $this->render('public/show.html.twig', [
             'title' => 'Zoom sur ' . $trick['title'],
             'trick' => $trick,
         ]);

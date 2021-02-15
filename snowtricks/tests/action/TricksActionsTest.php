@@ -35,12 +35,12 @@ class TricksActionsTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
     }
     
-    public function testGetCreateTrickPage(): void
+    public function testGetEditTrickPage(): void
     {
         $client = static::createClient();
         $client->insulate();
         $client->catchExceptions(true);
-        $client->request('GET','/create/trick');
+        $client->request('GET','/trick/create');
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
     }
     

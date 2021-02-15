@@ -1,0 +1,64 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+{% form_theme form with ['form_themes/form_errors.html.twig'] %}
+{% block body %}
+    <div class="font-sans w-10/12 mx-auto px-40">
+        {{ form_start(form,
+            {'attr': { 'class': '', 'novalidate': true }})
+        }}
+            {{ form_row(form.title,
+                {
+                    'label': 'Titre :',
+                    'attr': {
+                        'placeholder': 'intitulé ',
+                        'class': 'input-txt'
+                }})
+            }}
+            {{ form_row(form.slug,
+                {
+                    'label': 'Alias',
+                    'attr': {
+                        'placeholder': 'diminutif',
+                        'class': 'input-txt'
+                }})
+            }}
+            {{ form_row(form.description,
+                {
+                    'label': 'Déscription :',
+                    'attr': {
+                        'placeholder': 'déscription',
+                        'class': 'input-txt'
+                }})
+            }}
+        {{ form_row(form.image,
+            {
+                'label': 'Téléverser vos images :',
+                'attr': {
+                'class': 'input-txt'
+            }})
+        }}
+        {{ form_row(form.video,
+            {
+                'label': 'Partager des vidéos hébergés :',
+                'attr': {
+                'class': 'input-txt'
+            }})
+        }}
+        <div class="mx-6 mt-6 mx-auto">
+            <button class="submit_btn " id="submit" type="submit" name="submit" >envoyer !</button>
+        </div>
+        {{ form_end(form) }}
+    </div>
+
+    {#
+        Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
+        See https://symfony.com/doc/current/security/remember_me.html
+
+        <div class="checkbox mb-3">
+            <label>
+                <input type="checkbox" name="_remember_me"> Remember me
+            </label>
+        </div>
+    #}
+{% endblock %}

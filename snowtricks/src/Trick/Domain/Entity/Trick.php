@@ -29,26 +29,32 @@ class Trick
      * @ORM\Column(type="integer")
      */
     private int $id;
+    
     /**
      * @ORM\Column(type="string", length=32)
      */
     private string $title;
+    
     /**
      * @ORM\Column(type="string", length=32)
      */
     private string $slug;
+    
     /**
      * @ORM\Column(type="text")
      */
     private string $description;
+    
     /**
      * @ORM\Column(type="string", length=32) // [published, draft, deleted]
      */
     private string $state;
+    
     /**
      * @ORM\Column(type="integer")
      */
     private int $version;
+    
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
@@ -56,7 +62,7 @@ class Trick
     
     /**
      * @ManyToOne(targetEntity="App\Trick\Domain\Entity\Trick", inversedBy="children")
-     * @JoinColumn(name="parent", referencedColumnName="id")
+     * @JoinColumn(name="parent", referencedColumnName="id", nullable=true)
      */
     private ?Trick $parent;
     
