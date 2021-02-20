@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\File;
 
 class TrickEditionType extends AbstractType
@@ -23,25 +24,27 @@ class TrickEditionType extends AbstractType
                 options: ['required' => true,])
             ->add('description', TextareaType::class,
                 options: ['required' => true,])
-            ->add('image', FileType::class,
+            ->add('images', FileType::class,
                 options: [
                     'required' => true,
-                    'label' => 'Photos.',
+                    'multiple' => true,
                     'mapped' => false,
                     'constraints' => [
-                        new File([
-                            'maxSize' => '5m',
-                            'mimeTypes' => [
-                                'image/png',
-                                'image/jpg',
-                                'image/gif',
-                                'image/webp',
-                            ],
-                            'mimeTypesMessage' => 'Le type d\'images est incorrect',
+                        new All([
+                            new File([
+                                'maxSize' => '5m',
+                                'mimeTypes' => [
+                                    'image/png',
+                                    'image/jpeg',
+                                    'image/gif',
+                                    'image/webp',
+                                ],
+                                'mimeTypesMessage' => 'Le type d\'images est incorrect',
+                            ])
                         ])
                     ],
                 ])
-            ->add('video', TextType::class,
+            ->add('videos', TextType::class,
                 options: [
                     'required' => false,
                     'label' => 'Video.',

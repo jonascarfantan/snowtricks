@@ -23,19 +23,19 @@ class TricksFixtures extends Fixture implements DependentFixtureInterface
         $carbon = new Carbon();
         $faker = Factory::create('fr_FR');
         $img_path = [
-            '/build/images/chill3.webp',
-            '/build/images/chill1.webp',
-            '/build/images/chill2.webp',
-            '/build/images/frontgrab1.webp',
-            '/build/images/frontgrab2.webp',
-            '/build/images/backgap1.webp',
-            '/build/images/backgap2.webp',
-            '/build/images/contest.webp',
-            '/build/images/home_page.webp',
-            '/build/images/mountain1.webp',
-            '/build/images/slide1.webp',
-            '/build/images/slide2.webp',
-            '/build/images/slide3.webp',
+            '/images/tricks/chill3.webp',
+            '/images/tricks/chill1.webp',
+            '/images/tricks/chill2.webp',
+            '/images/tricks/frontgrab1.webp',
+            '/images/tricks/frontgrab2.webp',
+            '/images/tricks/backgap1.webp',
+            '/images/tricks/backgap2.webp',
+            '/images/tricks/contest.webp',
+            '/images/tricks/home_page.webp',
+            '/images/tricks/mountain1.webp',
+            '/images/tricks/slide1.webp',
+            '/images/tricks/slide2.webp',
+            '/images/tricks/slide3.webp',
         ];
         $trick_name = [
             'Frontside',

@@ -24,18 +24,18 @@ class UsersFixtures extends Fixture
     public function load(ObjectManager $manager)
     {
         $avatar_path = [
-            '/build/images/fake/181989_fake.webp',
-            '/build/images/fake/898424_fake.webp',
-            '/build/images/fake/1087536_fake.webp',
-            '/build/images/fake/1394524_fake.webp',
-            '/build/images/fake/1564832_fake.webp',
-            '/build/images/fake/2102412_fake.webp',
-            '/build/images/fake/3550386_fake.webp',
-            '/build/images/fake/3765240_fake.webp',
-            '/build/images/fake/3944519_fake.webp',
-            '/build/images/fake/4402086_fake.webp',
-            '/build/images/fake/6092843_fake.webp',
-            '/build/images/fake/6957380_fake.webp',
+            '/images/fake/181989_fake.webp',
+            '/images/fake/898424_fake.webp',
+            '/images/fake/1087536_fake.webp',
+            '/images/fake/1394524_fake.webp',
+            '/images/fake/1564832_fake.webp',
+            '/images/fake/2102412_fake.webp',
+            '/images/fake/3550386_fake.webp',
+            '/images/fake/3765240_fake.webp',
+            '/images/fake/3944519_fake.webp',
+            '/images/fake/4402086_fake.webp',
+            '/images/fake/6092843_fake.webp',
+            '/images/fake/6957380_fake.webp',
         ];
         
         $carbon = new Carbon();
