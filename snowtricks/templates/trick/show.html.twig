@@ -28,7 +28,11 @@
 				<div class=" w-11/12 mb-6 mx-auto">
 					<h2 class="mt-6 mb-4 text-3xl font-bold tracking-wide">Description</h2>
 					<div class="">
-						<p class="mx-6 text-justify ">{{ trick.description }}</p>
+						<p class="mx-6 text-justify ">
+							{% autoescape false %}
+								{{ trick.description }}
+							{%  endautoescape %}
+						</p>
 					</div>
 				</div>
 				<div class="">

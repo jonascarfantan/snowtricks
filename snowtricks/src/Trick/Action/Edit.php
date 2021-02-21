@@ -52,14 +52,15 @@ final class Edit extends AbstractController
                     ->setCreatedAt($now);
                 $new_trick->addMedia($media);
             }
-            $media = new Media();
-            $media->setType('mov')
-                ->setTrick($new_trick)
-                ->setIframe($videos)
-                ->setSlug('blap')
-                ->setCreatedAt($now);
-            $new_trick->addMedia($media);
-
+            foreach($videos as $video) {
+                $media = new Media();
+                $media->setType('mov')
+                    ->setTrick($new_trick)
+                    ->setIframe($video)
+                    ->setSlug('blap')
+                    ->setCreatedAt($now);
+                $new_trick->addMedia($media);
+            }
             $em->persist($new_trick);
             $em->flush();
         }

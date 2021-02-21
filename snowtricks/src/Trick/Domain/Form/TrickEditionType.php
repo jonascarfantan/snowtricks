@@ -4,8 +4,8 @@ namespace App\Trick\Domain\Form;
 
 use App\Trick\Domain\Entity\Trick;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -44,15 +44,16 @@ class TrickEditionType extends AbstractType
                         ])
                     ],
                 ])
-            ->add('videos', TextType::class,
+            ->add('videos', CollectionType::class,
                 options: [
+                    'entry_type' => TextType::class,
+                    'allow_add' => true,
                     'required' => false,
                     'label' => 'Video.',
                     'mapped' => false,
                 ])
             ;
     }
-
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([

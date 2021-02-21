@@ -6,56 +6,62 @@
 {% endblock %}
 {% form_theme form with ['form_themes/trick_edit.html.twig'] %}
 {% block body %}
-    <div x-data="createTrick()" class="font-sans w-10/12 mx-auto px-40">
-        {{ form_start(form,
-            {'attr': { 'class': 'flex flex-wrap', 'novalidate': true }})
-        }}
-            {{ form_row(form.title,
+    <div class="md:mt-4 grid grid-cols-12 grid-rows-2">
+        <div x-data="manageForm()"
+             x-init="document.addEventListener('DOMContentLoaded', (event) => {console.log('fully loaded'); prepareFormGroup(); });"
+             class="font-sans md:col-start-2 md:col-span-10 mx-auto lg:px-8">
+            {{ form_start(form,
+                {'attr': { 'class': '', 'novalidate': true }})
+            }}
+                {{ form_row(form.title,
+                    {
+                        'label': 'Titre :',
+                        'attr': {
+                            'placeholder': 'intitulé ',
+                            'class': 'input-txt'
+                    }})
+                }}
+                {{ form_row(form.slug,
+                    {
+                        'label': 'Alias :',
+                        'attr': {
+                            'placeholder': 'diminutif',
+                            'class': 'input-txt'
+                    }})
+                }}
+                {{ form_row(form.description,
+                    {
+                        'label': 'Déscription :',
+                        'attr': {
+                            'placeholder': 'déscription',
+                            'class': 'input-txt'
+                    }})
+                }}
+            {{ form_row(form.images,
                 {
-                    'label': 'Titre :',
+                    'label': 'Téléverser vos images :',
                     'attr': {
-                        'placeholder': 'intitulé ',
-                        'class': 'input-txt'
+                    'x-on:change': 'checkImage(event);',
+                    'class': 'input-txt'
                 }})
             }}
-            {{ form_row(form.slug,
+            {{ form_row(form.videos,
                 {
-                    'label': 'Alias',
+                    'label': 'Partager des vidéos hébergés :',
                     'attr': {
-                        'placeholder': 'diminutif',
-                        'class': 'input-txt'
+                    'placeholder': '<iframe>',
+                    'class': 'input-txt'
                 }})
             }}
-            {{ form_row(form.description,
-                {
-                    'label': 'Déscription :',
-                    'attr': {
-                        'placeholder': 'déscription',
-                        'class': 'input-txt'
-                }})
-            }}
-        {{ form_row(form.images,
-            {
-                'label': 'Téléverser vos images :',
-                'attr': {
-                'x-on:change': 'checkImage(event);',
-                'class': 'input-txt'
-            }})
-        }}
-        {{ form_row(form.videos,
-            {
-                'label': 'Partager des vidéos hébergés :',
-                'attr': {
-                'class': 'input-txt'
-            }})
-        }}
-        <div class="mx-6 mt-6 mx-auto">
-            <button class="submit_btn " id="submit" type="submit" name="submit" >envoyer !</button>
+            <div class="mx-6 mt-6 mx-auto">
+                <button class="submit_btn ml-2 lg:ml-8" id="submit-btn" type="submit" name="submit" >envoyer</button>
+            </div>
+            {{ form_end(form) }}
         </div>
-        {{ form_end(form) }}
+{#        <div class="hidden lg:block col-start-11 col-span-2 row-start-1 row-span-2 bg-gray-300"></div>#}
     </div>
 
-{% endblock %}
+        {% endblock %}
 {% block javascripts %}
     <script>
         tinymce.init({
@@ -63,35 +69,70 @@
             plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
             toolbar_mode: 'floating',
         });
-        function createTrick() {
-            return {
-                checkImage(event) {
-                    const files = event.target.files;
-                    console.log(files);
-                    // this.createInput(files);
-                },
-                createInput(files) {
-                    const form = document.getElementsByTagName('form')[0];
-                    const file_input = document.createElement('input');
-                    file_input.setAttribute('type',files[0].type);
-                    file_input.setAttribute('class','input-uploaded');
-                    file_input.setAttribute('value', files[0].name);
-                    file_input.setAttribute('name', 'trick_edition[images][]');
-                    form.appendChild(file_input);
-                },
-                uniqueInputFileName() {
-                    const inputs = document.getElementsByClassName('input-uploaded');
-                    if (inputs.length > 0) {
-                        return inputs.length + 1;
-                    } else {
-                        return 0;
+        function manageForm() {
+                return {
+                    prepareFormGroup() {
+                        const plus_icon = document.createElement('i');
+                        const broken_input = document.getElementById('trick_edition_videos');
+                        broken_input.remove();
+                        plus_icon.setAttribute('id','first-plus');
+                        plus_icon.setAttribute('class','fas fa-plus fa-2x ml-4');
+                        plus_icon.setAttribute('x-on:click','addVideoIframeInput()');
+                        const groups = document.querySelectorAll('.form-group');
+                        groups[0].classList.add('inline-block', 'w-full', 'md:w-11/12', 'lg:w-auto', 'ml-2', 'bg-green-200'); // Title
+                        groups[1].classList.add('inline-block', 'w-full', 'md:w-11/12', 'lg:w-auto', 'ml-2', 'bg-green-200'); // Slug
+                        groups[2].classList.add('inline-block', 'w-full', 'md:w-11/12', 'lg:w-full', 'ml-2', 'bg-pink-200'); // Description
+                        groups[3].classList.add('inline-block', 'w-full', 'md:w-11/12', 'lg:w-auto', 'ml-2', 'bg-yellow-200'); // Upload images
+                        groups[4].classList.add('inline-block', 'w-full', 'md:w-11/12', 'lg:w-auto', 'ml-2', 'bg-red-200'); // Iframe video
+                        const new_base_input = this.createVideoIframeInput();
+                        new_base_input.setAttribute('id','first-video-input')
+                        groups[4].insertAdjacentElement('beforeend', new_base_input); // Iframe video
+                        groups[4].insertAdjacentElement('beforeend', plus_icon); // Iframe video
+                        // button.classList.add('inline-block', 'ml-auto', 'lg:ml-8', 'bg-indigo-200'); // Button
+                    },
+                    addVideoIframeInput() {
+                        const video_input = document.getElementById('first-video-input');
+                        // const first_video_input = video_input.parentNode;
+                        // console.log(first_video_input);
+                        const new_video_input = this.createVideoIframeInput();
+                        video_input.insertAdjacentElement('afterend', new_video_input);
+                    },
+                    createVideoIframeInput() {
+                        const new_video_input = document.createElement('input');
+                        new_video_input.setAttribute('type', 'text');
+                        new_video_input.setAttribute('name', 'trick_edition[videos][]');
+                        new_video_input.setAttribute('class','input-txt ml-4 mt-4');
+                        new_video_input.setAttribute('placeholder','<iframe>');
+
+                        return new_video_input;
+                    },
+                    checkImage(event) {
+                        const files = event.target.files;
+                        console.log(files);
+                        // this.createInput(files);
+                    },
+                    createInput(files) {
+                        const form = document.getElementsByTagName('form')[0];
+                        const file_input = document.createElement('input');
+                        file_input.setAttribute('type',files[0].type);
+                        file_input.setAttribute('class','input-uploaded');
+                        file_input.setAttribute('value', files[0].name);
+                        file_input.setAttribute('name', 'trick_edition[images][]');
+                        form.appendChild(file_input);
+                    },
+                    uniqueInputFileName() {
+                        const inputs = document.getElementsByClassName('input-uploaded');
+                        if (inputs.length > 0) {
+                            return inputs.length + 1;
+                        } else {
+                            return 0;
+                        }
+                    },
+                    display() {
+                        console.log('yo')
                     }
-                },
-                display() {
-                    console.log('yo')
                 }
-            }
         }
-        window.createTrick = createTrick;
+        window.manageForm = manageForm;
     </script>
 {% endblock %}

@@ -11,9 +11,8 @@
 	{%- if help is not empty -%}
 		{%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
 	{%- endif -%}
-	<div{% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %} class="mb-6 pr-8 pl-4 border-l-4 border-gray-300">
+	<div{% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %} class="form-group mb-6 pr-8 pl-4">
 		{{- form_label(form) -}}
-		<div class="">
 			{{- form_widget(form, widget_attr) -}}
 {#			ERRRRRRRRRRRROOOOOOORRRRRRRRRRRRRR#}
 			{% block form_errors %}
@@ -24,7 +23,6 @@
 				</ul>
 			{% endblock %}
 			{{- form_help(form) -}}
-		</div>
 	</div>
 {%- endblock form_row -%}
 
