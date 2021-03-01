@@ -8,26 +8,30 @@
 	</style>
 	<main x-data="interact()" x-init="init()" class="grid grid-rows-col grid-cols-12">
 		<section class="col-span-12">
-			<div class="w-full h-screen website-img-banner">
-				<div class="slogan ml-48 pl-4 pt-12 text-blue-50 border-l-8">
-					<h1 class="text-6xl font-black">Snowtricks</h1>
-					<ul class="text-2xl font-bold">
-						<li class="class">Speak</li>
-						<li class="class">Apprend</li>
-						<li class="class">Ride</li>
-						<li class="class">Partage</li>
-					</ul>
-				</div>
+			<div class="w-full h-96 website-img-banner">
+{#				<div class="slogan ml-48 pl-4 pt-12 text-blue-50 border-l-8">#}
+{#					<h1 class="text-6xl font-black">Snowtricks</h1>#}
+{#					<ul class="text-2xl font-bold">#}
+{#						<li class="class">Speak</li>#}
+{#						<li class="class">Apprend</li>#}
+{#						<li class="class">Ride</li>#}
+{#						<li class="class">Partage</li>#}
+{#					</ul>#}
+{#				</div>#}
 			</div>
 		</section>
 		<section class="col-start-2 col-span-10 mt-8 mx-auto ">
-			<div class="-mt-28">
+			<div class="-mt-28 mb-8">
 				<h1 class="text-9xl font-snowtricks italic text-indigo-900 font-black tracking-tight">LES TRICKS</h1>
-				<p>Ces tricks sont publiés par la communotée, si vous voyez une correction à apporter connectez-vous et contribuez au partage de connaissance !</p>
+				<div class="py-4 px-20">
+					<p>Ces tricks sont publiés par la communotée, si vous voyez une correction à apporter<br> connectez-vous et contribuez au partage de connaissance !<br><br></p>
+					<a href="/trick/create" class="submit_btn">Ajouter un trick</a>
+
+				</div>
 			</div>
 			<div class="mt-8">
 				<div id="trick-card-container" class="flex flex-wrap content-start justify-start mt-8">
-{#					 Tricks appear here !#}
+				{# Tricks appear here ! #}
 				</div>
 			</div>
 		</section>

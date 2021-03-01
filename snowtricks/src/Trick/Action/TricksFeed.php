@@ -16,7 +16,7 @@ final class TricksFeed extends AbstractController {
     #[Route(path: '/feed/{offset}/tricks', name: 'feed.tricks.json', methods: ['GET', 'HEAD'])]
     public function __invoke(Request $request, EntityManagerInterface $em, $offset): Response {
         $tricks_manager = new TricksManager([Trick::class], $em);
-        $tricks = $tricks_manager->currentVersions($offset);
+        $tricks = $tricks_manager->getHomeSample($offset);
         return new JsonResponse(['tricks' => $tricks]);
     }
 }

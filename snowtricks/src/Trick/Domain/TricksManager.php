@@ -5,15 +5,19 @@ namespace App\Trick\Domain;
 use App\_Core\Domain\EntityManager;
 use App\Media\Domain\Entity\Media;
 use App\Trick\Domain\Entity\Trick;
+use App\Trick\Domain\Exception\CannotUpdateOlderVersionException;
+use App\Trick\Domain\Exception\DraftVersionAlreadyExistsException;
 use Carbon\Carbon;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\PersistentCollection;
+use phpDocumentor\Reflection\Types\Iterable_;
 
 class TricksManager extends EntityManager {
     
-    public function currentVersions(string $offset): array
+    public function getHomeSample(string $offset): array
     {
         $repo = $this->em->getRepository(Trick::class);
-        // TODO rename state in current
         $segment = $repo->findBy(['state' => 'current'], ['id' => 'DESC'], 8, 8 * $offset);
         
         $tricks = [];
@@ -37,10 +41,9 @@ class TricksManager extends EntityManager {
         return $tricks;
     }
     
-    public function trickWithTree(string $id): array
+    public function trickWithTree(Trick $trick): array
     {
         $repo = $this->em->getRepository(Trick::class);
-        $trick = $repo->find($id);
         $family_tree = [];
         // get the entire family tree with version information
         $raw_family_tree = $trick->getParent()->getChildren();
@@ -58,22 +61,57 @@ class TricksManager extends EntityManager {
         ksort($family_tree);
         $family_tree = ['family_tree' => $family_tree];
         
-        // Merge trick wi his tree
-        return array_merge($this->trick($id), $family_tree);
+        // Merge trick with his tree TODO improve number of request
+        return array_merge($this->showTrick($trick), $family_tree);
+    }
+    //Check if the trick version is the current one
+    public function isCurrentVersion(Trick $trick): bool
+    {
+        if('current' === $trick->getState()){
+            return true;
+        }
+        throw new CannotUpdateOlderVersionException();
     }
     
-    public function trick(string $id): array
+    //Check if the trick to update already has a draft
+    public function alreadyHasDraft(Trick $trick): bool
+    {
+        $all_version_expect_first = $trick->getParent()->getChildren();
+        foreach($all_version_expect_first as $version) {
+            if($version->getState() === 'draft')
+                return true;
+        }
+        
+        return false;
+    }
+    
+    //Retrieve the draft version of this trick
+    public function getDraftIfExists(Trick $trick): Trick | bool
+    {
+        $all_version_expect_first = $trick->getParent()->getChildren();
+        
+        foreach($all_version_expect_first as $version){
+            if($version->getState() === 'draft') {
+                return $version;
+            }
+        }
+        
+        return false;
+        
+    }
+    
+    public function showTrick(Trick $trick): array
     {
         $repo = $this->em->getRepository(Trick::class);
-        $trick = $repo->find($id);
-    
+        
         // Retrieve media split by type img & mov
         $medias = $trick->getMedias();
         $criteria = Criteria::create()->where(Criteria::expr()->eq("type", "img"));
         $img = $medias->matching($criteria);
         $criteria = Criteria::create()->where(Criteria::expr()->eq("type", "mov"));
         $mov = $medias->matching($criteria);
-        $path = $img[0] !== null ? $img[0]->getPath(): '/build/images/home_page.webp' ;
+        
+        $path = $img->first() !== false ? $img->first()->getPath() : '/images/home_page.webp' ;
         // Prepare trick to being displayed
         $prepared_trick = [
             'id' => $trick->getId(),
@@ -91,8 +129,30 @@ class TricksManager extends EntityManager {
         return $prepared_trick;
     }
     
-    public function extractCurrentVersion(Trick $trick) {
+    public function getCurrentVersion(Trick $trick): Trick {
+        $legacy_trick = $trick->getParent();
+        if($legacy_trick->getState() === 'current')
+            return $legacy_trick;
+        else {
+            $others_versions = $legacy_trick->getChildren();
+            foreach($others_versions as $version) {
+                if($version->getState() === 'current') {
+                    return $version;
+                }
+            }
+        }
+    }
     
+    public function cloneMedias(PersistentCollection $medias, Trick $trick)
+    {
+        $cloned_medias = [];
+        foreach($medias as $media) {
+            $clone = clone $media;
+            $clone->setTrick($trick);
+            $cloned_medias[] = $clone;
+        }
+        
+        return $cloned_medias;
     }
     
 }

@@ -6,7 +6,10 @@
         {% block stylesheets %}
             {{ encore_entry_link_tags('tailwind') }}
         {% endblock %}
-        {% block head %}{% endblock %}
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+        {% endblock %}
+        {% block head '' %}
     </head>
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.0/dist/alpine.min.js" defer></script>
     <script src="https://kit.fontawesome.com/898f10838d.js" crossorigin="anonymous"></script>
@@ -14,6 +17,5 @@
     {% include 'layout/header.html.twig' %}
     {% include 'layout/partials/flash_messages.html.twig' %}
         {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
     </body>
 </html>

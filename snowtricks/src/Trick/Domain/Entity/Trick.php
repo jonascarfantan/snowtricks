@@ -28,7 +28,7 @@ class Trick
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id;
     
     /**
      * @ORM\Column(type="string", length=32)
@@ -86,6 +86,10 @@ class Trick
     {
         $this->medias = new ArrayCollection();
     }
+//    #[Pure] public function __clone()
+//    {
+//       $this->slug = clone $this->slug;
+//    }
     
     public function setMedias(iterable $medias): self
     {
@@ -103,7 +107,6 @@ class Trick
             $this->medias->add($media);
             $media->setTrick($this);
         }
-        
         return $this;
     }
     
@@ -116,7 +119,7 @@ class Trick
     {
         if ($this->medias->contains($media)) {
             $this->medias->removeElement($media);
-            $media->setTrick(null);
+            $media->setTrick($this);
         }
         
         return $this;

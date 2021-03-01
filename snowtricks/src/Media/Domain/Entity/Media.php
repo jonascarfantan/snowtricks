@@ -82,7 +82,7 @@ class Media
         return $this->trick;
     }
     
-    public function setTrick(Trick $trick): self
+    public function setTrick(?Trick $trick): self
     {
         $this->trick = $trick;
         $trick->addMedia($this);

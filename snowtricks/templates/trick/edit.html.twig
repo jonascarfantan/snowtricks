@@ -79,11 +79,11 @@
                         plus_icon.setAttribute('class','fas fa-plus fa-2x ml-4');
                         plus_icon.setAttribute('x-on:click','addVideoIframeInput()');
                         const groups = document.querySelectorAll('.form-group');
-                        groups[0].classList.add('inline-block', 'w-full', 'md:w-11/12', 'lg:w-auto', 'ml-2', 'bg-green-200'); // Title
-                        groups[1].classList.add('inline-block', 'w-full', 'md:w-11/12', 'lg:w-auto', 'ml-2', 'bg-green-200'); // Slug
-                        groups[2].classList.add('inline-block', 'w-full', 'md:w-11/12', 'lg:w-full', 'ml-2', 'bg-pink-200'); // Description
-                        groups[3].classList.add('inline-block', 'w-full', 'md:w-11/12', 'lg:w-auto', 'ml-2', 'bg-yellow-200'); // Upload images
-                        groups[4].classList.add('inline-block', 'w-full', 'md:w-11/12', 'lg:w-auto', 'ml-2', 'bg-red-200'); // Iframe video
+                        groups[0].classList.add('inline-block', 'w-full', 'md:w-11/12', 'lg:w-auto', 'ml-2'); // Title
+                        groups[1].classList.add('inline-block', 'w-full', 'md:w-11/12', 'lg:w-auto', 'ml-2'); // Slug
+                        groups[2].classList.add('inline-block', 'w-full', 'md:w-11/12', 'lg:w-full', 'ml-2'); // Description
+                        groups[3].classList.add('inline-block', 'w-full', 'md:w-11/12', 'lg:w-auto', 'ml-2'); // Upload images
+                        groups[4].classList.add('inline-block', 'w-full', 'md:w-11/12', 'lg:w-auto', 'ml-2'); // Iframe video
                         const new_base_input = this.createVideoIframeInput();
                         new_base_input.setAttribute('id','first-video-input')
                         groups[4].insertAdjacentElement('beforeend', new_base_input); // Iframe video
@@ -101,7 +101,7 @@
                         const new_video_input = document.createElement('input');
                         new_video_input.setAttribute('type', 'text');
                         new_video_input.setAttribute('name', 'trick_edition[videos][]');
-                        new_video_input.setAttribute('class','input-txt ml-4 mt-4');
+                        new_video_input.setAttribute('class','input-txt ml-4');
                         new_video_input.setAttribute('placeholder','<iframe>');
 
                         return new_video_input;
