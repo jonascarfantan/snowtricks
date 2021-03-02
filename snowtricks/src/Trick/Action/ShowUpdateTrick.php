@@ -2,18 +2,18 @@
 
 namespace App\Trick\Action;
 
+use App\_Core\Trait\Manager;
 use App\Trick\Domain\Entity\Trick;
-use App\Trick\Domain\Exception\DraftVersionAlreadyExistsException;
 use App\Trick\Domain\Repository\TrickRepository;
 use App\Trick\Domain\TricksManager;
 use Doctrine\ORM\EntityManagerInterface;
-use SebastianBergmann\Timer\RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 final class ShowUpdateTrick extends AbstractController {
+    use Manager;
     
     #[Route(path: '/trick/update/{id}', name: 'show.update.trick', methods: ['GET'])]
     public function __invoke(
@@ -22,13 +22,16 @@ final class ShowUpdateTrick extends AbstractController {
         TrickRepository $trick_repository,
         int $id
     ): Response {
-        $user           = $this->getUser();
+        if( ($redirect = $this->redirectUnauthenticated($request)) instanceof Response ) {
+            return $redirect;
+        }
+        
         $tricks_manager = new TricksManager([Trick::class], $em);
         $trick          = $trick_repository->find($id);
         // If there is no draft for this trick yet, we can create one
         if(!$tricks_manager->alreadyHasDraft($trick)) {
             
-            // If this trick is the current one we can clone it has draft to update it
+            // If this trick is the current one we clone it has a draft ready to be updated
             if($tricks_manager->isCurrentVersion($trick)) {
                 $draft_trick = clone $trick;
                 $draft_trick->setState('draft');
@@ -47,6 +50,7 @@ final class ShowUpdateTrick extends AbstractController {
             
         } else {
             // If there is a draft but you'r not the author
+            $user = $this->getUser();
             if(!($user === $trick->getContributor())) {
                 $request->getSession()->getFlashBag()->add('warning','Une modification est déjà en cours pour ce trick, vous pouvez la consulter en lecture seul.');
                 

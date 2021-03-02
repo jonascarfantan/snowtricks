@@ -1,6 +1,6 @@
 <?php
 
-namespace App\_Core\Domain;
+namespace App\_Core;
 
 use App\_Core\Trait\Manager;
 use Doctrine\ORM\EntityManagerInterface;

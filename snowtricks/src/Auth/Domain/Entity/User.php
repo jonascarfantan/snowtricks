@@ -3,6 +3,7 @@
 namespace App\Auth\Domain\Entity;
 
 use App\Auth\Domain\Repository\UserRepository;
+use App\Media\Domain\Entity\Media;
 use App\Trick\Domain\Entity\Trick;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -68,9 +69,9 @@ class User implements UserInterface
     private string $confirm_password;
     
     /**
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\OneToOne(targetEntity="App\Media\Domain\Entity\Media", cascade={"persist", "remove"}, orphanRemoval=true)
      */
-    private string $avatar_path;
+    private Media $avatar;
     
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -110,12 +111,14 @@ class User implements UserInterface
     public function getPassword(): string { return $this->password; }
     public function getCreatedAt(): string { return $this->created_at; }
     public function getUpdatedAt(): string { return $this->updated_at; }
+    public function getAvatar(): Media { return $this->avatar; }
     
     public function setUsername(string $username): self { $this->username = $username; return $this; }
     public function setEmail(string $email): self { $this->email = $email; return $this; }
     public function setPassword(string $password): self { $this->password = $password; return $this; }
     public function setCreatedAt(\DateTime $date_time): self { $this->created_at = $date_time; return $this; }
     public function setUpdatedAt(\DateTime $date_time): self { $this->created_at = $date_time; return $this; }
+    public function setAvatar(Media $media): self { $this->avatar = $media; return $this; }
     
     public function getRoles(): array
     {

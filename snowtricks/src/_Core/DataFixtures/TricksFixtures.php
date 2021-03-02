@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataFixtures;
+namespace App\_Core\DataFixtures;
 
 use App\DataFixtures\UsersFixtures;
 use App\Media\Domain\Entity\Media;
@@ -65,7 +65,7 @@ class TricksFixtures extends Fixture implements DependentFixtureInterface
             '<iframe src="https://www.youtube.com/embed/h0UtyOX9p90" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
         ];
         $type = ['img','mov'];
-        for ($count = 0; $count < 50; $count++) {
+        for ($count = 0; $count < 25; $count++) {
             $now = $carbon->now();
             $trick = new Trick();
             $trick->setTitle($trick_name[rand(0, count($trick_name) - 1)]);

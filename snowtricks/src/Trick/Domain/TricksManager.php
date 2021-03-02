@@ -2,7 +2,7 @@
 
 namespace App\Trick\Domain;
 
-use App\_Core\Domain\EntityManager;
+use App\_Core\EntityManager;
 use App\Media\Domain\Entity\Media;
 use App\Trick\Domain\Entity\Trick;
 use App\Trick\Domain\Exception\CannotUpdateOlderVersionException;

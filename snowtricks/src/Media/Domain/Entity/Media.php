@@ -55,7 +55,7 @@ class Media
     
     /**
      * @ORM\ManyToOne(targetEntity="App\Trick\Domain\Entity\Trick", inversedBy="medias")
-     * @ORM\JoinColumn(name="trick_id", referencedColumnName="id", onDelete="CASCADE" ,nullable=false)
+     * @ORM\JoinColumn(name="trick_id", referencedColumnName="id", onDelete="CASCADE" )
      */
     private ?Trick $trick;
     

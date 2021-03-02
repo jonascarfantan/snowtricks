@@ -26,7 +26,7 @@
 				{%  for node in trick.family_tree %}
 					<li x-show="isOpen" class="mb-3 mr-3">
 {#						TODO Mettre les info utilisateur dans une bulle popin #}
-						<a href="/user/{{ node.contributor.id }}"><img src="{{ node.contributor.avatarPath }}" alt="avatar utilisateur" class="h-12 w-12 rounded-full"></a>
+						<a href="/user/{{ node.contributor.id }}"><img src="{{ node.contributor.avatar.path }}" alt="avatar utilisateur" class="h-12 w-12 rounded-full"></a>
 					</li>
 				{%  endfor %}
 			</ul>

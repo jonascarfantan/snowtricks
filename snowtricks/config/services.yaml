@@ -20,7 +20,7 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
             - '../src/Tests/'
-    App\Service\FileUploader:
+    App\_Core\Service\FileUploader:
         arguments:
             $target_directory: '%kernel.project_dir%/public/images/tricks'
     # controllers are imported separately to make sure services can be injected

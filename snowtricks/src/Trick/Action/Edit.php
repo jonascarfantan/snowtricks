@@ -2,11 +2,9 @@
 
 namespace App\Trick\Action;
 
-use App\Auth\Domain\Entity\Role;
-use App\Auth\Domain\Entity\User;
-use App\Auth\Domain\Form\RegistrationType;
+use App\_Core\Service\FileUploader;
+use App\_Core\Trait\Manager;
 use App\Media\Domain\Entity\Media;
-use App\Service\FileUploader;
 use App\Trick\Domain\Entity\Trick;
 use App\Trick\Domain\Form\TrickEditionType;
 use Carbon\Carbon;
@@ -19,6 +17,8 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 final class Edit extends AbstractController
 {
+    use Manager;
+    
     #[Route('/trick/create', name: 'trick.create', methods: ['GET', 'POST'])]
     public function __invoke(Request $request,
                              EntityManagerInterface $em,
@@ -26,6 +26,10 @@ final class Edit extends AbstractController
                              FileUploader $file_uploader
     ): Response
     {
+        if( ($redirect = $this->redirectUnauthenticated($request)) instanceof Response ) {
+            return $redirect;
+        }
+        
         $user = $this->getUser();
         $form = $this->createForm(TrickEditionType::class, new Trick() );
         $form->handleRequest($request);
