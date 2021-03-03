@@ -24,9 +24,11 @@
 			<h3 class="ml-3 mb-3 font-black">Contributeurs</h3>
 			<ul class="ml-3 flex flex-row flex-wrap justify-start">
 				{%  for node in trick.family_tree %}
+					{% set author = node.contributor %}
 					<li x-show="isOpen" class="mb-3 mr-3">
 {#						TODO Mettre les info utilisateur dans une bulle popin #}
-						<a href="/user/{{ node.contributor.id }}"><img src="{{ node.contributor.avatar.path }}" alt="avatar utilisateur" class="h-12 w-12 rounded-full"></a>
+{#						<a href="/user/{{ node.contributor.id }}"><img src="{{ node.contributor.avatar.path }}" alt="avatar utilisateur" class="h-12 w-12 rounded-full"></a>#}
+						<a href="/user/{{ author.id }}"><div style="background : url('{{ author.avatar ? author.avatar.path : null }}') no-repeat center/100%;" class="h-12 w-12 rounded-full"></a>
 					</li>
 				{%  endfor %}
 			</ul>
@@ -38,10 +40,10 @@
 					<a href="https://www.redbull.com/fr-fr/"><img src="/images/sponsor/img.png" alt="redbull event" class=" w-full rounded-lg"></a>
 				</li>
 				<li class="mb-3 mr-3">
-					<a href=""><img src="/images/sponsor/img_1.png" alt="rosignol sponsor" class="w-full bg-gray-50 rounded-lg"></a>
+					<a href=""><img src="/images/sponsor/img_1.png" alt="Sponsor Rosignol trend logo" class="w-full rounded-lg"></a>
 				</li>
 				<li class="mb-3 mr-3">
-					<a href=""><img src="/images/sponsor/img_2.png" alt="rosignol sponsor" class="w-full bg-gray-50 rounded-lg"></a>
+					<a href=""><img src="/images/sponsor/img_2.png" alt="Sponsor Polar trend logo" class="w-full rounded-lg"></a>
 				</li>
 			</ul></article>
 	</section>

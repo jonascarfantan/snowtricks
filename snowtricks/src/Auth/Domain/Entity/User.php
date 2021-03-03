@@ -111,7 +111,7 @@ class User implements UserInterface
     public function getPassword(): string { return $this->password; }
     public function getCreatedAt(): string { return $this->created_at; }
     public function getUpdatedAt(): string { return $this->updated_at; }
-    public function getAvatar(): Media { return $this->avatar; }
+    public function getAvatar(): Media|null { return $this->avatar ?? null; }
     
     public function setUsername(string $username): self { $this->username = $username; return $this; }
     public function setEmail(string $email): self { $this->email = $email; return $this; }

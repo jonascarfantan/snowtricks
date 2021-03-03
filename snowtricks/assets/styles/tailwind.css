@@ -11,6 +11,7 @@
 .website-img-banner {
 	background : url('../../public/images/tricks/backgap1.webp') no-repeat center/100%;
 	background-position: top 5%;
+	height: 60vh;
 
 }
 .show-img-banner {
