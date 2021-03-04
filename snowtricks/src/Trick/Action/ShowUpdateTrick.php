@@ -53,6 +53,8 @@ final class ShowUpdateTrick extends AbstractController {
             $user = $this->getUser();
             if(!($user === $trick->getContributor())) {
                 $request->getSession()->getFlashBag()->add('warning','Une modification est déjà en cours pour ce trick, vous pouvez la consulter en lecture seul.');
+                $request->getSession()->getFlashBag()->add('error','Une modification est déjà en cours pour ce trick, vous pouvez la consulter en lecture seul.');
+                $request->getSession()->getFlashBag()->add('success','Une modification est déjà en cours pour ce trick, vous pouvez la consulter en lecture seul.');
                 
                 return $this->redirect('/trick/'.$trick->getId(),301);
             } else {

@@ -4,22 +4,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/*GLOBAL*/
 .html {
 	@apply outline-none !important font-medium ;
 }
 
-.website-img-banner {
-	background : url('../../public/images/tricks/backgap1.webp') no-repeat center/100%;
-	background-position: top 5%;
-	height: 60vh;
-
-}
-.show-img-banner {
-	background : url('../../public/images/tricks/home_page.webp') no-repeat center/80%;
-	background-position: top 10%;
-
-	background-size: cover;
-}
+/*HEDAER*/
 .slogan {
 	@apply font-snowtricks font-black italic font-extrabold ;
 }
@@ -27,6 +17,13 @@
 /*NAV*/
 .register_link {
 	@apply block h-8 px-3 rounded-md border-2 text-gray-800 border-gray-600 tracking-tight font-medium hover:bg-gray-50 hover:border-gray-800;
+}
+
+/*MAIN*/
+.show-img-banner {
+	background : url('../../public/images/tricks/home_page.webp') no-repeat center/80%;
+	background-position: top 10%;
+	background-size: cover;
 }
 
 /*FORM*/
@@ -48,16 +45,16 @@
 	@apply px-1 rounded-sm text-xs font-bold tracking-wide;
 }
 .badge-success {
-	@apply bg-green-600 text-purple-50 ;
+	@apply bg-green-600 text-purple-50;
 }
 .badge-error {
-	@apply bg-red-500 text-pink-50 ;
+	@apply bg-red-500 text-pink-50;
 }
 .badge-warning {
-	@apply bg-yellow-600 text-blue-50 ;
+	@apply bg-yellow-600 text-blue-50;
 }
 .badge-info {
-	@apply bg-teal-600 text-yellow-50 ;
+	@apply bg-teal-600 text-yellow-50;
 }
 
 /*LOADING*/
@@ -81,4 +78,21 @@
 /*SHOW*/
 .p-wrapper {
 	column-count: 3;
+}
+
+/*MESSAGE FLASH*/
+.message-flash-error {
+	@apply bg-red-200 text-red-900;
+}
+.message-flash-warning {
+	@apply bg-yellow-200 text-yellow-900;
+}
+.message-flash-success {
+	@apply bg-green-200 text-green-900;
+}
+.message-flash-info {
+	@apply bg-teal-200 text-teal-900;
+}
+.message-flash {
+	@apply w-11/12 md:w-6/12 lg:w-4/12 xl:w-3/12;
 }

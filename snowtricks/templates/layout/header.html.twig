@@ -37,8 +37,9 @@
 </header>
 {% block javascripts %}
     <script type="text/javascript">
+        // Add event on avatar circle if user is connected
+        {% if user %}
         const user_avatar = document.querySelector('user-avatar')
-
         user_avatar.addEventListener('click', () => {
             toggleAuthDropdown()
         })
@@ -47,5 +48,6 @@
 
             auth_toggle.toggleAttribute('hidden')
         }
+        {% endif %}
     </script>
 {% endblock %}
