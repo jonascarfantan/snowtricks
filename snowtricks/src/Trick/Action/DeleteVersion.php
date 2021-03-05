@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-final class Delete extends AbstractController {
+final class DeleteVersion extends AbstractController {
     
     #[Route(path: '/trick/delete/{id}', name: 'delete.trick', methods: ['GET'])]
     public function __invoke(
@@ -21,9 +21,18 @@ final class Delete extends AbstractController {
         $id
     ): Response {
         $tricks_manager = new TricksManager([Trick::class], $em);
-        $trick = $tricks_manager->trickWithTree($trick_repository->find($id));
+        $version = $trick_repository->find($id);
+        if(($trick = $tricks_manager->remove($version)) === $version) {
+            $request->getSession()->getFlashBag()
+                ->add('error','Vous ne pouvez pas supprimer une version antérieur à celle courrante pour garder l\'historique et le cohérence.');
+        } elseif ($trick === false) {
+            $request->getSession()->getFlashBag()
+                ->add('error','Seul les versions non publiées dont vous êtes l\'auteur peuvent être supprimées');
+            $trick = $version;
+        }
+        $trick = $tricks_manager->trickWithTree($trick);
         
-        return $this->render('public/show.html.twig', [
+        return $this->render('trick/show.html.twig', [
             'title' => 'Zoom sur ' . $trick['title'],
             'trick' => $trick,
         ]);

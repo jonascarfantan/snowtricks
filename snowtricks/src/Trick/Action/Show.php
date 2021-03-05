@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-final class ShowTrick extends AbstractController {
+final class Show extends AbstractController {
     
     #[Route(path: '/trick/{id}', name: 'show.trick', methods: ['GET'])]
     public function __invoke(

@@ -12,6 +12,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\PersistentCollection;
 use phpDocumentor\Reflection\Types\Iterable_;
+use Psr\Http\Message\ServerRequestInterface;
 
 class TricksManager extends EntityManager {
     
@@ -143,7 +144,7 @@ class TricksManager extends EntityManager {
         }
     }
     
-    public function cloneMedias(PersistentCollection $medias, Trick $trick)
+    public function cloneMedias(PersistentCollection $medias, Trick $trick): array
     {
         $cloned_medias = [];
         foreach($medias as $media) {
@@ -153,6 +154,33 @@ class TricksManager extends EntityManager {
         }
         
         return $cloned_medias;
+    }
+    
+    public function remove(Trick $trick, User $user): Trick|bool
+    {
+        
+        if(!($trick->getState() === 'draft')) {
+            $return = false;
+        } else {
+            $parent = $trick->getParent();
+            // Retrieve the the real parent of draft
+            if ( ((int)$trick->getVersion() - 1) === (int)$parent->getVersion() ) {
+                $return = $parent;
+            } else {
+                $tricks = $trick->getParent()->getChildren();
+                if(count($tricks) > 1) {
+                    $return = $tricks[count($tricks) - 2];
+                }
+            }
+            if ($trick->getContributor() !== $user) {
+                $return = false;
+            } else {
+                $this->em->remove($trick);
+                $this->em->flush();
+            }
+        }
+        
+        return $return;
     }
     
 }

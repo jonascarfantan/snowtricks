@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-final class ShowUpdateTrick extends AbstractController {
+final class CloneBeforeUpdate extends AbstractController {
     use Manager;
     
     #[Route(path: '/trick/update/{id}', name: 'show.update.trick', methods: ['GET'])]
@@ -54,7 +54,6 @@ final class ShowUpdateTrick extends AbstractController {
             if(!($user === $trick->getContributor())) {
                 $request->getSession()->getFlashBag()->add('warning','Une modification est déjà en cours pour ce trick, vous pouvez la consulter en lecture seul.');
                 $request->getSession()->getFlashBag()->add('error','Une modification est déjà en cours pour ce trick, vous pouvez la consulter en lecture seul.');
-                $request->getSession()->getFlashBag()->add('success','Une modification est déjà en cours pour ce trick, vous pouvez la consulter en lecture seul.');
                 
                 return $this->redirect('/trick/'.$trick->getId(),301);
             } else {

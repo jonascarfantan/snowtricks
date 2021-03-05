@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-final class TricksFeed extends AbstractController {
+final class FeedHome extends AbstractController {
     
     #[Route(path: '/feed/{offset}/tricks', name: 'feed.tricks.json', methods: ['GET', 'HEAD'])]
     public function __invoke(Request $request, EntityManagerInterface $em, $offset): Response {
