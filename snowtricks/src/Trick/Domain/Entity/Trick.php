@@ -33,17 +33,17 @@ class Trick
     /**
      * @ORM\Column(type="string", length=32)
      */
-    private string $title;
+    protected string $title;
     
     /**
      * @ORM\Column(type="string", length=32)
      */
-    private string $slug;
+    protected string $slug;
     
     /**
      * @ORM\Column(type="text")
      */
-    private string $description;
+    protected string $description;
     
     /**
      * @ORM\Column(type="string", length=32) // [published, draft, deleted]
@@ -90,6 +90,13 @@ class Trick
 //    {
 //       $this->slug = clone $this->slug;
 //    }
+    public function set(string $attribute, string $value) {
+        $this->$attribute = $value;
+    }
+    
+    public function get(string $attribute) {
+        return $this->$attribute;
+    }
     
     public function setMedias(iterable $medias): self
     {
@@ -270,5 +277,6 @@ class Trick
     public function getVersion(): string {
         return $this->version;
     }
+    
     
 }

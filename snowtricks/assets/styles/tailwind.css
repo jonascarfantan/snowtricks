@@ -7,8 +7,8 @@
 /*GLOBAL*/
 .html {
 	@apply outline-none !important font-medium ;
+	-webkit-appearance: none;
 }
-
 /*HEDAER*/
 .slogan {
 	@apply font-snowtricks font-black italic font-extrabold ;

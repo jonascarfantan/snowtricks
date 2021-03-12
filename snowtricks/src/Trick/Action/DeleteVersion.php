@@ -22,7 +22,8 @@ final class DeleteVersion extends AbstractController {
     ): Response {
         $tricks_manager = new TricksManager([Trick::class], $em);
         $version = $trick_repository->find($id);
-        if(($trick = $tricks_manager->remove($version)) === $version) {
+        $user = $this->getUser();
+        if(($trick = $tricks_manager->remove($version, $user)) === $version) {
             $request->getSession()->getFlashBag()
                 ->add('error','Vous ne pouvez pas supprimer une version antérieur à celle courrante pour garder l\'historique et le cohérence.');
         } elseif ($trick === false) {

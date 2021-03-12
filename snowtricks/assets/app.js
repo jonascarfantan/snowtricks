@@ -15,6 +15,6 @@ import './bootstrap';
 import 'alpinejs'
 
 // Handmade Web Components
-import './components/index.js'
+import './js/components/index.js'
 // Pages behavior
-import './pages/index.js'
+import './js/pages/index.js'

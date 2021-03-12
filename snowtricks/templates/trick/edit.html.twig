@@ -8,7 +8,7 @@
 {% block body %}
     <div class="md:mt-4 grid grid-cols-12 grid-rows-2">
         <div x-data="manageForm()"
-             x-init="document.addEventListener('DOMContentLoaded', (event) => {console.log('fully loaded'); prepareFormGroup(); });"
+             x-init="document.addEventListener('DOMContentLoaded', (event) => { prepareFormGroup(); });"
              class="font-sans md:col-start-2 md:col-span-10 mx-auto lg:px-8">
             {{ form_start(form,
                 {'attr': { 'class': '', 'novalidate': true }})
@@ -54,7 +54,7 @@
                 }})
             }}
             <div class="mx-6 mt-6 mx-auto">
-                <button class="submit_btn ml-2 lg:ml-8" id="submit-btn" type="submit" name="submit" >envoyer</button>
+                <button class="submit_btn ml-2 lg:ml-8" id="submit-btn" type="submit" name="submit">envoyer</button>
             </div>
             {{ form_end(form) }}
         </div>
@@ -64,14 +64,15 @@
         {% endblock %}
 {% block javascripts %}
     <script>
-        tinymce.init({
-            selector: 'textarea',
-            plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
-            toolbar_mode: 'floating',
-        });
         function manageForm() {
                 return {
                     prepareFormGroup() {
+                        tinymce.init({
+                            selector: 'textarea',
+                            plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+                            toolbar_mode: 'floating',
+                        });
+
                         const plus_icon = document.createElement('i');
                         const broken_input = document.getElementById('trick_edition_videos');
                         broken_input.remove();
@@ -92,8 +93,6 @@
                     },
                     addVideoIframeInput() {
                         const video_input = document.getElementById('first-video-input');
-                        // const first_video_input = video_input.parentNode;
-                        // console.log(first_video_input);
                         const new_video_input = this.createVideoIframeInput();
                         video_input.insertAdjacentElement('afterend', new_video_input);
                     },
@@ -128,9 +127,6 @@
                             return 0;
                         }
                     },
-                    display() {
-                        console.log('yo')
-                    }
                 }
         }
         window.manageForm = manageForm;

@@ -3,6 +3,7 @@
 namespace App\Trick\Domain;
 
 use App\_Core\EntityManager;
+use App\Auth\Domain\Entity\User;
 use App\Media\Domain\Entity\Media;
 use App\Trick\Domain\Entity\Trick;
 use App\Trick\Domain\Exception\CannotUpdateOlderVersionException;
@@ -13,6 +14,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\PersistentCollection;
 use phpDocumentor\Reflection\Types\Iterable_;
 use Psr\Http\Message\ServerRequestInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class TricksManager extends EntityManager {
     
@@ -156,7 +158,7 @@ class TricksManager extends EntityManager {
         return $cloned_medias;
     }
     
-    public function remove(Trick $trick, User $user): Trick|bool
+    public function remove(Trick $trick, UserInterface $user): Trick|bool
     {
         
         if(!($trick->getState() === 'draft')) {
@@ -181,6 +183,14 @@ class TricksManager extends EntityManager {
         }
         
         return $return;
+    }
+    
+    public function isContributor(UserInterface $user, Trick $trick)
+    {
+        if($trick->getContributor()->getUsername() === $user->getUsername())
+            return true;
+        
+        return false;
     }
     
 }

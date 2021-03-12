@@ -25,7 +25,7 @@ final class CloneBeforeUpdate extends AbstractController {
         if( ($redirect = $this->redirectUnauthenticated($request)) instanceof Response ) {
             return $redirect;
         }
-        
+        $user = $this->getUser();
         $tricks_manager = new TricksManager([Trick::class], $em);
         $trick          = $trick_repository->find($id);
         // If there is no draft for this trick yet, we can create one
@@ -36,6 +36,7 @@ final class CloneBeforeUpdate extends AbstractController {
                 $draft_trick = clone $trick;
                 $draft_trick->setState('draft');
                 $draft_trick->setParent($trick);
+                $draft_trick->setContributor($user);
                 $draft_trick->setVersion((int)$trick->getVersion() + 1);
                 $tricks_manager->cloneMedias($trick->getMedias(), $draft_trick);
                 $em->persist($draft_trick);
@@ -50,10 +51,8 @@ final class CloneBeforeUpdate extends AbstractController {
             
         } else {
             // If there is a draft but you'r not the author
-            $user = $this->getUser();
-            if(!($user === $trick->getContributor())) {
+            if( !($tricks_manager->isContributor(user: $user,trick: $tricks_manager->getDraftIfExists($trick))) ) {
                 $request->getSession()->getFlashBag()->add('warning','Une modification est déjà en cours pour ce trick, vous pouvez la consulter en lecture seul.');
-                $request->getSession()->getFlashBag()->add('error','Une modification est déjà en cours pour ce trick, vous pouvez la consulter en lecture seul.');
                 
                 return $this->redirect('/trick/'.$trick->getId(),301);
             } else {

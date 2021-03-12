@@ -13,7 +13,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\File;
 
-class TrickEditionType extends AbstractType
+class  TrickEditionType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {

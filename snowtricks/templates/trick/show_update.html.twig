@@ -1,5 +1,8 @@
 {% extends 'layout/base.html.twig' %}
-
+{% block title %}{{ title }}{% endblock %}
+{% block head %}
+	<script src="https://cdn.tiny.cloud/1/gxt8mgcppsvtooif8gfa2v01p3y4wrupwb4r7ubgg10m803t/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+{% endblock %}
 {% block body %}
 	<div class="grid grid-cols-12 grid-rows-2">
 		{% include 'trick/aside_show.html.twig' %}
@@ -15,8 +18,7 @@
 								<button class="submit_btn text-gray-400 hover:text-gray-100">Publier !</button>
 							</a>
 						</div>
-
-						<h1 class="mr-12 text-right text-7xl font-black font-snowtricks">{{ trick.title }}</h1>
+						<h1 id="title" class="mr-12 text-right text-7xl font-black font-snowtricks">{{ trick.title }}</h1>
 						<ul class="absolute right-0 mr-12 mt-2 flex text-lg justify-start">
 							<li class="badge badge-warning mr-2">Rotation</li>
 							<li class="badge badge-warning mr-2">grab</li>
@@ -27,15 +29,12 @@
 			<main class="grid grid-flow-row">
 				<div class=" w-11/12 mb-6 mx-auto">
 					<h2 class="mt-6 mb-4 text-3xl font-bold tracking-wide">Description</h2>
-					<div class="">
-						<p class="mx-6 text-justify ">
+						<div id="description" class="mx-6 text-justify ">
 							{% autoescape false %}
 								{{ trick.description }}
 							{%  endautoescape %}
-						</p>
-					</div>
+						</div>
 				</div>
-				<div class="">
 					<div class="grid grid-cols-2 w-11/12 mx-auto gap-4">
 						<div class="class">
 							<h2 class="my-4 text-3xl font-bold tracking-wide">images</h2>
@@ -58,10 +57,179 @@
 							</div>
 						</div>
 					</div>
-				</div>
 			</main>
+		</div>
 	</div>
-<script type="text/javascript">
+{% endblock %}
+{% block javascripts %}
+	<script type="text/javascript">
 
-</script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const title_target = document.getElementById('title')
+            setInputable(title_target, 'title',  'text', '{{ trick.title }}')
+            const description_target = document.getElementById('description')
+            setInputable(description_target, 'description', 'wysiwyg')
+
+        });
+
+		function setInputable(element, name, type, value = null)
+		{
+		    if(type === 'text') {
+                element.addEventListener('click', () => {replaceByInput(name, value)}, true)
+                element.addEventListener('focusout', (e) => {
+                    send()
+                }, true)
+		    } else if (type === 'wysiwyg') {
+                element.addEventListener('click', (event) => {
+                    replaceByWysiwig()
+                }, true)
+		    }
+
+		}
+
+		const replaceByInput = function (name, value)
+		{
+			if(!document.getElementById('ephemeral-input')) {
+				const target = document.getElementById('title')
+                const input = document.createElement('input')
+                input.setAttribute('type', 'text')
+                input.setAttribute('style', '-webkit-appearance: none; box-shadow: none; outline: none; background-color: transparent !important;')
+                input.setAttribute('class', 'text-right font-black')
+                input.setAttribute('id', 'ephemeral-input')
+                input.setAttribute('name', name)
+                input.setAttribute('value', value)
+                target.innerHTML = ''
+                target.insertAdjacentElement('beforeend', input)
+                addCsrfInput()
+				input.focus()
+                input.addEventListener('change', (event) => {
+                    event.target.setAttribute('value', event.target.value)
+                }, true)
+
+			}
+		}
+
+		function replaceByWysiwig()
+		{
+		    const textarea = document.querySelector('textarea')
+			if (!textarea) {
+                const description = document.getElementById('description')
+                description.removeEventListener('click', () => {}, )
+                const input = document.createElement('textarea')
+                input.setAttribute('type', 'textarea')
+                input.setAttribute('style', '-webkit-appearance: none; box-shadow: none; outline: none; background-color: transparent !important;')
+                input.setAttribute('id', 'ephemeral-input')
+                input.setAttribute('name', 'description')
+                description.innerHTML = ''
+                description.insertAdjacentElement('beforeend', input)
+                addCsrfInput()
+                setUpTinyMce()
+			}
+
+        }
+
+		async function setUpTinyMce()
+		{
+		    let trick_id = {{ trick.id }}
+			await tinymce.init({
+                forced_root_block : "",
+                selector: 'textarea',
+                plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+                toolbar_mode: 'floating',
+            });
+			const ephemeral_input = document.getElementById('ephemeral-input')
+			const input_name = ephemeral_input.getAttribute('name')
+			const url = "/tricks/"+trick_id+"/"+input_name
+
+			// Retrieve the description of the tricks
+            fetch(url, {
+                method: 'GET',
+	            headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => res.json())
+                .then(response => {
+                    const tiny = tinymce.get('ephemeral-input')
+                    tiny.setContent(response.data);
+                    console.log(response.data)
+                })
+                .catch(error => console.error('Error:', error))
+
+			// Add send button
+			const submit = document.getElementById('submit-change')
+			if (!submit) {
+                const button = document.createElement('button')
+                const container = document.getElementById('description')
+                button.setAttribute('class','submit_btn mt-4 ml-2 lg:ml-8')
+                button.setAttribute('id','submit-change')
+                button.innerHTML = `Enregistrer`
+                container.insertAdjacentElement('afterend', button)
+
+                // Send Updated content
+                button.addEventListener('click', (event) => {
+                    send(tinymce.get('ephemeral-input').getContent())
+                }, true)
+			}
+		}
+
+        function addCsrfInput()
+        {
+            if(!document.getElementById('csrf-token')){
+                const token_csrf = "{{ csrf_token('update_part') }}";
+                const csrf_input = document.createElement('input')
+                csrf_input.setAttribute('name', 'token')
+                csrf_input.setAttribute('value', token_csrf)
+                csrf_input.setAttribute('id', 'csrf-token')
+                csrf_input.setAttribute('type', 'hidden')
+                document.getElementById('ephemeral-input').insertAdjacentElement('afterend', csrf_input)
+            }
+        }
+
+        function send(tiny_data = null)
+        {
+            const url = "{{ path('update.trick.json', {id: trick.id}) }}"
+            const token = document.getElementById('csrf-token')
+            const ephemeral_input = document.getElementById('ephemeral-input')
+            const data = {
+                name: (ephemeral_input.getAttribute('name')),
+                value: (tiny_data ?? ephemeral_input.getAttribute('value')),
+                token: (token.getAttribute('value')),
+            }
+            console.log(data)
+            fetch(url, {
+                method: 'PUT',
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => res.json())
+	            .then(response => {
+	                 reset(response.data, response.datatype)
+	                })
+	            .catch(error => console.error('Error:', error))
+        }
+		//Reset as initial state
+		function reset(data, datatype)
+		{
+		    if(datatype === 'title') {
+		        const input = document.getElementById('ephemeral-input')
+			    const container = input.parentElement
+                container.innerHTML = data
+		    } else if (datatype === 'description') {
+				console.log(data)
+		    }
+		}
+		// TODO handle clean wysiwig in reset
+        function cleanContainer(target)
+        {
+            const name = target.getAttribute('name')
+            const value = target.getAttribute('value')
+            const parent = target.parentElement
+            const clean_container = parent.cloneNode()
+            parent.insertAdjacentElement('beforeend', clean_container)
+            target.remove()
+            console.log(clean_container)
+            clean_container.addEventListener('click', () => {replaceByInput(name, value)}, true)
+        }
+	</script>
 {% endblock %}
