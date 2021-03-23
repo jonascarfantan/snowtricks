@@ -8,13 +8,14 @@
 		{% include 'trick/aside_show.html.twig' %}
 		<div class="row-span-2 col-start-1 col-span-10">
 			<header class="">
+				<input id="csrf-token" type="hidden" name="token" value="{{ csrf_token('update_part') }}"/>
 				<div alt="Snowboard trick" class="bg-no-repeat bg-cover mx-auto" style="height:600px;background-image:url({{ trick.preview_path }}); background-position: 0% 40%;">
 					<div class="w-full pt-56 relative">
 						<div class="absolute right-0 top-0 mt-4">
 							<a href="{{ path('delete.trick', {id: trick.id}) }}" class="mr-4">
 								<button class="submit_btn text-gray-400 hover:text-gray-100">Supprimer le brouillon</button>
 							</a>
-							<a href="{{ path('show.update.trick', {id: trick.id}) }}" class="mr-4 ">
+							<a href="{{ path('publish.draft.trick', {id: trick.id}) }}" class="mr-4 ">
 								<button class="submit_btn text-gray-400 hover:text-gray-100">Publier !</button>
 							</a>
 						</div>
@@ -36,24 +37,36 @@
 						</div>
 				</div>
 					<div class="grid grid-cols-2 w-11/12 mx-auto gap-4">
-						<div class="class">
+						<div>
 							<h2 class="my-4 text-3xl font-bold tracking-wide">images</h2>
-							<div class="w-full flex flex-wrap justify-items-start ">
+							<div id="img-wrapper" class="w-full flex flex-wrap justify-items-start">
 								{% for img in trick.img %}
-									<div class="media-img">
+									<div id="container-{{ img.id }}" class="img-container media-img grid grid-row-2">
+										<div id="{{ img.id }}" class="removable w-10/12 align-items-end cursor-pointer pl-2" ><i class="fas fa-times outline-none"></i></div>
 										<div style="background-image: url({{ img.path }});" class="tricks_img bg-contain rounded-md mr-6 mb-6 w-48 h-40"></div>
 									</div>
 								{% endfor %}
+								<div id="uploader-btn" class="media-img grid grid-row-2">
+									<div class="removable w-10/12 align-items-end font-medium pl-2" >ajouter une image</div>
+									<div class="tricks_img bg-gray-100 border-gray-700 rounded-md mr-6 mb-6 w-48 h-40 pt-11 pl-14">
+										<i class="fas fa-plus-circle fa-4x text-gray-500 hover:text-gray-800"></i>
+									</div>
+								</div>
 							</div>
 						</div>
-						<div class="class">
+						<div>
 							<h2 class="my-4 text-3xl font-bold tracking-wide">vidéos</h2>
-							<div class="w-full flex flex-wrap justify-items-start">
+							<div id="iframe-wrapper" class="w-full flex flex-wrap justify-items-start">
 								{% for mov in trick.mov %}
-									<div class="media-mov mr-6 mb-6">
+									<div id="container-{{ mov.id }}" class="iframe-container media-mov mr-6 mb-6">
+										<div id="{{ mov.id }}" class="removable w-10/12 align-items-end cursor-pointer pl-2"><i class="fas fa-times outline-none"></i></div>
 										{{ mov.iframe|raw }}
 									</div>
 								{% endfor %}
+								<label id="iframe-label" for="iframe">
+									Ajouter une vidéo:
+									<input id="iframe-input" type="text" name="iframe" class="input-txt" placeholder="<iframe>"/>
+								</label>
 							</div>
 						</div>
 					</div>
@@ -63,24 +76,146 @@
 {% endblock %}
 {% block javascripts %}
 	<script type="text/javascript">
-
-        document.addEventListener('DOMContentLoaded', (event) => {
+        document.addEventListener('DOMContentLoaded', () => {
+            // TITLE
             const title_target = document.getElementById('title')
             setInputable(title_target, 'title',  'text', '{{ trick.title }}')
+
+	        // DESCRIPTION
             const description_target = document.getElementById('description')
             setInputable(description_target, 'description', 'wysiwyg')
 
+	        // MOVIE IFRAME
+            const iframe_input = document.getElementById('iframe-input')
+	        iframe_input.addEventListener('change', (event) => {
+                event.target.setAttribute('value', event.target.value)
+            }, true)
+			iframe_input.addEventListener('focusout', () => {
+			    const value = iframe_input.getAttribute('value')
+                const regex = new RegExp('<iframe*', 'g');
+                if(regex.test(value)) {
+			        send()
+			    } else {
+				const msg_flash = document.createElement('message-flash')
+	                msg_flash.innerText = 'Le texte inséré ne représente pas un format de vidéo correct.'
+                }
+            }, true)
+
+            // IMAGE UPLOAD
+	        const img_uploader_btn = document.getElementById('uploader-btn')
+	        img_uploader_btn.addEventListener('click', (e) => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.onchange = e => {
+					uploadImage(e.target)
+                }
+                input.click();
+	        }, true)
+	        removableMedia()
         });
+
+        // ADD VIDEO
+        function handleAddIframe() {
+            const iframe_input = document.getElementById('iframe-input')
+            iframe_input.addEventListener('focusout', () => {
+                send()
+            }, true)
+        }
+
+        function uploadImage(target) {
+            const file = target.files[0];
+            const formData = new FormData()
+            formData.append('file', file)
+            formData.append('trick', "{{ trick.id }}")
+            formData.append('token', getToken())
+            var url = "{{ url('media.upload.json', {id: trick.id}) }}"
+            //TODO debug this ajax file upload
+            fetch(url, {
+                method: 'POST',
+                body: formData,
+            }).then(res => res.json())
+                .then(response => {
+                    addUploaded(response.data)
+                })
+                .catch(error => console.error('Error:', error))
+        }
+        function getToken() {
+            return document.getElementById('csrf-token').getAttribute('value')
+        }
+
+		function addUploaded(image) {
+		    const uploader_btn = document.getElementById('uploader-btn')
+			const img_container = document.createElement('div')
+			img_container.setAttribute('id','container-'+image.id)
+			img_container.setAttribute('class','img-container media-img grid grid-row-2')
+			img_container.innerHTML =
+				'<div id="'+image.id+'" class="removable w-10/12 align-items-end cursor-pointer pl-2" ><i class="fas fa-times outline-none"></i></div>'+
+				'<div style="background-image: url('+ image.path +');" class="tricks_img bg-contain rounded-md mr-6 mb-6 w-48 h-40"></div>';
+			uploader_btn.insertAdjacentElement('beforebegin', img_container)
+			removableMedia()
+        }
+
+        function addIframe(iframe) {
+            const iframe_label = document.getElementById('iframe-label')
+            const img_container = document.createElement('div')
+            img_container.setAttribute('id','container-'+iframe.id)
+            img_container.setAttribute('class','iframe-container media-mov mr-6 mb-6')
+            img_container.innerHTML =
+                '<div id="'+iframe.id+'" class="removable w-10/12 align-items-end cursor-pointer pl-2" ><i class="fas fa-times outline-none"></i></div>'+
+                iframe.iframe
+            iframe_label.insertAdjacentElement('beforebegin', img_container)
+            removableMedia()
+        }
+
+
+		function removableMedia() {
+            const remove_img = document.querySelectorAll('.removable')
+			remove_img.forEach((icon) => {
+			    icon.addEventListener('click', (e) => {
+				    const unknown_target = e.target
+				    if(unknown_target.getAttribute('id') === null) {
+				        var target = unknown_target.parentElement
+				    } else {
+				        var target = unknown_target
+				    }
+                    const media_id = target.getAttribute('id')
+                    removeMedia(media_id, 'img')
+
+                }, true)
+			})
+		}
+		function removeMedia(media_id, media_type) {
+            const url = "{{ url('home') }}medias/"+ media_id
+            const data = {
+                type: (media_type),
+                trick_id: ({{ trick.id }}),
+                token: (getToken()),
+            }
+            fetch(url, {
+                method: 'DELETE',
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => res.json())
+                .then(response => {
+	                if(response.code === 200) {
+	                    const deleted_item = document.getElementById('container-'+response.media_id)
+		                deleted_item.remove()
+	                }
+                })
+                .catch(error => console.error('Error:', error))
+		}
 
 		function setInputable(element, name, type, value = null)
 		{
 		    if(type === 'text') {
                 element.addEventListener('click', () => {replaceByInput(name, value)}, true)
-                element.addEventListener('focusout', (e) => {
+                element.addEventListener('focusout', () => {
                     send()
                 }, true)
 		    } else if (type === 'wysiwyg') {
-                element.addEventListener('click', (event) => {
+                element.addEventListener('click', () => {
                     replaceByWysiwig()
                 }, true)
 		    }
@@ -89,45 +224,44 @@
 
 		const replaceByInput = function (name, value)
 		{
-			if(!document.getElementById('ephemeral-input')) {
-				const target = document.getElementById('title')
-                const input = document.createElement('input')
-                input.setAttribute('type', 'text')
-                input.setAttribute('style', '-webkit-appearance: none; box-shadow: none; outline: none; background-color: transparent !important;')
-                input.setAttribute('class', 'text-right font-black')
-                input.setAttribute('id', 'ephemeral-input')
-                input.setAttribute('name', name)
-                input.setAttribute('value', value)
-                target.innerHTML = ''
-                target.insertAdjacentElement('beforeend', input)
-                addCsrfInput()
-				input.focus()
-                input.addEventListener('change', (event) => {
-                    event.target.setAttribute('value', event.target.value)
-                }, true)
-
-			}
+			if(document.getElementById('ephemeral-input')) {
+			    return;
+            }
+			const target = document.getElementById('title')
+            const input = document.createElement('input')
+            input.setAttribute('type', 'text')
+            input.setAttribute('style', '-webkit-appearance: none; box-shadow: none; outline: none; background-color: transparent !important;')
+            input.setAttribute('class', 'text-right font-black')
+            input.setAttribute('id', 'ephemeral-input')
+            input.setAttribute('name', name)
+            input.setAttribute('value', value)
+            target.innerHTML = ''
+            target.insertAdjacentElement('beforeend', input)
+			input.focus()
+            input.addEventListener('change', (event) => {
+                event.target.setAttribute('value', event.target.value)
+            }, true)
 		}
 
 		function replaceByWysiwig()
 		{
 		    const textarea = document.querySelector('textarea')
-			if (!textarea) {
-                const description = document.getElementById('description')
-                description.removeEventListener('click', () => {}, )
-                const input = document.createElement('textarea')
-                input.setAttribute('type', 'textarea')
-                input.setAttribute('style', '-webkit-appearance: none; box-shadow: none; outline: none; background-color: transparent !important;')
-                input.setAttribute('id', 'ephemeral-input')
-                input.setAttribute('name', 'description')
-                description.innerHTML = ''
-                description.insertAdjacentElement('beforeend', input)
-                addCsrfInput()
-                setUpTinyMce()
-			}
+			if (textarea) {
+                return
+            }
+            const description = document.getElementById('description')
+            description.removeEventListener('click', () => {}, )
+            const input = document.createElement('textarea')
+            input.setAttribute('type', 'textarea')
+            input.setAttribute('style', '-webkit-appearance: none; box-shadow: none; outline: none; background-color: transparent !important;')
+            input.setAttribute('id', 'ephemeral-input')
+            input.setAttribute('name', 'description')
+            description.innerHTML = ''
+            description.insertAdjacentElement('beforeend', input)
+            setUpTinyMce()
 
         }
-
+		// LOAD DESCRIPTION FROM API & SET EVENT LISTENER
 		async function setUpTinyMce()
 		{
 		    let trick_id = {{ trick.id }}
@@ -151,13 +285,14 @@
                 .then(response => {
                     const tiny = tinymce.get('ephemeral-input')
                     tiny.setContent(response.data);
-                    console.log(response.data)
                 })
                 .catch(error => console.error('Error:', error))
 
 			// Add send button
 			const submit = document.getElementById('submit-change')
-			if (!submit) {
+			if (submit) {
+				return;
+            }
                 const button = document.createElement('button')
                 const container = document.getElementById('description')
                 button.setAttribute('class','submit_btn mt-4 ml-2 lg:ml-8')
@@ -166,36 +301,21 @@
                 container.insertAdjacentElement('afterend', button)
 
                 // Send Updated content
-                button.addEventListener('click', (event) => {
+                button.addEventListener('click', () => {
                     send(tinymce.get('ephemeral-input').getContent())
                 }, true)
-			}
 		}
 
-        function addCsrfInput()
+        function send(wysiwyg_value)
         {
-            if(!document.getElementById('csrf-token')){
-                const token_csrf = "{{ csrf_token('update_part') }}";
-                const csrf_input = document.createElement('input')
-                csrf_input.setAttribute('name', 'token')
-                csrf_input.setAttribute('value', token_csrf)
-                csrf_input.setAttribute('id', 'csrf-token')
-                csrf_input.setAttribute('type', 'hidden')
-                document.getElementById('ephemeral-input').insertAdjacentElement('afterend', csrf_input)
-            }
-        }
-
-        function send(tiny_data = null)
-        {
+            console.log(wysiwyg_value)
             const url = "{{ path('update.trick.json', {id: trick.id}) }}"
-            const token = document.getElementById('csrf-token')
-            const ephemeral_input = document.getElementById('ephemeral-input')
+            const ephemeral_input = (document.getElementById('ephemeral-input') ?? document.getElementById('iframe-input'))
             const data = {
                 name: (ephemeral_input.getAttribute('name')),
-                value: (tiny_data ?? ephemeral_input.getAttribute('value')),
-                token: (token.getAttribute('value')),
+                value: (wysiwyg_value ?? ephemeral_input.getAttribute('value')),
+                token: (getToken()),
             }
-            console.log(data)
             fetch(url, {
                 method: 'PUT',
                 body: JSON.stringify(data),
@@ -204,19 +324,25 @@
                 }
             }).then(res => res.json())
 	            .then(response => {
+	                if(response.datatype == 'iframe' && response.code == 200) {
+						addIframe(response.data)
+	                }
 	                 reset(response.data, response.datatype)
 	                })
 	            .catch(error => console.error('Error:', error))
         }
+
 		//Reset as initial state
 		function reset(data, datatype)
 		{
-		    if(datatype === 'title') {
-		        const input = document.getElementById('ephemeral-input')
+            const input = (document.getElementById('ephemeral-input') ?? document.getElementById('iframe-input'))
+            if(datatype === 'title') {
 			    const container = input.parentElement
                 container.innerHTML = data
 		    } else if (datatype === 'description') {
-				console.log(data)
+		        //TODO handle wysiwyg cleaning
+		    } else if (datatype === 'iframe') {
+		        input.setAttribute('value','')
 		    }
 		}
 		// TODO handle clean wysiwig in reset
@@ -228,7 +354,6 @@
             const clean_container = parent.cloneNode()
             parent.insertAdjacentElement('beforeend', clean_container)
             target.remove()
-            console.log(clean_container)
             clean_container.addEventListener('click', () => {replaceByInput(name, value)}, true)
         }
 	</script>

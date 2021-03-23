@@ -30,6 +30,7 @@ class Trick
      */
     private ?int $id;
     
+    //TODO add validator assert
     /**
      * @ORM\Column(type="string", length=32)
      */
@@ -126,7 +127,7 @@ class Trick
     {
         if ($this->medias->contains($media)) {
             $this->medias->removeElement($media);
-            $media->setTrick($this);
+            $media->removeTrick();
         }
         
         return $this;
