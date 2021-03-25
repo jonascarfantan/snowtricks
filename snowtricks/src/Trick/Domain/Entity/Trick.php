@@ -17,6 +17,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 
 use JetBrains\PhpStorm\Pure;
 use phpDocumentor\Reflection\Types\Integer;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=TrickRepository::class)
@@ -76,7 +77,7 @@ class Trick
      * @ManyToOne(targetEntity=User::class, inversedBy="tricks", fetch="EAGER")
      * @JoinColumn(name="contributor_id", referencedColumnName="id")
      */
-    public User $contributor;
+    public UserInterface $contributor;
     
     /**
      * @OneToMany(targetEntity=Media::class, mappedBy="trick", orphanRemoval=true, cascade={"persist", "remove"}, fetch="EAGER")
@@ -143,7 +144,7 @@ class Trick
         return $this;
     }
     
-    public function setContributor(User $contributor): self
+    public function setContributor(UserInterface $contributor): self
     {
         $this->contributor = $contributor;
         

@@ -134,9 +134,9 @@ class TricksManager extends EntityManager {
     
     public function getCurrentVersion(Trick $trick): Trick {
         $legacy_trick = $trick->getParent();
-        if($legacy_trick->getState() === 'current')
+        if($legacy_trick->getState() === 'current') {
             return $legacy_trick;
-        else {
+        } else {
             $others_versions = $legacy_trick->getChildren();
             foreach($others_versions as $version) {
                 if($version->getState() === 'current') {
@@ -160,8 +160,7 @@ class TricksManager extends EntityManager {
     
     public function remove(Trick $trick, UserInterface $user): Trick|bool
     {
-        
-        if(!($trick->getState() === 'draft')) {
+        if($trick->getState() !== 'draft') {
             $return = false;
         } else {
             $parent = $trick->getParent();

@@ -3,7 +3,7 @@
 {% block body %}
 	<div class="grid grid-cols-12 grid-rows-2">
 		{% include 'trick/aside_show.html.twig' %}
-		<div class="row-span-2 col-start-1 col-span-10">
+		<div class="row-span-2 col-start-1 col-span-12 md:col-span-10">
 			<header class="">
 				<div alt="Snowboard trick" class="bg-no-repeat bg-cover mx-auto" style="height:600px;background-image:url({{ trick.preview_path }}); background-position: 0% 40%;">
 					<div class="w-full pt-56 relative">
@@ -35,8 +35,8 @@
 						</p>
 					</div>
 				</div>
-				<div class="">
-					<div class="grid grid-cols-2 w-11/12 mx-auto gap-4">
+				<div>
+					<div class="flex flex-wrap w-11/12 md:grid md:grid-cols-2 mx-auto md:gap-4">
 						<div class="class">
 							<h2 class="my-4 text-3xl font-bold tracking-wide">images</h2>
 							<div class="w-full flex flex-wrap justify-items-start ">

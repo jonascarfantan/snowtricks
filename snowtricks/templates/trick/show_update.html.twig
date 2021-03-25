@@ -6,7 +6,7 @@
 {% block body %}
 	<div class="grid grid-cols-12 grid-rows-2">
 		{% include 'trick/aside_show.html.twig' %}
-		<div class="row-span-2 col-start-1 col-span-10">
+		<div class="row-span-2 col-start-1 col-span-12 md:col-span-10">
 			<header class="">
 				<input id="csrf-token" type="hidden" name="token" value="{{ csrf_token('update_part') }}"/>
 				<div alt="Snowboard trick" class="bg-no-repeat bg-cover mx-auto" style="height:600px;background-image:url({{ trick.preview_path }}); background-position: 0% 40%;">
@@ -36,7 +36,7 @@
 							{%  endautoescape %}
 						</div>
 				</div>
-					<div class="grid grid-cols-2 w-11/12 mx-auto gap-4">
+					<div class="flex flex-wrap w-11/12 md:grid md:grid-cols-2 mx-auto gap-3 md:gap-4">
 						<div>
 							<h2 class="my-4 text-3xl font-bold tracking-wide">images</h2>
 							<div id="img-wrapper" class="w-full flex flex-wrap justify-items-start">
@@ -63,9 +63,9 @@
 										{{ mov.iframe|raw }}
 									</div>
 								{% endfor %}
-								<label id="iframe-label" for="iframe">
-									Ajouter une vidéo:
-									<input id="iframe-input" type="text" name="iframe" class="input-txt" placeholder="<iframe>"/>
+								<label id="iframe-label justify-self-center" for="iframe">
+									<span class="block" >Ajouter une vidéo :</span>
+									<input id="iframe-input" type="text" name="iframe" class="block input-txt" placeholder="<iframe>"/>
 								</label>
 							</div>
 						</div>

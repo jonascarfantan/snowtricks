@@ -19,7 +19,7 @@ final class Edit extends AbstractController
 {
     use Manager;
     
-    #[Route('/trick/create', name: 'trick.create', methods: ['GET', 'POST'])]
+    #[Route('/tricks/create', name: 'trick.create', methods: ['GET', 'POST'])]
     public function __invoke(Request $request,
                              EntityManagerInterface $em,
                              UserPasswordEncoderInterface $password_encoder,

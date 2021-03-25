@@ -15,27 +15,28 @@ use Symfony\Component\Routing\Annotation\Route;
 final class CloneBeforeUpdate extends AbstractController {
     use Manager;
     
-    #[Route(path: '/trick/update/{id}', name: 'show.update.trick', methods: ['GET'])]
+    #[Route(path: '/tricks/{id}/update', name: 'show.update.trick', methods: ['GET'])]
     public function __invoke(
         Request $request,
         EntityManagerInterface $em,
         TrickRepository $trick_repository,
-        int $id
+        Trick $trick
     ): Response {
         if( ($redirect = $this->redirectUnauthenticated($request)) instanceof Response ) {
             return $redirect;
         }
         $user = $this->getUser();
         $tricks_manager = new TricksManager([Trick::class], $em);
-        $trick          = $trick_repository->find($id);
+        
         // If there is no draft for this trick yet, we can create one
         if(!$tricks_manager->alreadyHasDraft($trick)) {
             
             // If this trick is the current one we clone it has a draft ready to be updated
             if($tricks_manager->isCurrentVersion($trick)) {
+                $ancestor = $trick->getParent();
                 $draft_trick = clone $trick;
                 $draft_trick->setState('draft');
-                $draft_trick->setParent($trick);
+                $draft_trick->setParent($ancestor);
                 $draft_trick->setContributor($user);
                 $draft_trick->setVersion((int)$trick->getVersion() + 1);
                 $tricks_manager->cloneMedias($trick->getMedias(), $draft_trick);

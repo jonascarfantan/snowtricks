@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 final class Show extends AbstractController {
     
-    #[Route(path: '/trick/{id}', name: 'show.trick', methods: ['GET'])]
+    #[Route(path: '/tricks/{id}', name: 'show.trick', methods: ['GET'])]
     public function __invoke(
         Request $request,
         EntityManagerInterface $em,
