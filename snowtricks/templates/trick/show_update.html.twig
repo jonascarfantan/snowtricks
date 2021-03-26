@@ -13,10 +13,10 @@
 					<div class="w-full pt-56 relative">
 						<div class="absolute right-0 top-0 mt-4">
 							<a href="{{ path('delete.trick', {id: trick.id}) }}" class="mr-4">
-								<button class="submit_btn text-gray-400 hover:text-gray-100">Supprimer le brouillon</button>
+								<button class="submit_btn text-red-400 hover:text-red-100">Supprimer le brouillon</button>
 							</a>
 							<a href="{{ path('publish.draft.trick', {id: trick.id}) }}" class="mr-4 ">
-								<button class="submit_btn text-gray-400 hover:text-gray-100">Publier !</button>
+								<button class="submit_btn text-green-400 hover:text-green-100">Publier !</button>
 							</a>
 						</div>
 						<h1 id="title" class="mr-12 text-right text-7xl font-black font-snowtricks">{{ trick.title }}</h1>

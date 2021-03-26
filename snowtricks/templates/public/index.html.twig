@@ -20,11 +20,11 @@
 			</div>
 		</section>
 		<section class="col-start-2 col-span-10 mt-8 mx-auto ">
-			<div class="-mt-28 mb-8">
-				<h1 class="text-9xl font-snowtricks italic text-indigo-900 font-black tracking-tight">LES TRICKS</h1>
+			<div class="-mt-24 lg:-mt-28 mb-8">
+				<h1 class="text-8xl lg:text-9xl font-snowtricks italic text-indigo-900 font-black tracking-tight">LES TRICKS</h1>
 				<div class="py-4 px-20">
-					<p>Ces tricks sont publiés par la communotée, si vous voyez une correction à apporter<br> connectez-vous et contribuez au partage de connaissance !<br><br></p>
-					<a href="/trick/create" class="submit_btn">Ajouter un trick</a>
+					<p>Ces figures sont publiés par la communotée, si vous voyez une correction à apporter<br> connectez-vous et contribuez au partage de connaissance !<br><br></p>
+					<a href="/trick/create" class="submit_btn text-green-100 text-center py-2 px-4">Ajouter un trick</a>
 
 				</div>
 			</div>
@@ -115,9 +115,9 @@
                 const trick_id = current_trick.id;
                 const div = document.createElement('div');
 
-                div.setAttribute('class','trick-card flex-none mx-8 mb-8 rounded-t-md h-52 w-72 shadow-sm '+
+                div.setAttribute('class','trick-card flex-none  mx-4 md:mx-8 mb-8 rounded-t-md h-52 w-96 md:w-72 shadow-sm '+
                     'transition duration-200 ease-out bg-gray-50 hover:bg-gray-200 hover:shadow-xl transform hover:-translate-y-1 hover:scale-110 hover:rotate-1');
-                div.innerHTML = '<div id="card-img-container" class="tricks_img rounded-t-md h-40 w-72"' +
+                div.innerHTML = '<div id="card-img-container" class="tricks_img rounded-t-md h-40 w-96 md:w-72"' +
                     'style="background-image:url(' + current_trick.preview_path + ')">' +
                     '</div>'+
                     '<div class="flex justify-between pt-2 px-2">'+
@@ -125,12 +125,12 @@
 	                        '<h3 class="mx-2 text-xl font-medium font-mono">' + current_trick.title + '</h3>'+
 	                    '</a>' +
 	                    '<div>' +
-	                    '<a href="tricks/'+ trick_id +'/delete" class="mr-3" data-a="'+ trick_id +'">' +
-	                        '<i class="far fa-1x fa-trash-alt mt-2 text-gray-300 hover:text-gray-400"></i>' +
+	                    '<a href="tricks/'+ trick_id +'/delete" class="" data-a="'+ trick_id +'">' +
+	                        '<i class="far fa-1x fa-trash-alt mt-2 mr-4 text-gray-300 hover:text-gray-400"></i>' +
 	                    '</a>' +
-                        '<a href="tricks/'+ trick_id +'/update" class="mr-3" data-a="'+ trick_id +'">' +
+                        '<a href="tricks/'+ trick_id +'/update" class="" data-a="'+ trick_id +'">' +
                             '<i id="edit-ico-'+ trick_id + ' "' +
-                            'class="far fa-edit fa-1x float-right mt-2 text-gray-300 hover:text-gray-400" data-i="'+ trick_id +'"></i>' +
+                            'class="far fa-edit fa-1x float-right mt-2 mr-2 text-gray-300 hover:text-gray-400" data-i="'+ trick_id +'"></i>' +
                         '</a>' +
 	                    '</div>' +
                     '</div>';

@@ -1,0 +1,53 @@
+{% set user = app.user ?? null %}
+<header class="h-16">
+    <style>:root { --avatar-url: url( {{ user ? (user.avatar ? user.avatar.path : null) : null }} ); }</style>
+    <div class="flex justify-between text-lg h-8 pt-4">
+        <div class="pl-8">
+            <a href="{{ path('home') }}" class="font-snowtricks font-black italic text-3xl ">SNOWTRICKS</a>
+        </div>
+        <nav class="">
+            <ul class="flex text-right items-center -mt-1.5">
+                <li class="mr-4"><a href="/">Tricks</a></li>
+                <li class="mr-4"><a href="/">Accueil</a></li>
+                <li class="mr-4"><a href="/">Sponsor</a></li>
+                {% if not user %}
+                <li class="mr-4 ml-4"><a href="{{ path('login') }}">connexion</a></li>
+                <li class="mr-4"><a href="{{ path('register') }}" class="register_link">inscription</a></li>
+                {% endif %}
+                <li class="mr-8 relative" id="auth-toggle">
+                    {% if user %}
+                        <user-avatar username="{{ user.username }}" url="{{ user.avatar ? user.avatar.path : null }}"></user-avatar>
+                        <div id="auth-dropdown" class="absolute z-50 top-0 right-0 -mr-8 mt-12 w-80" hidden>
+                            <ul class="bg-white font-medium text-center">
+                                <li class="">
+                                    <a href="{{ path('logout') }}" class="block py-2">mon compte</a>
+                                    <hr class="block h-1 bg-gray-300">
+                                </li>
+                                <li class="">
+                                    <a href="{{ path('logout') }}" class="block py-2">déconnexion</a>
+                                    <hr class="block h-1 bg-gray-400">
+                                </li>
+                            </ul>
+                        </div>
+                    {% endif %}
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+{% block javascripts %}
+    <script type="text/javascript">
+        // Add event on avatar circle if user is connected
+        {% if user %}
+        const user_avatar = document.querySelector('user-avatar')
+        user_avatar.addEventListener('click', () => {
+            toggleAuthDropdown()
+        })
+        function toggleAuthDropdown() {
+            const auth_toggle = document.getElementById('auth-dropdown')
+
+            auth_toggle.toggleAttribute('hidden')
+        }
+        {% endif %}
+    </script>
+{% endblock %}

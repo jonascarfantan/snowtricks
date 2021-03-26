@@ -1,20 +1,48 @@
 {% set user = app.user ?? null %}
-<header class="h-16">
+<header class="bg-white shadow">
     <style>:root { --avatar-url: url( {{ user ? (user.avatar ? user.avatar.path : null) : null }} ); }</style>
-    <div class="flex justify-between text-lg h-8 pt-4">
-        <div class="pl-8">
-            <a href="{{ path('home') }}" class="font-snowtricks font-black italic text-3xl ">SNOWTRICKS</a>
+    <nav x-data="{isOpen: false}" class="md:flex md:justify-between md:items-center text-lg pt-6 pb-2">
+        <div class="flex justify-between items-center mb-4">
+            <!--HOME LOGO -->
+            <div class="ml-8 pt-1">
+                <a href="{{ path('home') }}" class="font-snowtricks font-black italic text-3xl ">SNOWTRICKS</a>
+            </div>
+            <!--END HOME LOGO -->
+            <!--MENU BUTTON (FOR MOBILE)-->
+            <div class="flex md:hidden mr-8">
+                <button @click="isOpen = !isOpen"
+                        aria-label="toggle menu"
+                        type="button"
+                        class="text-gray-500 hover:text-gray-500 focus:outline-none"
+                        :class="{ 'transition transform-180': isOpen }"
+                >
+                    <svg class="h-10 w-10 fill-current"
+                         xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 24 24"
+                    >
+                        <path x-show="isOpen"
+                              fill-rule="evenodd"
+                              clip-rule="evenodd"
+                              d="M18.278 16.864a1 1 0 0 1-1.414 1.414l-4.829-4.828-4.828 4.828a1 1 0 0 1-1.414-1.414l4.828-4.829-4.828-4.828a1 1 0 0 1 1.414-1.414l4.829 4.828 4.828-4.828a1 1 0 1 1 1.414 1.414l-4.828 4.829 4.828 4.828z"/>
+                        <path x-show="!isOpen"
+                              fill-rule="evenodd"
+                              d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z"/>
+                    </svg>
+                </button>
+            </div>
+            <!--END MENU BUTTON (FOR MOBILE)-->
         </div>
-        <nav class="">
-            <ul class="flex text-right items-center -mt-1.5">
-                <li class="mr-4"><a href="/">Tricks</a></li>
-                <li class="mr-4"><a href="/">Accueil</a></li>
-                <li class="mr-4"><a href="/">Sponsor</a></li>
+        <!--NAV MENU -->
+        <div :class="isOpen ? 'show' : 'hidden'" class="md:flex md:items-center md:block">
+            <ul class="flex flex-col md:flex-row justify-center text-right items-center -mt-1.5">
+                <li class="md:mr-4 mb-4 mt-4 md:mt-0"><a href="/">Tricks</a></li>
+                <li class="md:mr-4 mb-4"><a href="/">Accueil</a></li>
+                <li class="md:mr-4 mb-4"><a href="/">Sponsor</a></li>
                 {% if not user %}
-                <li class="mr-4 ml-4"><a href="{{ path('login') }}">connexion</a></li>
-                <li class="mr-4"><a href="{{ path('register') }}" class="register_link">inscription</a></li>
+                    <li class="md:mr-4 mb-4 md:ml-4"><a href="{{ path('login') }}">connexion</a></li>
+                    <li class="md:mr-4 mb-4"><a href="{{ path('register') }}" class="register_link">inscription</a></li>
                 {% endif %}
-                <li class="mr-8 relative" id="auth-toggle">
+                <li class="md:mr-8 mb-4 relative" id="auth-toggle">
                     {% if user %}
                         <user-avatar username="{{ user.username }}" url="{{ user.avatar ? user.avatar.path : null }}"></user-avatar>
                         <div id="auth-dropdown" class="absolute z-50 top-0 right-0 -mr-8 mt-12 w-80" hidden>
@@ -32,8 +60,9 @@
                     {% endif %}
                 </li>
             </ul>
-        </nav>
-    </div>
+        </div>
+    </nav>
+    <!--END NAV MENU -->
 </header>
 {% block javascripts %}
     <script type="text/javascript">

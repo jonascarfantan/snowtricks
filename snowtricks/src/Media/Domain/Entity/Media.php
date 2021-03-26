@@ -90,6 +90,13 @@ class Media
         return $this;
     }
     
+    public function removeTrick(): self
+    {
+        $this->trick = null;
+        
+        return $this;
+    }
+    
     public function setType(string $type): Media {
         $this->type = $type;
         
