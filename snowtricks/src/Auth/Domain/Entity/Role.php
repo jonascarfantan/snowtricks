@@ -35,7 +35,7 @@ class Role {
 //    BORING GETTER & SETTER
     public function getTitle(): string { return $this->title; }
     public function getSlug(): string { return $this->slug; }
-    public function setTitle(string $title): string { $this->title = $title; return $this; }
-    public function setSlug(string $slug): string { $this->slug = $slug; return $this; }
+    public function setTitle(string $title): self { $this->title = $title; return $this; }
+    public function setSlug(string $slug): self { $this->slug = $slug; return $this; }
     
 }

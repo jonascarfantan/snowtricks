@@ -20,10 +20,7 @@ class Message
      * @ORM\ManyToOne(targetEntity="App\Auth\Domain\Entity\User", inversedBy="user", cascade={"persist", "remove"})
      */
     protected int $author;
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Chat\Domain\Entity\ChatRoom", inversedBy="messages", cascade={"persist", "remove"})
-     */
-    protected int $chat_room;
+    
     /**
      * @ORM\Column(type="string")
      */

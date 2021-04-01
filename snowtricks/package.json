@@ -21,8 +21,10 @@
         "@tailwindcss/typography": "^0.3.1",
         "alpinejs": "^2.8.0",
         "autoprefixer": "^10.1.0",
+        "flatpickr": "^4.6.9",
         "postcss": "^8.2.1",
         "tailwindcss": "^2.0.2",
+        "trumbowyg": "^2.23.0",
         "yarn": "^1.22.10"
     }
 }

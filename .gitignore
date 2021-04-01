@@ -18,6 +18,9 @@
 #vendor node_module
 /snowtricks/vendor/*
 /snowtricks/node_modules/*
+#bin
+/snowtricks/bin/.phpunit
+/snowtricks/bin/phpunit
 
 # webpack
 /snowtricks/public/build/*

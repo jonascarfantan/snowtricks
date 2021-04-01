@@ -3,20 +3,19 @@
 namespace App\Auth\Domain\Entity;
 
 use App\Auth\Domain\Repository\UserRepository;
+use App\Media\Domain\Entity\Media;
 use App\Trick\Domain\Entity\Trick;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinTable;
-use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToMany;
 
+use Doctrine\ORM\Mapping\OneToMany;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoder;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotNull;
@@ -66,10 +65,14 @@ class User implements UserInterface
         NotNull(message: 'Mot de passe requis.')
     ]
     private string $password;
-//    #[UserPassword(message: 'Mot de passe incorect.')]
     private string $old_password;
     private string $confirm_password;
-
+    
+    /**
+     * @ORM\OneToOne(targetEntity="App\Media\Domain\Entity\Media", cascade={"persist", "remove"}, orphanRemoval=true)
+     */
+    private Media $avatar;
+    
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
@@ -81,18 +84,16 @@ class User implements UserInterface
     private ?\DateTimeInterface $updated_at;
     
     /**
-     * @ORM\ManyToOne(targetEntity="App\Auth\Domain\Entity\Role", cascade={"persist", "remove"}, fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="App\Auth\Domain\Entity\Role", cascade={"persist", "remove"}, fetch="EXTRA_LAZY")
      */
-    public $role;
+    private $role;
     
     /**
-     * @ORM\ManyToMany(targetEntity="App\Trick\Domain\Entity\Trick", mappedBy="contributors", cascade={"persist", "remove"})
-     * @JoinTable(name="trick_user",
-     * joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-     * inverseJoinColumns={@JoinColumn(name="trick_id", referencedColumnName="id")}
-     * )
+     * Many Users have Many Groups.
+     * @OneToMany(targetEntity="App\Trick\Domain\Entity\Trick", mappedBy="contributor", cascade={"persist", "remove"})
      */
-    public Collection $tricks;
+    public Collection|Trick $tricks;
+    
     private $salt;
     
     #[Pure] public function __construct()
@@ -100,6 +101,7 @@ class User implements UserInterface
         if(!isset($this->role)){
             $this->roles = ['ROLE_USER'];
         }
+        $this->tricks = new ArrayCollection();
     }
     
 //    BORING GETTER & SETTER
@@ -107,10 +109,16 @@ class User implements UserInterface
     public function getUsername(): string { return $this->username; }
     public function getEmail(): string { return $this->email; }
     public function getPassword(): string { return $this->password; }
+    public function getCreatedAt(): string { return $this->created_at; }
+    public function getUpdatedAt(): string { return $this->updated_at; }
+    public function getAvatar(): Media|null { return $this->avatar ?? null; }
     
     public function setUsername(string $username): self { $this->username = $username; return $this; }
     public function setEmail(string $email): self { $this->email = $email; return $this; }
     public function setPassword(string $password): self { $this->password = $password; return $this; }
+    public function setCreatedAt(\DateTime $date_time): self { $this->created_at = $date_time; return $this; }
+    public function setUpdatedAt(\DateTime $date_time): self { $this->created_at = $date_time; return $this; }
+    public function setAvatar(Media $media): self { $this->avatar = $media; return $this; }
     
     public function getRoles(): array
     {
@@ -129,21 +137,10 @@ class User implements UserInterface
         return $this->tricks;
     }
     
-    public function addTrick(Trick $trick): self
+    public function setTrick(Trick $trick): self
     {
         if(!$this->tricks->contains($trick)) {
             $this->tricks[] = $trick;
-            $trick->removeContributor($this);
-        }
-        
-        return $this;
-    }
-    
-    public function removeTrick(Trick $trick): self
-    {
-        if(!$this->tricks->contains($trick)) {
-            $this->tricks->removeElement($trick);
-            $trick->removeContributor($this);
         }
         
         return $this;
@@ -166,4 +163,14 @@ class User implements UserInterface
     public function needsRehash(UserInterface $user): bool {
         // TODO: Implement needsRehash() method.
     }
+    
+    public function getAvatarPath(): string {
+        return $this->avatar_path;
+    }
+    
+    public function setAvatarPath(string $avatar_path): User {
+        $this->avatar_path = $avatar_path;
+        
+        return $this;
+}
 }

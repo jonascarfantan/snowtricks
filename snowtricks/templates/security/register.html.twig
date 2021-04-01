@@ -3,7 +3,7 @@
 {% block title %}{{ title }}{% endblock %}
 {% form_theme form with ['form_themes/form_errors.html.twig'] %}
 {% block body %}
-    <div class="font-sans w-10/12 md:w-4/12 mx-auto px-40">
+    <div class="font-sans w-10/12 md:w-4/12 mx-auto mt-8 md:px-40">
         {{ form_start(form,
             {'attr': { 'class': '', 'novalidate': true }})
         }}
@@ -31,7 +31,7 @@
                 }})
             }}
         <div class="mx-6 mt-6 mx-auto">
-            <button class="submit_btn " id="submit" type="submit" name="submit" >envoyer !</button>
+            <button class="submit_btn text-indigo-100" id="submit" type="submit" name="submit" >envoyer !</button>
         </div>
         {{ form_end(form) }}
     </div>

@@ -21,3 +21,4 @@ framework:
     form:
         legacy_error_messages: false
 
+    test: true

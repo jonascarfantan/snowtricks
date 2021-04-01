@@ -1,0 +1,66 @@
+<div class="hidden md:block col-start-11 col-span-2 row-start-1 row-span-2 bg-gray-300">
+	<section class="flex flex-col">
+		<article class="flex-1">
+			<div x-data="dropDownVersion()" class="bg-gray-200 text-gray-800">
+				<div  @click="toggle()" class="flex justify-start items-baseline mb-3 ml-3 pt-4 text-2xl bg-grey-50 text-gray-900 ">
+					<i id="v-arrow"
+					   class="fas fas-1x fa-greater-than mr-2 transition duration-500 ease-in-out transform hover:rotate-90 hover:scale-125" ></i>
+					<h3 class=" mr-4 font-black">Version {{ trick.version }}</h3>
+					<span class="h-5 pt-0.5 badge badge-success" style="background-color: rebeccapurple ">{{ trick.state }}</span>
+
+				</div>
+				<ul id="version-list" class="ml-3 flex flex-col-reverse mb-3">
+					{%  for node in trick.family_tree %}
+						<li x-show="isOpen" class="" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0.5 transform-gpu scale-10 -translate-y-8"
+						    x-transition:enter-end="opacity-100 transform scale-100" x-transition:leave="transition ease-in duration-300"
+						    x-transition:leave-start="opacity-100 transform scale-100" x-transition:leave-end="opacity-0 transform scale-10 -translate-y-8">
+							<a href="{{ path('show.trick', {id: node.id}) }}"><strong class="font-black text-xl mr-1">V {{ node.version }}</strong> - {{ node.created_at }} <span class="h-5 ml-1 mr-2 badge badge-warning">{{ node.state }}</span> </a>
+						</li>
+					{%  endfor %}
+				</ul>
+			</div>
+		</article>
+		<article class="flex-1 mt-3">
+			<h3 class="ml-3 mb-3 font-black">Contributeurs</h3>
+			<ul class="ml-3 flex flex-row flex-wrap justify-start">
+				{%  for node in trick.family_tree %}
+					{% set author = node.contributor %}
+					<li x-show="isOpen" class="mb-3 mr-3">
+{#						<user-avatar username="{{ author.username }}" url="{{ author.avatar ? author.avatar.path : null }}"></user-avatar>#}
+{#						<a href="/user/{{ node.contributor.id }}"><img src="{{ node.contributor.avatar.path }}" alt="avatar utilisateur" class="h-12 w-12 rounded-full"></a>#}
+						<a href="/user/{{ author.id }}"><div style="background : url('{{ author.avatar ? author.avatar.path : null }}') no-repeat center/100%;" class="h-12 w-12 rounded-full"></div></a>
+					</li>
+				{%  endfor %}
+			</ul>
+		</article>
+		<article class="flex-1 mt-3">
+			<h3 class="ml-3 mb-3 font-black">Sponsors</h3>
+			<ul class="ml-3 flex flex-col justify-start">
+				<li class="mb-3 mr-3">
+					<a href="https://www.redbull.com/fr-fr/"><img src="/images/sponsor/img.png" alt="redbull event" class=" w-full rounded-lg"></a>
+				</li>
+				<li class="mb-3 mr-3">
+					<a href=""><img src="/images/sponsor/img_1.png" alt="Sponsor Rosignol trend logo" class="w-full rounded-lg"></a>
+				</li>
+				<li class="mb-3 mr-3">
+					<a href=""><img src="/images/sponsor/img_2.png" alt="Sponsor Polar trend logo" class="w-full rounded-lg"></a>
+				</li>
+			</ul></article>
+	</section>
+</div>
+
+{% block javascripts %}
+        <script type="text/javascript">
+			function dropDownVersion() {
+                return {
+                isOpen: false,
+                toggle() {
+                    let list = document.getElementById('version-list');
+                    let li = list.firstChild;
+                    this.isOpen = !this.isOpen;
+                }
+                };
+            }
+	</script>
+{% endblock %}
+
