@@ -24,6 +24,11 @@ class Media
     private string $type;
     
     /**
+     * @ORM\Column(type="boolean", length=64, nullable=true)
+     */
+    private ?bool $is_banner;
+    
+    /**
      * @ORM\Column(type="string", length=64)
      */
     private string $slug;
@@ -63,6 +68,7 @@ class Media
     {
         $this->iframe = null;
         $this->path = null;
+        $this->is_banner = null;
     }
     
     public function get(string $attribute): mixed
@@ -171,5 +177,15 @@ class Media
     
     public function getId(): int {
         return $this->id;
+    }
+    
+    public function getIsBanner(): bool|null {
+        return $this->is_banner;
+    }
+    
+    public function setIsBanner(string $is_banner): Media {
+        $this->is_banner = $is_banner;
+        
+        return $this;
     }
 }

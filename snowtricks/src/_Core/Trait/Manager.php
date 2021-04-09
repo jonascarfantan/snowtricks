@@ -15,10 +15,15 @@ trait Manager {
         if($user = $this->getUser() === null) {
             $request->getSession()->getFlashBag()->add('error', 'Vous devez être authentifié pour réaliser cette action.');
     
-            return $this->redirect('/login', 301);
+            return $this->redirect('/login');
         }
         
         return true;
+    }
+    
+    public static function slugable(string $title, int $version): string
+    {
+        return str_replace(' ','-',strtolower($title)).'-v-'.(string)$version;
     }
     
 }

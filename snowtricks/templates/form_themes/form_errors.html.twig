@@ -17,7 +17,7 @@
 			{{- form_widget(form, widget_attr) -}}
 {#			ERRRRRRRRRRRROOOOOOORRRRRRRRRRRRRR#}
 			{% block form_errors %}
-				<ul class="mx-auto">
+				<ul class="mx-auto listable">
 					{% for error in errors %}
 						<li class="text-sm text-pink-500 mb-1"><span class=" mr-2 badge badge-error">ERR</span>{{ error.message }}</li>
 					{% endfor %}

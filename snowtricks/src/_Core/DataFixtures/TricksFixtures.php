@@ -2,7 +2,8 @@
 
 namespace App\_Core\DataFixtures;
 
-use App\DataFixtures\UsersFixtures;
+use App\_Core\DataFixtures\UsersFixtures;
+use App\_Core\Trait\Manager;
 use App\Media\Domain\Entity\Media;
 use App\Trick\Domain\Entity\Trick;
 use Carbon\Carbon;
@@ -15,6 +16,8 @@ use JetBrains\PhpStorm\NoReturn;
 
 class TricksFixtures extends Fixture implements DependentFixtureInterface
 {
+    use Manager;
+    
     #[NoReturn] public function __construct(
     ) { }
     
@@ -37,6 +40,15 @@ class TricksFixtures extends Fixture implements DependentFixtureInterface
             '/images/tricks/slide2.webp',
             '/images/tricks/slide3.webp',
         ];
+        $categories = [
+            'Grab',
+            'No foot',
+            'One foot',
+            'rotation',
+            'Back flip',
+            'Front flip',
+        ];
+        
         $trick_name = [
             'Frontside',
             'Backside air',
@@ -69,8 +81,9 @@ class TricksFixtures extends Fixture implements DependentFixtureInterface
             $now = $carbon->now();
             $trick = new Trick();
             $trick->setTitle($trick_name[rand(0, count($trick_name) - 1)]);
-            $trick->setSlug($faker->word());
+            $trick->setCategory($categories[rand(0, count($categories) - 1)]);
             $trick->setVersion(1);
+            $trick->setSlug(Manager::slugable($trick->getTitle(), $trick->getVersion()));
             $trick->setDescription($faker->word());
             $trick->setState('current');
             $trick->setCreatedAt($now);
@@ -92,6 +105,16 @@ class TricksFixtures extends Fixture implements DependentFixtureInterface
                 $media->setCreatedAt($now);
                 $manager->persist($media);
             }
+            // One banner img at minimum
+            $media = new Media();
+            $media->setSlug($faker->word);
+            $media->setPath($img_path[rand(0, count($img_path) - 1)]);
+            $media->setAlt($faker->word);
+            $media->setType('img');
+            $media->setIsBanner(true);
+            $media->setCreatedAt($now);
+            $media->setTrick($trick);
+            $manager->persist($media);
         }
         $manager->flush();
     }

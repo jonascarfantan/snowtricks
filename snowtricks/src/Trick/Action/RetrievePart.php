@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 final class RetrievePart extends AbstractController {
     use Manager;
     
-    #[Route(path: '/tricks/{id}/{name}', name: 'retrieve.trick.part.json', methods: ['GET'])]
+    #[Route(path: '/tricks/{slug}/{name}', name: 'retrieve.trick.part.json', methods: ['GET'])]
     public function __invoke(
         Request $request,
         EntityManagerInterface $em,
@@ -28,14 +28,13 @@ final class RetrievePart extends AbstractController {
         
         if(!in_array($name, ['images','videos'])) {
             $data = $trick->get($name);
-
         } else {
             //TODO get media instead of add
 //            $media = new Media();
 //            if($name === 'images'){
 //                $media->setSlug('trick-'.$trick->getId().'-img');
 //                $media->setPath($field_value);
-//                $media->setAlt('Image d\'une figure de snowboard.' );
+//                $media->setAlt('Image d\'une figure de snowboard.');
 //                $media->setType('img');
 //            } else {
 //                $media->setSlug('trick-'.$trick->getId().'-mov');

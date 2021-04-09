@@ -17,8 +17,12 @@ use Doctrine\ORM\Mapping\OneToMany;
 
 use JetBrains\PhpStorm\Pure;
 use phpDocumentor\Reflection\Types\Integer;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 
+//#[
+//    UniqueEntity(fields: 'slug' ,message: 'Le slug doit être unique.'),
+//]
 /**
  * @ORM\Entity(repositoryClass=TrickRepository::class)
  */
@@ -31,16 +35,20 @@ class Trick
      */
     private ?int $id;
     
-    //TODO add validator assert
     /**
      * @ORM\Column(type="string", length=32)
      */
     protected string $title;
     
     /**
+     * @ORM\Column(type="string", length=32, nullable=true)
+     */
+    protected ?string $slug = null;
+    
+    /**
      * @ORM\Column(type="string", length=32)
      */
-    protected string $slug;
+    protected string $category;
     
     /**
      * @ORM\Column(type="text")
@@ -88,10 +96,7 @@ class Trick
     {
         $this->medias = new ArrayCollection();
     }
-//    #[Pure] public function __clone()
-//    {
-//       $this->slug = clone $this->slug;
-//    }
+
     public function set(string $attribute, string $value) {
         $this->$attribute = $value;
     }
@@ -151,7 +156,7 @@ class Trick
         return $this;
     }
     
-    public function getContributor(): User
+    public function getContributor(): UserInterface
     {
         return $this->contributor;
     }
@@ -215,10 +220,12 @@ class Trick
         return $this->slug;
     }
     
-    public function setSlug($slug): self
+    public function setSlug(?string $slug = null): self
     {
+        if(is_null($slug)) {
+            $slug = str_replace(' ','-',strtolower($this->title)).'-v-'.(string)$this->version;
+        }
         $this->slug = $slug;
-        
         return $this;
     }
     
@@ -280,5 +287,14 @@ class Trick
         return $this->version;
     }
     
+    public function getCategory(): string {
+        return $this->category;
+    }
+    
+    public function setCategory(string $category): self {
+        $this->category = $category;
+        
+        return $this;
+    }
     
 }

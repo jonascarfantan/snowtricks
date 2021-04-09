@@ -40,7 +40,7 @@ class TricksActionsTest extends WebTestCase
         $client = static::createClient();
         $client->insulate();
         $client->catchExceptions(true);
-        $client->request('GET','/trick/create');
+        $client->request('GET','/tricks/create');
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
     }
     

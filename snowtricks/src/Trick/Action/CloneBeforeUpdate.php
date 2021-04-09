@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 final class CloneBeforeUpdate extends AbstractController {
     use Manager;
     
-    #[Route(path: '/tricks/{id}/update', name: 'show.update.trick', methods: ['GET'])]
+    #[Route(path: '/tricks/{slug}/update', name: 'show.update.trick', methods: ['GET'])]
     public function __invoke(
         Request $request,
         EntityManagerInterface $em,
@@ -37,19 +37,12 @@ final class CloneBeforeUpdate extends AbstractController {
                 if($tricks_manager->isCurrentVersion($trick)) {
                     $ancestor = $trick->getParent();
                     $draft_trick = clone $trick;
-                    $draft_trick->setState('draft');
-                    $draft_trick->setParent($ancestor);
-                    $draft_trick->setContributor($user);
-                    $draft_trick->setVersion((int)$trick->getVersion() + 1);
+                    $draft_trick->setState('draft')
+                    ->setSlug(Manager::slugable($trick->getTitle(), ((int)$trick->getVersion()+1)) )
+                    ->setParent($ancestor)
+                    ->setContributor($user)
+                    ->setVersion((int)$trick->getVersion() + 1);
                     $tricks_manager->cloneMedias($trick->getMedias(), $draft_trick);
-                    //TODO DEBUG THIS STRANGE MEDIA DUPLICATION
-//                    foreach($trick->getMedias() as $media) {
-//                        foreach($draft_trick->getMedias() as $draft_media){
-//                            if($draft_media !== $media) {
-//                                $draft_trick->removeMedia($media);
-//                            }
-//                        }
-//                    }
                     $em->persist($draft_trick);
                     $em->flush();
                     $trick = $tricks_manager->trickWithTree($draft_trick);
@@ -58,13 +51,15 @@ final class CloneBeforeUpdate extends AbstractController {
                         ->add('success','Une nouvelle version à été créer en brouillon.
                     Effectuer vos modifiaction et publiez la, pour que celle çi soit consultable par les autres membres.
                     Si vous n\'avez pas terminé vos modifications, elles sont sauvgardés, ainsi vous pourrez reprendre plus tard.');
+                    
+                    return $this->redirect('/tricks/'.$draft_trick->getSlug().'/update');
                 }
             } else {
                 // If there is a draft but you'r not the author
                 if( !($tricks_manager->isContributor(user: $user,trick: $tricks_manager->getDraftIfExists($trick))) ) {
                     $request->getSession()->getFlashBag()->add('warning','Une modification est déjà en cours pour ce trick, vous pouvez la consulter en lecture seul.');
             
-                    return $this->redirect('/trick/'.$trick->getId(),301);
+                    return $this->redirect('/tricks/'.$trick->getSlug());
                 } else {
                     // There is a draft and you are the author so let's update it !
                     $draft_trick = $tricks_manager->getDraftIfExists($trick);

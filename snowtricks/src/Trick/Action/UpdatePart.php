@@ -6,7 +6,6 @@ use App\_Core\Trait\Manager;
 use App\Media\Domain\Entity\Media;
 use App\Trick\Domain\Entity\Trick;
 use App\Trick\Domain\Repository\TrickRepository;
-use App\Trick\Domain\TricksManager;
 use Carbon\Carbon;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,7 +18,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 final class UpdatePart extends AbstractController {
     use Manager;
     
-    #[Route(path: '/tricks/{id}', name: 'update.trick.json', methods: ['PUT'])]
+    #[Route(path: '/tricks/{slug}', name: 'update.trick.json', methods: ['PATCH'])]
     public function __invoke(
         Request $request,
         EntityManagerInterface $em,
@@ -41,14 +40,33 @@ final class UpdatePart extends AbstractController {
     
     
         if ($this->isCsrfTokenValid('update_part', $token)) {
-            if($field_name !=='iframe') {
-                //TODO add validation
-                $trick->set($field_name, $field_value);
-//                $violation = $validator->validate($trick);
-//                dd($violation);
-                $em->persist($trick);
-                $em->flush();
-                $returnable = $trick->get($field_name);;
+            if($field_name !== 'iframe') {
+                
+                if($field_name === 'is_banner') {
+                    //TODO get all images of the trick set the media with $field_value as ID to is_banner = true and other trick's medias to false
+                    //BON CHANCE !
+                    $medias = $trick->getMedias();
+                    foreach($medias as $media) {
+                        if($media->getId() == $field_value) {
+                            $media->setIsBanner(true);
+                            $returnable = [
+                                'id' => $media->getId(),
+                                'src' => $media->getPath()
+                            ];
+                        } else {
+                            $media->setIsBanner(false);
+                        }
+                        $em->flush();
+                    }
+                } else {
+                    //TODO add validation
+                    $trick->set($field_name, $field_value);
+                    //                $violation = $validator->validate($trick);
+                    //                dd($violation);
+                    $em->persist($trick);
+                    $em->flush();
+                    $returnable = $trick->get($field_name);
+                }
             } else {
                 $media = new Media();
                 $media->setSlug('trick-mov'.random_bytes(2));

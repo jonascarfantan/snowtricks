@@ -9,13 +9,13 @@
 		<div class="row-span-2 col-start-1 col-span-12 md:col-span-10">
 			<header class="">
 				<input id="csrf-token" type="hidden" name="token" value="{{ csrf_token('update_part') }}"/>
-				<div alt="Snowboard trick" class="bg-no-repeat bg-cover mx-auto" style="height:600px;background-image:url({{ trick.preview_path }}); background-position: 0% 40%;">
+				<div alt="Snowboard trick" class="banner bg-no-repeat bg-cover mx-auto" style="height:600px;background-image:url({{ trick.preview_path }}); background-position: 0% 40%;">
 					<div class="w-full pt-56 relative">
 						<div class="absolute right-0 top-0 mt-4">
-							<a href="{{ path('delete.trick', {id: trick.id}) }}" class="mr-4">
+							<a href="{{ path('delete.trick', {slug: trick.slug}) }}" class="mr-4">
 								<button class="submit_btn text-red-400 hover:text-red-100">Supprimer le brouillon</button>
 							</a>
-							<a href="{{ path('publish.draft.trick', {id: trick.id}) }}" class="mr-4 ">
+							<a href="{{ path('publish.draft.trick', {slug: trick.slug}) }}" class="mr-4 ">
 								<button class="submit_btn text-green-400 hover:text-green-100">Publier !</button>
 							</a>
 						</div>
@@ -38,12 +38,13 @@
 				</div>
 					<div class="flex flex-wrap w-11/12 md:grid md:grid-cols-2 mx-auto gap-3 md:gap-4">
 						<div>
-							<h2 class="my-4 text-3xl font-bold tracking-wide">images</h2>
+							<h2 class="mt-4 mb-2 text-3xl font-bold tracking-wide">images</h2>
+							<h4 class="mb-4 text-lg font-medium">Cliquer sur l'image à mettre en banière.</h4>
 							<div id="img-wrapper" class="w-full flex flex-wrap justify-items-start">
 								{% for img in trick.img %}
 									<div id="container-{{ img.id }}" class="img-container media-img grid grid-row-2">
-										<div id="{{ img.id }}" class="removable w-10/12 align-items-end cursor-pointer pl-2" ><i class="fas fa-times outline-none"></i></div>
-										<div style="background-image: url({{ img.path }});" class="tricks_img bg-contain rounded-md mr-6 mb-6 w-48 h-40"></div>
+										<div class="removable w-10/12 align-items-end cursor-pointer pl-2" ><i class="fas fa-times outline-none"></i></div>
+										<div id="{{ img.id }}" style="background-image: url({{ img.path }});" class="tricks_img bg-contain rounded-md mr-6 mb-6 w-48 h-40"></div>
 									</div>
 								{% endfor %}
 								<div id="uploader-btn" class="media-img grid grid-row-2">
@@ -52,6 +53,9 @@
 										<i class="fas fa-plus-circle fa-4x text-gray-500 hover:text-gray-800"></i>
 									</div>
 								</div>
+								<ul class="listable">
+								{# Banner img input radio hapend here#}
+								</ul>
 							</div>
 						</div>
 						<div>
@@ -101,6 +105,12 @@
                 }
             }, true)
 
+			// CHOOSE BANNER IMAGE BY CLIKING ON IT
+	        let div_img = document.querySelectorAll('div.tricks_img')
+			div_img.forEach(img => {
+                addChooseBannerListener(img)
+            })
+
             // IMAGE UPLOAD
 	        const img_uploader_btn = document.getElementById('uploader-btn')
 	        img_uploader_btn.addEventListener('click', (e) => {
@@ -108,11 +118,42 @@
                 input.type = 'file';
                 input.onchange = e => {
 					uploadImage(e.target)
+					addChooseBannerListener(e.target)
                 }
                 input.click();
 	        }, true)
 	        removableMedia()
         });
+
+        function addChooseBannerListener(img) {
+            img.addEventListener('click', () => {
+                const img_id = img.getAttribute('id')
+                const url = "{{ path('update.trick.json', {slug: trick.slug}) }}"
+                const data = {
+                    name: ('is_banner'),
+                    value: (img_id),
+                    token: (getToken()),
+                }
+                fetch(url, {
+                    method: 'PATCH',
+                    body: JSON.stringify(data),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(res => res.json())
+                    .then(response => {
+                        if(response.datatype == 'is_banner' && response.code == 200) {
+                            swapBanner(response.data.src)
+                        }
+                    })
+                    .catch(error => console.error('Error:', error))
+            }, false)
+        }
+
+        function swapBanner(src) {
+            const banner = document.querySelector('div.banner')
+	        banner.setAttribute('style','height:600px;background-image:url('+src+'); background-position: 0% 40%;')
+        }
 
         // ADD VIDEO
         function handleAddIframe() {
@@ -149,10 +190,12 @@
 			img_container.setAttribute('id','container-'+image.id)
 			img_container.setAttribute('class','img-container media-img grid grid-row-2')
 			img_container.innerHTML =
-				'<div id="'+image.id+'" class="removable w-10/12 align-items-end cursor-pointer pl-2" ><i class="fas fa-times outline-none"></i></div>'+
-				'<div style="background-image: url('+ image.path +');" class="tricks_img bg-contain rounded-md mr-6 mb-6 w-48 h-40"></div>';
+				'<div class="removable w-10/12 align-items-end cursor-pointer pl-2" ><i class="fas fa-times outline-none"></i></div>'+
+				'<div id="'+image.id+'" style="background-image: url('+ image.path +');" class="tricks_img bg-contain rounded-md mr-6 mb-6 w-48 h-40"></div>';
 			uploader_btn.insertAdjacentElement('beforebegin', img_container)
 			removableMedia()
+            let img = document.getElementById(image.id)
+			addChooseBannerListener(img)
         }
 
         function addIframe(iframe) {
@@ -308,8 +351,7 @@
 
         function send(wysiwyg_value)
         {
-            console.log(wysiwyg_value)
-            const url = "{{ path('update.trick.json', {id: trick.id}) }}"
+            const url = "{{ path('update.trick.json', {slug: trick.slug}) }}"
             const ephemeral_input = (document.getElementById('ephemeral-input') ?? document.getElementById('iframe-input'))
             const data = {
                 name: (ephemeral_input.getAttribute('name')),
@@ -317,7 +359,7 @@
                 token: (getToken()),
             }
             fetch(url, {
-                method: 'PUT',
+                method: 'PATCH',
                 body: JSON.stringify(data),
                 headers: {
                     'Content-Type': 'application/json'
