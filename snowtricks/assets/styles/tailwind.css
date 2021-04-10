@@ -9,11 +9,16 @@
 	@apply outline-none !important font-medium ;
 	-webkit-appearance: none;
 }
+
 /* HEDAER */
-.slogan { @apply font-snowtricks font-black italic font-extrabold ; }
+.slogan {
+	@apply font-snowtricks font-black italic font-extrabold ;
+}
 
 /* NAV */
-.register_link { @apply block h-8 px-3 rounded-md border-2 text-gray-800 border-gray-600 tracking-tight font-medium hover:bg-gray-50 hover:border-gray-800; }
+.register_link {
+	@apply block h-8 px-3 rounded-md border-2 text-gray-800 border-gray-600 tracking-tight font-medium hover:bg-gray-50 hover:border-gray-800;
+}
 
 /* MAIN */
 .show-img-banner {
@@ -21,21 +26,45 @@
 	background-position: top 10%;
 	background-size: cover;
 	height: 462px;
-
 }
 
 /* FORM */
-.input-txt { @apply mb-1 px-4 py-1 bg-none font-mono text-gray-700 border-b-4 border-gray-700 outline-none bg-gray-50; }
-.input-error { @apply text-red-700 bg-indigo-50 font-mono; }
-.submit_btn { @apply h-8 px-2 rounded-md bg-gray-800 tracking-tight font-medium ring-indigo-300; }
-.cancel_btn { @apply h-8 px-2 rounded-md text-gray-800 tracking-tight font-medium border-2 border-gray-800; }
+.input-txt {
+	@apply mb-1 px-4 py-1 bg-none font-mono text-gray-700 border-b-4 border-gray-700 outline-none bg-gray-50;
+}
+
+.input-error {
+	@apply text-red-700 bg-indigo-50 font-mono;
+}
+
+.submit_btn {
+	@apply h-8 px-2 rounded-md bg-gray-800 tracking-tight font-medium ring-indigo-300;
+}
+
+.cancel_btn {
+	@apply h-8 px-2 rounded-md text-gray-800 tracking-tight font-medium border-2 border-gray-800;
+}
 
 /* ELEMENTS */
-.badge { @apply px-1 rounded-sm text-xs font-bold tracking-wide; }
-.badge-success { @apply bg-green-600 text-purple-50; }
-.badge-error { @apply bg-red-500 text-pink-50; }
-.badge-warning { @apply bg-yellow-600 text-blue-50; }
-.badge-info { @apply bg-teal-600 text-yellow-50; }
+.badge {
+	@apply px-1 rounded-sm text-xs font-bold tracking-wide;
+}
+
+.badge-success {
+	@apply bg-green-600 text-purple-50;
+}
+
+.badge-error {
+	@apply bg-red-500 text-pink-50;
+}
+
+.badge-warning {
+	@apply bg-yellow-600 text-blue-50;
+}
+
+.badge-info {
+	@apply bg-teal-600 text-yellow-50;
+}
 
 /* LOADING */
 .loading {
@@ -47,6 +76,7 @@
 	transform: translateX(-50%);
 	transition: opacity .3s ease-in;
 }
+
 /* IMAGES */
 .tricks_img {
 	background-size: cover;
@@ -61,8 +91,22 @@
 }
 
 /* MESSAGE FLASH */
-.message-flash-error { @apply bg-red-200 text-red-900; }
-.message-flash-warning { @apply bg-yellow-200 text-yellow-900; }
-.message-flash-success { @apply bg-green-200 text-green-900; }
-.message-flash-info { @apply bg-teal-200 text-teal-900; }
-.message-flash { @apply w-11/12 md:w-6/12 lg:w-4/12 xl:w-3/12; }
+.message-flash-error {
+	@apply bg-red-200 text-red-900;
+}
+
+.message-flash-warning {
+	@apply bg-yellow-200 text-yellow-900;
+}
+
+.message-flash-success {
+	@apply bg-green-200 text-green-900;
+}
+
+.message-flash-info {
+	@apply bg-teal-200 text-teal-900;
+}
+
+.message-flash {
+	@apply w-11/12 md:w-6/12 lg:w-4/12 xl:w-3/12;
+}
