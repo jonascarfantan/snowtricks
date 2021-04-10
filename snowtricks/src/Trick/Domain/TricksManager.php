@@ -24,7 +24,9 @@ class TricksManager extends EntityManager {
             
             $medias = $trick->getMedias();
             //Todo change type from img to img_preview
-            $criteria = Criteria::create()->where(Criteria::expr()->eq("type", "img"));
+            $criteria = Criteria::create()
+                ->where(Criteria::expr()->eq("type", "img"))
+                ->andWhere(Criteria::expr()->eq("is_banner",true));
             $preview_img = $medias->matching($criteria)->first();
             if($preview_img instanceof Media) {
                 $path = $preview_img->getPath();
@@ -115,6 +117,7 @@ class TricksManager extends EntityManager {
             'id' => $trick->getId(),
             'version' => $trick->getVersion(),
             'title' => $trick->getTitle(),
+            'category' => $trick->getCategory(),
             'state' => $trick->getState(),
             'slug' => $trick->getSlug(),
             'img' => $img,

@@ -14,7 +14,6 @@ final class HomePage extends AbstractController {
     public function __invoke(Request $request, EntityManagerInterface $em): Response {
         return $this->render('public/index.html.twig', [
             'title' => 'Snowtricks - Communoté de Free Rider',
-            'action_name' => 'HomePage',
         ]);
     }
 }
