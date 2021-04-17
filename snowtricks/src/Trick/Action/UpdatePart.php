@@ -37,14 +37,10 @@ final class UpdatePart extends AbstractController {
         $field_name = $arguments->name;
         $field_value = $arguments->value;
         $token = $arguments->token;
-    
-    
         if ($this->isCsrfTokenValid('update_part', $token)) {
             if($field_name !== 'iframe') {
                 
                 if($field_name === 'is_banner') {
-                    //TODO get all images of the trick set the media with $field_value as ID to is_banner = true and other trick's medias to false
-                    //BON CHANCE !
                     $medias = $trick->getMedias();
                     foreach($medias as $media) {
                         if($media->getId() == $field_value) {
@@ -81,6 +77,7 @@ final class UpdatePart extends AbstractController {
                     'iframe' => $media->getIframe()
                 ];
             }
+            
             $response = new JsonResponse(
                 [
                     'code' => 200,

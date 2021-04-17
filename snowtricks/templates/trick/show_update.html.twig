@@ -42,13 +42,13 @@
 							<div id="img-wrapper" class="w-full flex flex-wrap justify-items-start">
 								{% for img in trick.img %}
 									<div id="container-{{ img.id }}" class="img-container media-img grid grid-row-2">
-										<div class="removable w-10/12 align-items-end cursor-pointer pl-2" ><i class="fas fa-times outline-none"></i></div>
+										<div class="removable w-10/12 align-items-end cursor-pointer pl-2" ><i id="{{ img.id }}" class="fas fa-times outline-none"></i></div>
 										<div id="{{ img.id }}" style="background-image: url({{ img.path }});" class="tricks_img bg-contain rounded-md mr-6 mb-6 w-48 h-40"></div>
 									</div>
 								{% endfor %}
 								<div id="uploader-btn" class="media-img grid grid-row-2">
 									<div class="removable w-10/12 align-items-end font-medium pl-2" >ajouter une image</div>
-									<div class="tricks_img bg-gray-100 border-gray-700 rounded-md mr-6 mb-6 w-48 h-40 pt-11 pl-14">
+									<div class="bg-gray-100 border-gray-700 rounded-md mr-6 mb-6 w-48 h-40 pt-11 pl-14">
 										<i class="fas fa-plus-circle fa-4x text-gray-500 hover:text-gray-800"></i>
 									</div>
 								</div>
@@ -84,9 +84,7 @@
             setInputable(title_target, 'title',  'text', '{{ trick.title }}')
 	        // CATEGORY
 	        const category_target = document.getElementById('category')
-	        console.log(category_target)
             setInputable(category_target, 'category',  'text', '{{ trick.category }}')
-
 	        // DESCRIPTION
             const description_target = document.getElementById('description')
             setInputable(description_target, 'description', 'wysiwyg')
@@ -119,8 +117,8 @@
                 const input = document.createElement('input');
                 input.type = 'file';
                 input.onchange = e => {
+                    console.log(e.target)
 					uploadImage(e.target)
-					addChooseBannerListener(e.target)
                 }
                 input.click();
 	        }, true)
@@ -145,7 +143,9 @@
                 }).then(res => res.json())
                     .then(response => {
                         if(response.datatype == 'is_banner' && response.code == 200) {
-                            swapBanner(response.data.src)
+                            if(response.data.src) {
+                                swapBanner(response.data.src)
+                            }
                         }
                     })
                     .catch(error => console.error('Error:', error))
@@ -172,7 +172,7 @@
             formData.append('trick', "{{ trick.id }}")
             formData.append('token', getToken())
             var url = "{{ url('media.upload.json', {id: trick.id}) }}"
-            //TODO debug this ajax file upload
+
             fetch(url, {
                 method: 'POST',
                 body: formData,
@@ -182,6 +182,7 @@
                 })
                 .catch(error => console.error('Error:', error))
         }
+
         function getToken() {
             return document.getElementById('csrf-token').getAttribute('value')
         }
@@ -192,8 +193,7 @@
 			img_container.setAttribute('id','container-'+image.id)
 			img_container.setAttribute('class','img-container media-img grid grid-row-2')
 			img_container.innerHTML =
-				'<div class="removable w-10/12 align-items-end cursor-pointer pl-2" ><i class="fas fa-times outline-none"></i></div>'+
-				'<div id="'+image.id+'" style="background-image: url('+ image.path +');" class="tricks_img bg-contain rounded-md mr-6 mb-6 w-48 h-40"></div>';
+				`<div class="removable w-10/12 align-items-end cursor-pointer pl-2" ><i class="fas fa-times outline-none"></i></div><div id="${image.id}" style="background-image: url(${image.path});" class="tricks_img bg-contain rounded-md mr-6 mb-6 w-48 h-40"></div>`;
 			uploader_btn.insertAdjacentElement('beforebegin', img_container)
 			removableMedia()
             let img = document.getElementById(image.id)
@@ -212,7 +212,6 @@
             removableMedia()
         }
 
-
 		function removableMedia() {
             const remove_img = document.querySelectorAll('.removable')
 			remove_img.forEach((icon) => {
@@ -220,6 +219,7 @@
 				    const unknown_target = e.target
 				    if(unknown_target.getAttribute('id') === null) {
 				        var target = unknown_target.parentElement
+					    console.log(target)
 				    } else {
 				        var target = unknown_target
 				    }
@@ -229,6 +229,7 @@
                 }, true)
 			})
 		}
+
 		function removeMedia(media_id, media_type) {
             const url = "{{ url('home') }}medias/"+ media_id
             const data = {
@@ -236,12 +237,14 @@
                 trick_id: ({{ trick.id }}),
                 token: (getToken()),
             }
+
             fetch(url, {
                 method: 'DELETE',
                 body: JSON.stringify(data),
                 headers: {
                     'Content-Type': 'application/json'
                 }
+
             }).then(res => res.json())
                 .then(response => {
 	                if(response.code === 200) {
@@ -380,7 +383,6 @@
 		function reset(data, datatype)
 		{
             const input = (document.getElementById('ephemeral-input') ?? document.getElementById('iframe-input'))
-            console.log(input)
             if(datatype === 'title' || datatype === 'category') {
 			    const container = input.parentElement
                 container.innerHTML = data

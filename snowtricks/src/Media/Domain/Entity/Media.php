@@ -68,7 +68,7 @@ class Media
     {
         $this->iframe = null;
         $this->path = null;
-        $this->is_banner = null;
+//        $this->is_banner = null;
     }
     
     public function get(string $attribute): mixed

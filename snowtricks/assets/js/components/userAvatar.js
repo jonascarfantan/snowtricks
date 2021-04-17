@@ -2,22 +2,21 @@ export class UserAvatar extends HTMLElement {
     constructor() {
         super()
         // this.shadow = this.attachShadow({mode:'open'})
-
+        const fantome = this.attachShadow({mode: 'open'});
     }
     connectedCallback() {
         const circle = document.createElement('div');
         const avatar_url = this.getAttribute('url')
 
         circle.style.cursor = "pointer"
-        circle.setAttribute('class','h-11 w-11 rounded-full bg-gray-900')
+        circle.setAttribute('class','my-avatar h-11 w-11 rounded-full bg-gray-900')
 
         // If user hasn't avatar display his initials
         if(avatar_url) {
             const css = document.createElement('style')
 
-            circle.setAttribute('id','my-avatar')
             css.textContent =
-                `#my-avatar {
+                `.my-avatar {
                     background :  var(--avatar-url) no-repeat center/100%;
                 }`
 

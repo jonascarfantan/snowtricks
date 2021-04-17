@@ -25,18 +25,10 @@
 			<ul class="ml-3 flex flex-row flex-wrap justify-start">
 				{%  for node in trick.family_tree %}
 					{% set author = node.contributor %}
-					{% set url = author.avatar ? author.avatar.path : null %}
 					<li x-show="isOpen" class="mb-3 mr-3">
-						{% if url is null %}
-							<div class="author {{ author.username }}">
-								<user-avatar username="{{ author.username }}" url="{{ url }}"></user-avatar>
-							</div>
-						{% else %}
-							<div class="author {{ author.username }}">
-								<div id="author-{{ author.id }}" style="background : url('{{ author.avatar ? author.avatar.path : null }}') no-repeat center/100%;" class="h-12 w-12 rounded-full"></div>
-							</div>
-						{% endif %}
+{#						<user-avatar username="{{ author.username }}" url="{{ author.avatar ? author.avatar.path : null }}"></user-avatar>#}
 {#						<a href="/user/{{ node.contributor.id }}"><img src="{{ node.contributor.avatar.path }}" alt="avatar utilisateur" class="h-12 w-12 rounded-full"></a>#}
+						<a href="/user/{{ author.id }}"><div style="background : url('{{ author.avatar ? author.avatar.path : null }}') no-repeat center/100%;" class="h-12 w-12 rounded-full"></div></a>
 					</li>
 				{%  endfor %}
 			</ul>
@@ -69,15 +61,6 @@
                 }
                 };
             }
-            // TODO REMOVE AUTHOR DOUBLON
-			const nodeList  = document.querySelectorAll('div.author')
-			const authors = Array.from(nodeList);
-			for (let i = 0; (i+1) < authors.length; i++) {
-			    var uniq = []
-			    if( authors[i].classList[1] == authors[i+1].classList[1] ) {
-                    nodeList[i+1].remove()
-                }
-			}
 	</script>
 {% endblock %}
 

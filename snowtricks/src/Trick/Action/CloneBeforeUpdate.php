@@ -45,8 +45,6 @@ final class CloneBeforeUpdate extends AbstractController {
                     $tricks_manager->cloneMedias($trick->getMedias(), $draft_trick);
                     $em->persist($draft_trick);
                     $em->flush();
-                    $trick = $tricks_manager->trickWithTree($draft_trick);
-            
                     $request->getSession()->getFlashBag()
                         ->add('success','Une nouvelle version à été créer en brouillon.
                     Effectuer vos modifiaction et publiez la, pour que celle çi soit consultable par les autres membres.
