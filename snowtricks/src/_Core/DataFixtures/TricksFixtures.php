@@ -9,6 +9,7 @@ use App\Trick\Domain\Entity\Trick;
 use Carbon\Carbon;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
 use Faker\Factory;
@@ -124,4 +125,5 @@ class TricksFixtures extends Fixture implements DependentFixtureInterface
             UsersFixtures::class,
         );
     }
+
 }

@@ -3,6 +3,7 @@
 namespace App\Auth\Domain\Entity;
 
 use App\Auth\Domain\Repository\UserRepository;
+use App\Chat\Domain\Entity\Message;
 use App\Media\Domain\Entity\Media;
 use App\Trick\Domain\Entity\Trick;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -94,7 +95,16 @@ class User implements UserInterface
      */
     public Collection|Trick $tricks;
     
+    /**
+     * @ORM\OneToMany(targetEntity="App\Chat\Domain\Entity\Message", mappedBy="speaker", cascade={"persist", "remove"})
+     */
+    public Collection|Message $messages;
+    
     private $salt;
+    
+    //    ___________________
+    //    GETTER AND SETTER
+    //    ___________________
     
     #[Pure] public function __construct()
     {
@@ -104,7 +114,6 @@ class User implements UserInterface
         $this->tricks = new ArrayCollection();
     }
     
-//    BORING GETTER & SETTER
     public function getId(): string { return $this->id; }
     public function getUsername(): string { return $this->username; }
     public function getEmail(): string { return $this->email; }
@@ -119,6 +128,7 @@ class User implements UserInterface
     public function setCreatedAt(\DateTime $date_time): self { $this->created_at = $date_time; return $this; }
     public function setUpdatedAt(\DateTime $date_time): self { $this->created_at = $date_time; return $this; }
     public function setAvatar(Media $media): self { $this->avatar = $media; return $this; }
+    
     
     public function getRoles(): array
     {
@@ -141,6 +151,20 @@ class User implements UserInterface
     {
         if(!$this->tricks->contains($trick)) {
             $this->tricks[] = $trick;
+        }
+        
+        return $this;
+    }
+    
+    public function getMessages(): Collection
+    {
+        return $this->messages;
+    }
+    
+    public function setMessage(Message $message): self
+    {
+        if(!$this->tricks->contains($message)) {
+            $this->messages[] = $message;
         }
         
         return $this;

@@ -64,6 +64,10 @@ class Media
      */
     private ?Trick $trick;
     
+    //    ___________________
+    //    GETTER AND SETTER
+    //    ___________________
+    
     public function __construct()
     {
         $this->iframe = null;

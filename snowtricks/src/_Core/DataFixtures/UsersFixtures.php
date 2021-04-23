@@ -99,4 +99,5 @@ class UsersFixtures extends Fixture
         
         return $media;
     }
+    
 }

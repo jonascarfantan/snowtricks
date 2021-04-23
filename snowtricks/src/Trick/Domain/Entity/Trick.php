@@ -4,20 +4,18 @@ namespace App\Trick\Domain\Entity;
 
 use App\Auth\Domain\Entity\User;
 use App\Media\Domain\Entity\Media;
+use App\Chat\Domain\Entity\Message;
+
 use App\Trick\Domain\Repository\TrickRepository;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\JoinTable;
-use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 
 use JetBrains\PhpStorm\Pure;
-use phpDocumentor\Reflection\Types\Integer;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 //#[
@@ -92,6 +90,15 @@ class Trick
      */
     private Collection|Media $medias;
     
+    /**
+     * @OneToMany(targetEntity=Message::class, mappedBy="trick", orphanRemoval=true, cascade={"persist", "remove"}, fetch="EAGER")
+     */
+    private Collection|Message $messages;
+    
+    //    ___________________
+    //    GETTER AND SETTER
+    //    ___________________
+    
     #[Pure] public function __construct()
     {
         $this->medias = new ArrayCollection();
@@ -149,6 +156,53 @@ class Trick
         return $this;
     }
     
+    
+    public function setMessages(iterable $messages): self
+    {
+        $this->clearMessages();
+        foreach ($messages as $message) {
+            $this->addMessage($message);
+        }
+        
+        return $this;
+    }
+    
+    public function addMessage(Message $message): self
+    {
+        if ($this->messages->contains($message) === false) {
+            $this->messages->add($message);
+            $message->setTrick($this);
+        }
+        return $this;
+    }
+    
+    public function getMessages(): iterable
+    {
+        return $this->messages;
+    }
+    
+    public function removeMessage(Message $message): self
+    {
+        if ($this->messages->contains($message)) {
+            $this->messages->removeElement($message);
+            $message->removeTrick();
+        }
+        
+        return $this;
+    }
+    
+    public function clearMessages(): self
+    {
+        foreach ($this->getMedias() as $message) {
+            $this->removeMedia($message);
+        }
+        $this->messages->clear();
+        
+        return $this;
+    }
+    
+    
+    
     public function setContributor(UserInterface $contributor): self
     {
         $this->contributor = $contributor;
@@ -174,6 +228,12 @@ class Trick
     public function getChildren(): iterable
     {
         return $this->children;
+    }
+    
+    public function setChildren(Collection|Trick $children): Trick {
+        $this->children = $children;
+        
+        return $this;
     }
     
     public function removeChild(Trick $trick): self
@@ -296,5 +356,6 @@ class Trick
         
         return $this;
     }
+    
     
 }
