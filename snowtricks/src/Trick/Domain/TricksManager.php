@@ -70,7 +70,8 @@ class TricksManager extends EntityManager {
         if('current' === $trick->getState()){
             return true;
         }
-        throw new CannotUpdateOlderVersionException();
+        
+        return false;
     }
     
     //Check if the trick to update already has a draft
@@ -158,7 +159,7 @@ class TricksManager extends EntityManager {
     
     public function remove(Trick $trick, UserInterface $user): Trick|bool
     {
-        if($trick->getState() !== 'draft') {
+        if($trick->getState() !== 'draft' || $trick->getContributor() !== $user) {
             $return = false;
         } else {
             $parent = $trick->getParent();
@@ -171,12 +172,8 @@ class TricksManager extends EntityManager {
                     $return = $tricks[count($tricks) - 2];
                 }
             }
-            if ($trick->getContributor() !== $user) {
-                $return = false;
-            } else {
-                $this->em->remove($trick);
-                $this->em->flush();
-            }
+            $this->em->remove($trick);
+            $this->em->flush();
         }
         
         return $return;

@@ -26,22 +26,23 @@ final class CloneBeforeUpdate extends AbstractController {
         if( ($redirect = $this->redirectUnauthenticated($request)) instanceof Response ) {
             return $redirect;
         }
+        
         $user = $this->getUser();
         $tricks_manager = new TricksManager([Trick::class], $em);
-        
         try {
             // If there is no draft for this trick yet, we can create one
             if(!$tricks_manager->alreadyHasDraft($trick)) {
-        
+    
                 // If this trick is the current one we clone it has a draft ready to be updated
                 if($tricks_manager->isCurrentVersion($trick)) {
+                    
                     $ancestor = $trick->getParent();
                     $draft_trick = clone $trick;
                     $draft_trick->setState('draft')
-                    ->setSlug(Manager::slugable($trick->getTitle(), ((int)$trick->getVersion()+1)) )
-                    ->setParent($ancestor)
-                    ->setContributor($user)
-                    ->setVersion((int)$trick->getVersion() + 1);
+                                ->setSlug(Manager::slugable($trick->getTitle(), ((int)$trick->getVersion()+1)) )
+                                ->setParent($ancestor)
+                                ->setContributor($user)
+                                ->setVersion((int)$trick->getVersion() + 1);
                     $tricks_manager->cloneMedias($trick->getMedias(), $draft_trick);
                     $em->persist($draft_trick);
                     $em->flush();
