@@ -53,11 +53,10 @@ final class Edit extends AbstractController
                       ->setState('current')
                       ->setVersion(1)
                       ->setCreatedAt($now);
-            //Prevent title duplication with our constraints
-            
             
             $images = $request->files->get('trick_edition')['images'];
             $videos = $request->get('trick_edition')['videos'];
+            
             foreach($images as $image) {
                 $uploaded = $file_uploader->upload($image);
                 $media = new Media();

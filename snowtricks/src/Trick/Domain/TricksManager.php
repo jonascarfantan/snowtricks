@@ -103,7 +103,6 @@ class TricksManager extends EntityManager {
     
     public function showTrick(Trick $trick): array
     {
-        $repo = $this->em->getRepository(Trick::class);
         // Retrieve media split by type img & mov
         $medias = $trick->getMedias();
         $criteria = Criteria::create()->where(Criteria::expr()->eq("type", "img"));
@@ -112,6 +111,17 @@ class TricksManager extends EntityManager {
         $img_banner = $medias->matching($criteria)->first()->getPath();
         $criteria = Criteria::create()->where(Criteria::expr()->eq("type", "mov"));
         $mov = $medias->matching($criteria);
+        
+        //Retrieve messages
+        $messages = $trick->getMessages();
+        foreach($messages as $message) {
+            $trick_messages[] = [
+                'id' => $message->getId(),
+                'speaker' => $message->getSpeaker(),
+                'content' => $message->getContent(),
+                'date' => $message->getCreatedAt()->format('Y-m-d')
+            ];
+        }
         
         // Prepare trick to being displayed
         $prepared_trick = [
@@ -127,7 +137,9 @@ class TricksManager extends EntityManager {
             'contributor' => $trick->getContributor(),
             'preview_path' => $img_banner,
             'created_at' => $trick->getCreatedAt(),
+            'messages' => $trick_messages,
         ];
+        
         return $prepared_trick;
     }
     

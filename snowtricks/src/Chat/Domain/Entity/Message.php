@@ -107,16 +107,20 @@ class Message
         return $this->content;
     }
     
-    public function setContent(string $content): void {
+    public function setContent(string $content): self {
         $this->content = $content;
+        
+        return $this;
     }
     
     public function getId(): int {
         return $this->id;
     }
     
-    public function setId(int $id): void {
+    public function setId(int $id): self {
         $this->id = $id;
+        
+        return $this;
     }
     
 }
