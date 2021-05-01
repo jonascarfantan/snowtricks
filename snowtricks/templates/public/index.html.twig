@@ -65,9 +65,6 @@
                 entries.forEach(function(entry) {
                     if (entry.intersectionRatio > prevRatio) {
                         fetchTricks();
-                        // entry.target.style.backgroundColor = increasingColor.replace("ratio", entry.intersectionRatio);
-                    } else {
-                        // entry.target.style.backgroundColor = decreasingColor.replace("ratio", entry.intersectionRatio);
                     }
                     prevRatio = entry.intersectionRatio;
                 });
@@ -75,9 +72,9 @@
 
             function fetchTricks() {
                 document.getElementById('body').classList.add('cursor-wait');
+
                 fetch('http://snowtricks.local/feed/' + window.nb_iteration + '/tricks')
                     .then(response => response.json())
-	                // .then(() => showLoader())
                     .then(function(data) {
 	                    let to_display = data.tricks.filter(function (trick) {
 	                        if ( !window.tricks.includes(JSON.stringify(trick)) ) {
@@ -86,19 +83,16 @@
                                 return true;
 	                        }
 	                    });
+
 	                    let old_last_child = container.lastElementChild;
 	                    window.observer.unobserve(old_last_child ? old_last_child : container);
                         to_display.map((x) => displayTrick(x, container));
+
                         let last_child = container.lastElementChild;
                         window.observer.observe(last_child);
                         document.getElementById('body').classList.remove('cursor-wait');
-                        // window.tricks.push(data.tricks);
                         window.nb_iteration ++;
-                    }).then(() => {
-
-                });
-	                // .then((to_display) => {return to_display;});
-
+                    })
             }
 
             function displayTrick(current_trick, container) {

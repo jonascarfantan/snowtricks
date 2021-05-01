@@ -1,17 +1,31 @@
-
+{#DISPLAY MESSAGES #}
 <div class=" w-11/12 mb-6 mx-auto">
 	<h2 class="my-4 text-3xl font-bold tracking-wide">Discution</h2>
-	<div class="w-2/3 mx-auto flex flex-row flex-wrap">
-		{% for message in trick.messages %}
-			<article id="{{ message.id }}" class="bg-gray-200 m-2 p-2 rounded-md">
-				<span class="text-md font-bold">{{ message.speaker.username }}</span>
-				<span class="text-sm font-thin">{{ message.date }}</span>
-				<p>{{ message.content }}</p>
-			</article>
-		{% endfor %}
+	<div id="message-container" class="w-2/3 mx-auto flex flex-row flex-wrap">
+
+	{#MESSAGE CARDS APPEAR HERE#}
+
 	</div>
 </div>
+{#TABULATION#}
+<div class=" w-2/6 mb-6 mx-auto bg-gray-100 rounded-md">
+	<div class="flex justify-content-between">
 
+		<div id="tab-previous" class="flex-none w-1/12 bg-gray-50 rounded-l-md py-6 flex justify-content-center">
+			<i class="fas fa-arrow-left ml-3"></i>
+		</div>
+
+		<ul id="tab-indexes" class="flex-grow flex justify-content-between">
+		{#INDEXES APPEAR HERE#}
+		</ul>
+
+		<div id="tab-next" class="flex-none w-1/12 bg-gray-50 rounded-r-md py-6 flex justify-content-center">
+			<i class="fas fa-arrow-right ml-3"></i>
+		</div>
+
+	</div>
+</div>
+{#FORM LEAVE MESSAGE#}
 <form action="{{ path('comment.trick', {slug: trick.slug}) }}" method="post" name="sentComment" id="comment-form"
       class="w-full mx-auto text-lg">
 	<input id="csrf-token" type="hidden" name="token" value="{{ csrf_token('comment') }}"/>
@@ -25,8 +39,112 @@
 </form>
 
 <script type="text/javascript">
-	const btn = document.querySelector('#sendComment')
-	btn.addEventListener('click', () => {
-	    document.querySelector('#comment-form').submit()
+	window.addEventListener('DOMContentLoaded', async () => {
+	    // INIT
+	    window.container = document.querySelector('#message-container')
+		const tab_indexes = document.querySelector('#tab-indexes')
+	    window.offset = 0
+
+		// GET FIRST 10 COMMENT
+        const messages = await getMessages(window.offset)
+        handleTabIndexes(window.nb_pages, tab_indexes, container)
+        messages.map(message => {
+            displayMessage(message);
+        })
+
+
+		// HANDLE TABULATION MESSAGES SAMPLE
+		const previous = document.querySelector('#tab-previous')
+		const next = document.querySelector('#tab-next')
+
+		previous.addEventListener('click', async () => {
+		    if(window.offset > 0) {
+		        const messages = await getMessages(window.offset -= 1)
+			    removeMessages()
+			    messages.map(message => displayMessage(message))
+		    }
+		})
+
+        next.addEventListener('click', async () => {
+            if(window.offset < window.nb_pages) {
+                const messages = await getMessages(window.offset += 1)
+	            removeMessages()
+                messages.map(message => displayMessage(message))
+            }
+        })
+
+		// SEND COMMENT
+        const btn = document.querySelector('#sendComment')
+        btn.addEventListener('click', () => {
+            document.querySelector('#comment-form').submit()
+        })
+
 	})
+
+    async function getMessages(offset)
+    {
+        document.getElementById('body').classList.add('cursor-wait');
+        const url = 'http://snowtricks.local/tricks/' + '{{ trick.slug }}' + '/offset/'+ offset
+
+	    await fetch(url)
+            .then(response => response.json())
+            .then(function(data) {
+                window.nb_pages = data.nb_pages
+
+                window.messages = data.messages
+            })
+
+	    return window.messages
+    }
+
+    function displayMessage(message)
+    {
+	    const message_cards = createMessageUi(message)
+	    window.container.insertAdjacentElement('afterbegin', message_cards)
+    }
+
+    function removeMessages()
+    {
+        const old_cards = Array.from(document.querySelectorAll('.message-cards'))
+        if(old_cards.length !== 0) {
+            old_cards.map(olds => olds.remove())
+        }
+    }
+
+    function createMessageUi(message)
+    {
+        const article = document.createElement('article')
+	    article.setAttribute('id','message-' + message.id)
+	    article.setAttribute('class','message-cards bg-gray-200 m-2 p-2 rounded-md flex')
+	    article.innerHTML = `
+			<div  style="background : url('${message.avatar}') no-repeat center/100%;" class="h-12 w-12 mx-2 rounded-full"></div>
+			<div class="flex-1">
+				<span class="text-md font-bold">${message.author_name}</span>
+				<span class="text-sm font-thin">${message.date}</span>
+				<p>${message.content}</p>
+			</div>
+	    `
+
+		return article
+    }
+    function handleTabIndexes(nb_pages, tab_container)
+    {
+        for(let i = 0; i < nb_pages; i++) {
+            const li = document.createElement('li')
+            li.setAttribute('id', i)
+            li.setAttribute('class','mt-4 mx-auto text-xl font-bold')
+	        li.innerHTML = `${i + 1}`
+
+	        li.addEventListener('click', async (e) => {
+	            if(e.target.id !== window.offset) {
+                    const messages = await getMessages(e.target.id)
+                    removeMessages()
+                    messages.map(message => displayMessage(message, window.container))
+                    window.offset = e.target.id
+	            }
+	        })
+
+	        tab_container.insertAdjacentElement('beforeend', li)
+        }
+    }
 </script>

@@ -18,14 +18,14 @@ final class RetrievePart extends AbstractController {
     use Manager;
     
     #[Route(path: '/tricks/{slug}/{name}', name: 'retrieve.trick.part.json', methods: ['GET'])]
-    public function __invoke(
+    public function __invoke (
         Request $request,
         EntityManagerInterface $em,
         TrickRepository $trick_repository,
         Trick $trick,
         string $name
-    ): Response {
-        
+    ): Response
+    {
         if(!in_array($name, ['images','videos'])) {
             $data = $trick->get($name);
         } else {

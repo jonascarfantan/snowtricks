@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * @ORM\Entity(repositoryClass=PublicMessageRepository::class)
+ * @ORM\Entity(repositoryClass="App\Chat\Domain\Repository\MessageRepository")
  */
 class Message
 {

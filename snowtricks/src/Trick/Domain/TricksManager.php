@@ -5,7 +5,6 @@ namespace App\Trick\Domain;
 use App\_Core\EntityManager;
 use App\Media\Domain\Entity\Media;
 use App\Trick\Domain\Entity\Trick;
-use App\Trick\Domain\Exception\CannotUpdateOlderVersionException;
 use Carbon\Carbon;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\PersistentCollection;
@@ -137,7 +136,7 @@ class TricksManager extends EntityManager {
             'contributor' => $trick->getContributor(),
             'preview_path' => $img_banner,
             'created_at' => $trick->getCreatedAt(),
-            'messages' => $trick_messages,
+            'messages' => $trick_messages ?? null,
         ];
         
         return $prepared_trick;
