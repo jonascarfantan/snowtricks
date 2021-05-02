@@ -13,17 +13,15 @@ use Symfony\Component\Routing\Annotation\Route;
 
 final class Show extends AbstractController {
     
-    #[Route(path: '/tricks/{id}', name: 'show.trick', methods: ['GET'])]
+    #[Route(path: '/tricks/{slug}', name: 'show.trick', methods: ['GET'])]
     public function __invoke(
         Request $request,
         EntityManagerInterface $em,
         TrickRepository $trick_repository,
-        $id
+        $slug
     ): Response {
-        
         $tricks_manager = new TricksManager([Trick::class], $em);
-        $trick = $tricks_manager->trickWithTree($trick_repository->find($id));
-        
+        $trick = $tricks_manager->trickWithTree($trick_repository->findOneBy(['slug' => $slug]));
         return $this->render('trick/show.html.twig', [
             'title' => 'Zoom sur ' . $trick['title'],
             'trick' => $trick,

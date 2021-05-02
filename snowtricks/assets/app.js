@@ -16,5 +16,5 @@ import 'alpinejs'
 
 // Handmade Web Components
 import './js/components/index.js'
-// Pages behavior
-import './js/pages/index.js'
+
+

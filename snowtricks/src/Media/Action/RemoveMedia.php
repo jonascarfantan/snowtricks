@@ -27,6 +27,7 @@ final class RemoveMedia extends AbstractController {
         if( ($redirect = $this->redirectUnauthenticated($request)) instanceof Response ) {
             return $redirect;
         }
+        
         $json = $request->getContent();
         $arguments = json_decode($json);
         $token = $arguments->token;

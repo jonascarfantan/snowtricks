@@ -1,12 +1,11 @@
 {% extends 'layout/base.html.twig' %}
-
 {% block title %}{{ title }}{% endblock %}
 {% block head %}
     <script src="https://cdn.tiny.cloud/1/gxt8mgcppsvtooif8gfa2v01p3y4wrupwb4r7ubgg10m803t/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
 {% endblock %}
 {% form_theme form with ['form_themes/trick_edit.html.twig'] %}
 {% block body %}
-    <div class="md:mt-4 grid grid-cols-12 grid-rows-2">
+    <div class="md:mt-4 grid grid-cols-12 grid-rows-1">
         <div x-data="manageForm()"
              x-init="document.addEventListener('DOMContentLoaded', (event) => { prepareFormGroup(); });"
              class="font-sans md:col-start-2 md:col-span-10 mx-auto lg:px-8">
@@ -21,11 +20,11 @@
                             'class': 'input-txt'
                     }})
                 }}
-                {{ form_row(form.slug,
+                {{ form_row(form.category,
                     {
-                        'label': 'Alias :',
+                        'label': 'Category :',
                         'attr': {
-                            'placeholder': 'diminutif',
+                            'placeholder': 'categorie de la figure',
                             'class': 'input-txt'
                     }})
                 }}
@@ -53,8 +52,8 @@
                     'class': 'input-txt'
                 }})
             }}
-            <div class="mx-6 mt-6 mx-auto">
-                <button class="submit_btn ml-2 lg:ml-8" id="submit-btn" type="submit" name="submit">envoyer</button>
+            <div class="my-6 mx-auto">
+                <button class="submit_btn text-green-50 ml-2 lg:ml-8" id="submit-btn" type="submit" name="submit">envoyer</button>
             </div>
             {{ form_end(form) }}
         </div>
@@ -67,6 +66,7 @@
         function manageForm() {
                 return {
                     prepareFormGroup() {
+
                         tinymce.init({
                             selector: 'textarea',
                             plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
@@ -107,8 +107,25 @@
                     },
                     checkImage(event) {
                         const files = event.target.files;
-                        console.log(files);
-                        // this.createInput(files);
+                        const lists = document.querySelectorAll('ul.listable')
+                        const list = lists[3];
+                        let li = document.createElement('li')
+                        li.setAttribute('class',"text-xl font-medium mb-2")
+                        li.innerText = "Choix de l'image principale :"
+                        list.insertAdjacentElement('beforeend', li)
+                        Array.from(files).forEach(file => {
+                            let li = this.createRadio(file)
+                            list.insertAdjacentElement('beforeend', li)
+                        })
+                    },
+                    createRadio(file) {
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                        <input type="radio" id="${file.name}" name="img_banner" value="${file.name}" checked>
+                        <label for="img_banner" class="text-lg font-medium ml-2">${file.name}</label>
+                        `;
+
+                        return li
                     },
                     createInput(files) {
                         const form = document.getElementsByTagName('form')[0];

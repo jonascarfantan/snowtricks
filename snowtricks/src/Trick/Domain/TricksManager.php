@@ -3,32 +3,29 @@
 namespace App\Trick\Domain;
 
 use App\_Core\EntityManager;
-use App\Auth\Domain\Entity\User;
 use App\Media\Domain\Entity\Media;
 use App\Trick\Domain\Entity\Trick;
-use App\Trick\Domain\Exception\CannotUpdateOlderVersionException;
-use App\Trick\Domain\Exception\DraftVersionAlreadyExistsException;
 use Carbon\Carbon;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\PersistentCollection;
-use phpDocumentor\Reflection\Types\Iterable_;
-use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class TricksManager extends EntityManager {
+    private const LIMIT = 8;
     
     public function getHomeSample(string $offset): array
     {
         $repo = $this->em->getRepository(Trick::class);
-        $segment = $repo->findBy(['state' => 'current'], ['id' => 'DESC'], 8, 8 * $offset);
+        $segment = $repo->findBy(['state' => 'current'], ['id' => 'DESC'], self::LIMIT, self::LIMIT * $offset);
         
         $tricks = [];
         foreach($segment as $trick) {
             
             $medias = $trick->getMedias();
             //Todo change type from img to img_preview
-            $criteria = Criteria::create()->where(Criteria::expr()->eq("type", "img"));
+            $criteria = Criteria::create()
+                ->where(Criteria::expr()->eq("type", "img"))
+                ->andWhere(Criteria::expr()->eq("is_banner",true));
             $preview_img = $medias->matching($criteria)->first();
             if($preview_img instanceof Media) {
                 $path = $preview_img->getPath();
@@ -46,15 +43,15 @@ class TricksManager extends EntityManager {
     
     public function trickWithTree(Trick $trick): array
     {
-        $repo = $this->em->getRepository(Trick::class);
-        $family_tree = [];
         // get the entire family tree with version information
+        $family_tree = [];
         $raw_family_tree = $trick->getParent()->getChildren();
         $raw_family_tree->add($trick->getParent());
         $raw_family_tree->map(function($version) use (&$family_tree) {
             $date = Carbon::parse(new Carbon($version->getCreatedAt()));
             $family_tree[$version->getVersion()-1] = [
                 'id' => $version->getId(),
+                'slug' => $version->getSlug(),
                 'version' => $version->getVersion(),
                 'state' => $version->getState(),
                 'created_at' => $date->toDateString(),
@@ -63,7 +60,6 @@ class TricksManager extends EntityManager {
         });
         ksort($family_tree);
         $family_tree = ['family_tree' => $family_tree];
-        
         // Merge trick with his tree TODO improve number of request
         return array_merge($this->showTrick($trick), $family_tree);
     }
@@ -73,7 +69,8 @@ class TricksManager extends EntityManager {
         if('current' === $trick->getState()){
             return true;
         }
-        throw new CannotUpdateOlderVersionException();
+        
+        return false;
     }
     
     //Check if the trick to update already has a draft
@@ -105,30 +102,43 @@ class TricksManager extends EntityManager {
     
     public function showTrick(Trick $trick): array
     {
-        $repo = $this->em->getRepository(Trick::class);
-        
         // Retrieve media split by type img & mov
         $medias = $trick->getMedias();
         $criteria = Criteria::create()->where(Criteria::expr()->eq("type", "img"));
         $img = $medias->matching($criteria);
+        $criteria = Criteria::create()->where(Criteria::expr()->eq("is_banner", true));
+        $img_banner = $medias->matching($criteria)->first()->getPath();
         $criteria = Criteria::create()->where(Criteria::expr()->eq("type", "mov"));
         $mov = $medias->matching($criteria);
         
-        $path = $img->first() !== false ? $img->first()->getPath() : '/images/home_page.webp' ;
+        //Retrieve messages
+        $messages = $trick->getMessages();
+        foreach($messages as $message) {
+            $trick_messages[] = [
+                'id' => $message->getId(),
+                'speaker' => $message->getSpeaker(),
+                'content' => $message->getContent(),
+                'date' => $message->getCreatedAt()->format('Y-m-d')
+            ];
+        }
+        
         // Prepare trick to being displayed
         $prepared_trick = [
             'id' => $trick->getId(),
             'version' => $trick->getVersion(),
             'title' => $trick->getTitle(),
+            'category' => $trick->getCategory(),
             'state' => $trick->getState(),
             'slug' => $trick->getSlug(),
             'img' => $img,
             'mov' => $mov,
             'description' => $trick->getDescription(),
             'contributor' => $trick->getContributor(),
-            'preview_path' => $path,
+            'preview_path' => $img_banner,
             'created_at' => $trick->getCreatedAt(),
+            'messages' => $trick_messages ?? null,
         ];
+        
         return $prepared_trick;
     }
     
@@ -160,7 +170,7 @@ class TricksManager extends EntityManager {
     
     public function remove(Trick $trick, UserInterface $user): Trick|bool
     {
-        if($trick->getState() !== 'draft') {
+        if($trick->getState() !== 'draft' || $trick->getContributor() !== $user) {
             $return = false;
         } else {
             $parent = $trick->getParent();
@@ -173,12 +183,8 @@ class TricksManager extends EntityManager {
                     $return = $tricks[count($tricks) - 2];
                 }
             }
-            if ($trick->getContributor() !== $user) {
-                $return = false;
-            } else {
-                $this->em->remove($trick);
-                $this->em->flush();
-            }
+            $this->em->remove($trick);
+            $this->em->flush();
         }
         
         return $return;
@@ -190,6 +196,16 @@ class TricksManager extends EntityManager {
             return true;
         
         return false;
+    }
+    public function isTitleAlreadyExists(string $title): bool
+    {
+        $repo = $this->em->getRepository(Trick::class);
+        if(null == $repo->findOneBy(['title' => $title])) {
+            return false;
+        }
+        
+        return true;
+        
     }
     
 }

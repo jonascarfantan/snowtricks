@@ -54,7 +54,6 @@ min-width: 100vw;
         </g>
     </svg>
 </div>
-
 `
 export class MessageFlash extends HTMLElement {
     constructor ()

@@ -44,6 +44,7 @@ final class Upload extends AbstractController
                 ->setPath('/images/tricks/'.$uploaded['file_path'])
                 ->setSlug('trick-img'.$uploaded['file_name'])
                 ->setAlt('image du trick '.$media->getSlug())
+                ->setIsBanner(true)
                 ->setCreatedAt($now);
             $trick->addMedia($media);
             $em->persist($trick);

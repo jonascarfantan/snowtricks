@@ -13,16 +13,14 @@ use Symfony\Component\Routing\Annotation\Route;
 
 final class DeleteVersion extends AbstractController {
     
-    #[Route(path: '/tricks/{id}/delete', name: 'delete.trick', methods: ['GET'])]
+    #[Route(path: '/tricks/{slug}/delete', name: 'delete.trick', methods: ['GET'])]
     public function __invoke(
         Request $request,
         EntityManagerInterface $em,
         TrickRepository $trick_repository,
-        $id
+        Trick $version
     ): Response {
-        //TODO empécher la suppression d'un trick qui n'est pas draft
         $tricks_manager = new TricksManager([Trick::class], $em);
-        $version = $trick_repository->find($id);
         $user = $this->getUser();
         if(($trick = $tricks_manager->remove($version, $user)) === $version) {
             $request->getSession()->getFlashBag()

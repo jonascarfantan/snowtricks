@@ -1,5 +1,5 @@
 {% extends 'layout/base.html.twig' %}
-
+{% block title %}{{ title }}{% endblock %}
 {% block body %}
 	<div class="grid grid-cols-12 grid-rows-2">
 		{% include 'trick/aside_show.html.twig' %}
@@ -8,18 +8,17 @@
 				<div alt="Snowboard trick" class="bg-no-repeat bg-cover mx-auto" style="height:600px;background-image:url({{ trick.preview_path }}); background-position: 0% 40%;">
 					<div class="w-full pt-56 relative">
 						<div class="absolute right-0 top-0 mt-4">
-							<a href="{{ path('delete.trick', {id: trick.id}) }}" class="mr-4">
+							<a href="{{ path('delete.trick', {slug: trick.slug}) }}" class="mr-4">
 								<i class="far fa-2x fa-trash-alt text-gray-400 hover:text-gray-100"></i>
 							</a>
-							<a href="{{ path('show.update.trick', {id: trick.id}) }}" class="mr-4 ">
+							<a href="{{ path('show.update.trick', {slug: trick.slug}) }}" class="mr-4 ">
 								<i class="far fa-edit fa-2x text-gray-400 hover:text-gray-100"></i>
 							</a>
 						</div>
 
 						<h1 class="mr-12 text-right text-7xl font-black font-snowtricks">{{ trick.title }}</h1>
 						<ul class="absolute right-0 mr-12 mt-2 flex text-lg justify-start">
-							<li class="badge badge-warning mr-2">Rotation</li>
-							<li class="badge badge-warning mr-2">grab</li>
+							<li class="badge badge-warning mr-2">{{ trick.category }}</li>
 						</ul>
 					</div>
 				</div>
@@ -59,6 +58,9 @@
 						</div>
 					</div>
 				</div>
+				<section>
+					{% include 'trick/commentaire.html.twig' %}
+				</section>
 			</main>
 	</div>
 <script type="text/javascript">

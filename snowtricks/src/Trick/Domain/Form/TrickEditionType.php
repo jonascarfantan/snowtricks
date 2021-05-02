@@ -6,6 +6,7 @@ use App\Trick\Domain\Entity\Trick;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\RadioType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -20,10 +21,12 @@ class  TrickEditionType extends AbstractType
         $builder
             ->add('title', TextType::class,
                 options: ['required' => true,])
-            ->add('slug', TextType::class,
+            ->add('category', TextType::class,
                 options: ['required' => true,])
             ->add('description', TextareaType::class,
                 options: ['required' => true,])
+//            ->add('img_banner', RadioType::class,
+//                options: ['required' => true, 'mapped' => false,])
             ->add('images', FileType::class,
                 options: [
                     'required' => true,

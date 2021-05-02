@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 final class Publish extends AbstractController {
     use Manager;
     
-    #[Route(path: '/tricks/{id}/publish', name: 'publish.draft.trick', methods: ['GET'])]
+    #[Route(path: '/tricks/{slug}/publish', name: 'publish.draft.trick', methods: ['GET'])]
     public function __invoke(
         Request $request,
         EntityManagerInterface $em,
