@@ -83,7 +83,6 @@
 
     async function getMessages(offset)
     {
-        document.getElementById('body').classList.add('cursor-wait');
         const url = 'http://snowtricks.local/tricks/' + '{{ trick.slug }}' + '/offset/'+ offset
 
 	    await fetch(url)

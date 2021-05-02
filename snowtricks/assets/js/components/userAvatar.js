@@ -1,9 +1,8 @@
 export class UserAvatar extends HTMLElement {
     constructor() {
         super()
-        // this.shadow = this.attachShadow({mode:'open'})
-        const fantome = this.attachShadow({mode: 'open'});
     }
+
     connectedCallback() {
         const circle = document.createElement('div');
         const avatar_url = this.getAttribute('url')
