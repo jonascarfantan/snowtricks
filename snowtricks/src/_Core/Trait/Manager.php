@@ -26,4 +26,6 @@ trait Manager {
         return str_replace(' ','-',strtolower($title)).'-v-'.(string)$version;
     }
     
+    
+    
 }

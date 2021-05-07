@@ -3,6 +3,7 @@
 namespace App\Auth\Domain\Form;
 
 use App\Auth\Domain\Dto\UpdatePasswordDto;
+use App\Auth\Domain\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
@@ -20,7 +21,7 @@ class ResetPasswordType extends AbstractType
                     'invalid_message' => 'Les mots de passe doivent être identique.',
                     'options' => ['attr' => ['class' => 'input-txt password-field']],
                     'required' => true,
-                    'first_options'  => ['label' => 'Mot de passe', 'attr' => ['class' => 'input-txt password-field','placeholder' => 'nouveau mot de passe']],
+                    'first_options'  => ['label' => 'Mot de passe', 'attr' => ['class' => 'input-txt password-field','placeholder' => 'mot de passe robuste']],
                     'second_options' => ['label' => 'Confirmation', 'attr' => ['class' => 'input-txt password-field','placeholder' => 'confirmer']],
                 ])
         ;
@@ -29,7 +30,7 @@ class ResetPasswordType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class'      => UpdatePasswordDto::class,
+            'data_class' => User::class,
             'csrf_protection' => true,
         ]);
     }
