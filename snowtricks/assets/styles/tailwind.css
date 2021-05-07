@@ -38,7 +38,7 @@
 }
 
 .submit_btn {
-	@apply h-8 px-2 rounded-md bg-gray-800 tracking-tight font-medium ring-indigo-300;
+	@apply h-8 px-2 rounded-md bg-gray-800 tracking-tight font-medium text-gray-50 ring-indigo-300;
 }
 
 .cancel_btn {

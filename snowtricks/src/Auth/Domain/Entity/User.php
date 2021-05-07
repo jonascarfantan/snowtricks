@@ -2,6 +2,7 @@
 
 namespace App\Auth\Domain\Entity;
 
+use App\Auth\Action\ForgotPassword;
 use App\Auth\Domain\Repository\UserRepository;
 use App\Chat\Domain\Entity\Message;
 use App\Media\Domain\Entity\Media;
@@ -46,7 +47,7 @@ class User implements UserInterface
         NotNull(message: 'Pseudo requis.')
     ]
     private string $username;
-
+    
     /**
      * @ORM\Column(type="string", length=255, unique=true)
      */
@@ -55,7 +56,22 @@ class User implements UserInterface
         NotNull(message: 'Adresse email requise.')
     ]
     private string $email;
-
+    
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private ?string $ForgotPasswordToken;
+    
+    /**
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
+    private ?\DateTimeImmutable $ForgotPasswordTokenRequestedAt;
+    
+    /**
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
+    private ?\DateTimeImmutable $ForgotPasswordTokenMustBeVerifiedBefore;
+    
     /**
      * @ORM\Column(type="string", length=255)
      */
@@ -197,4 +213,37 @@ class User implements UserInterface
         
         return $this;
 }
+
+//    PASSWORD RESET TOKEN
+    public function getForgotPasswordToken(): string {
+        return $this->ForgotPasswordToken;
+    }
+    
+    public function setForgotPasswordToken(string $ForgotPasswordToken): self {
+        $this->ForgotPasswordToken = $ForgotPasswordToken;
+        
+        return $this;
+    }
+    
+    public function getForgotPasswordTokenRequestedAt(): \DateTimeImmutable {
+        return $this->ForgotPasswordTokenRequestedAt;
+    }
+    
+    public function setForgotPasswordTokenRequestedAt(\DateTimeImmutable $ForgotPasswordTokenRequestedAt): self {
+        $this->ForgotPasswordTokenRequestedAt = $ForgotPasswordTokenRequestedAt;
+        
+        return $this;
+    }
+    
+    public function getForgotPasswordTokenMustBeVerifiedBefore(): \DateTimeImmutable {
+        return $this->ForgotPasswordTokenMustBeVerifiedBefore;
+    }
+    
+    public function setForgotPasswordTokenMustBeVerifiedBefore(\DateTimeImmutable $ForgotPasswordTokenMustBeVerifiedBefore): self {
+        $this->ForgotPasswordTokenMustBeVerifiedBefore = $ForgotPasswordTokenMustBeVerifiedBefore;
+        
+        return $this;
+    }
+    
+    
 }
