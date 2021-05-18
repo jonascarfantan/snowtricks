@@ -2,6 +2,7 @@
 
 namespace App\Trick\Action;
 
+use App\_Core\Trait\Manager;
 use App\Trick\Domain\Entity\Trick;
 use App\Trick\Domain\Repository\TrickRepository;
 use App\Trick\Domain\TricksManager;
@@ -11,7 +12,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-final class DeleteVersion extends AbstractController {
+final class DeleteVersion extends AbstractController
+{
+    use Manager;
     
     #[Route(path: '/tricks/{slug}/delete', name: 'delete.trick', methods: ['GET'])]
     public function __invoke(
@@ -19,7 +22,13 @@ final class DeleteVersion extends AbstractController {
         EntityManagerInterface $em,
         TrickRepository $trick_repository,
         Trick $version
-    ): Response {
+    ): Response
+    {
+        
+        if( ($redirect = $this->redirectUnauthenticated($request)) instanceof Response ) {
+            return $redirect;
+        }
+        
         $tricks_manager = new TricksManager([Trick::class], $em);
         $user = $this->getUser();
         if(($trick = $tricks_manager->remove($version, $user)) === $version) {

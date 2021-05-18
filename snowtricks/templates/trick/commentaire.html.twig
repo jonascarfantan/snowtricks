@@ -1,7 +1,7 @@
 {#DISPLAY MESSAGES #}
 <div class=" w-11/12 mb-6 mx-auto">
 	<h2 class="my-4 text-3xl font-bold tracking-wide">discussion</h2>
-	<div id="message-container" class="w-2/3 mx-auto flex flex-row flex-wrap">
+	<div id="message-container" class="md:w-2/3 mx-auto flex flex-row flex-wrap">
 
 	{#MESSAGE CARDS APPEAR HERE#}
 
@@ -25,7 +25,10 @@
 
 	</div>
 </div>
-{#FORM LEAVE MESSAGE#}
+{#FORM LEAVE A MESSAGE#}
+{% if not is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+	<p class="text-red-500 font-medium text-xl text-center">Vous devez être connecté pour publier un commentaire.</p>
+{% endif %}
 <form action="{{ path('comment.trick', {slug: trick.slug}) }}" method="post" name="sentComment" id="comment-form"
       class="w-full mx-auto text-lg">
 	<input id="csrf-token" type="hidden" name="token" value="{{ csrf_token('comment') }}"/>

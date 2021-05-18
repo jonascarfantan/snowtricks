@@ -45,6 +45,10 @@
 	@apply h-8 px-2 rounded-md text-gray-800 tracking-tight font-medium border-2 border-gray-800;
 }
 
+.common_btn {
+	@apply h-8 px-2 text-gray-50 rounded-md bg-indigo-900 tracking-tight font-medium border-2 ;
+}
+
 /* ELEMENTS */
 .badge {
 	@apply px-1 rounded-sm text-xs font-bold tracking-wide;

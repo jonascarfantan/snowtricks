@@ -13,7 +13,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-final class CloneBeforeUpdate extends AbstractController {
+final class CloneBeforeUpdate extends AbstractController
+{
     use Manager;
     
     #[Route(path: '/tricks/{slug}/update', name: 'show.update.trick', methods: ['GET'])]
@@ -24,6 +25,8 @@ final class CloneBeforeUpdate extends AbstractController {
         Trick $trick
     ): Response {
         if( ($redirect = $this->redirectUnauthenticated($request)) instanceof Response ) {
+            $request->getSession()->getFlashBag()
+                ->add('error','Vous devez être connecté pour effectuer cette action, rendez-vous sur la page de connexion.');
             return $redirect;
         }
         
