@@ -1,0 +1,151 @@
+{% extends 'layout/base.html.twig' %}
+{% block title %}{{ title }}{% endblock %}
+{% block head %}
+    <script src="https://cdn.tiny.cloud/1/gxt8mgcppsvtooif8gfa2v01p3y4wrupwb4r7ubgg10m803t/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+{% endblock %}
+{% form_theme form with ['form_themes/trick_edit.html.twig'] %}
+{% block body %}
+    <div class="md:mt-4 grid grid-cols-12 grid-rows-1">
+        <div x-data="manageForm()"
+             x-init="document.addEventListener('DOMContentLoaded', (event) => { prepareFormGroup(); });"
+             class="font-sans md:col-start-2 md:col-span-10 mx-auto lg:px-8">
+            {{ form_start(form,
+                {'attr': { 'class': '', 'novalidate': true }})
+            }}
+                {{ form_row(form.title,
+                    {
+                        'label': 'Titre :',
+                        'attr': {
+                            'placeholder': 'intitulé ',
+                            'class': 'input-txt'
+                    }})
+                }}
+                {{ form_row(form.category,
+                    {
+                        'label': 'Category :',
+                        'attr': {
+                            'placeholder': 'categorie de la figure',
+                            'class': 'input-txt'
+                    }})
+                }}
+                {{ form_row(form.description,
+                    {
+                        'label': 'Déscription :',
+                        'attr': {
+                            'placeholder': 'déscription',
+                            'class': 'input-txt'
+                    }})
+                }}
+            {{ form_row(form.images,
+                {
+                    'label': 'Téléverser vos images :',
+                    'attr': {
+                    'x-on:change': 'checkImage(event);',
+                    'class': 'input-txt'
+                }})
+            }}
+            {{ form_row(form.videos,
+                {
+                    'label': 'Partager des vidéos hébergés :',
+                    'attr': {
+                    'placeholder': '<iframe>',
+                    'class': 'input-txt'
+                }})
+            }}
+            <div class="my-6 mx-auto">
+                <button class="submit_btn text-green-50 ml-2 lg:ml-8" id="submit-btn" type="submit" name="submit">envoyer</button>
+            </div>
+            {{ form_end(form) }}
+        </div>
+{#        <div class="hidden lg:block col-start-11 col-span-2 row-start-1 row-span-2 bg-gray-300"></div>#}
+    </div>
+
+        {% endblock %}
+{% block javascripts %}
+    <script>
+        function manageForm() {
+                return {
+                    prepareFormGroup() {
+
+                        tinymce.init({
+                            selector: 'textarea',
+                            plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+                            toolbar_mode: 'floating',
+                        });
+
+                        const plus_icon = document.createElement('i');
+                        const broken_input = document.getElementById('trick_edition_videos');
+                        broken_input.remove();
+                        plus_icon.setAttribute('id','first-plus');
+                        plus_icon.setAttribute('class','fas fa-plus fa-2x ml-4');
+                        plus_icon.setAttribute('x-on:click','addVideoIframeInput()');
+                        const groups = document.querySelectorAll('.form-group');
+                        groups[0].classList.add('inline-block', 'w-full', 'md:w-11/12', 'lg:w-auto', 'ml-2'); // Title
+                        groups[1].classList.add('inline-block', 'w-full', 'md:w-11/12', 'lg:w-auto', 'ml-2'); // Slug
+                        groups[2].classList.add('inline-block', 'w-full', 'md:w-11/12', 'lg:w-full', 'ml-2'); // Description
+                        groups[3].classList.add('inline-block', 'w-full', 'md:w-11/12', 'lg:w-auto', 'ml-2'); // Upload images
+                        groups[4].classList.add('inline-block', 'w-full', 'md:w-11/12', 'lg:w-auto', 'ml-2'); // Iframe video
+                        const new_base_input = this.createVideoIframeInput();
+                        new_base_input.setAttribute('id','first-video-input')
+                        groups[4].insertAdjacentElement('beforeend', new_base_input); // Iframe video
+                        groups[4].insertAdjacentElement('beforeend', plus_icon); // Iframe video
+                        // button.classList.add('inline-block', 'ml-auto', 'lg:ml-8', 'bg-indigo-200'); // Button
+                    },
+                    addVideoIframeInput() {
+                        const video_input = document.getElementById('first-video-input');
+                        const new_video_input = this.createVideoIframeInput();
+                        video_input.insertAdjacentElement('afterend', new_video_input);
+                    },
+                    createVideoIframeInput() {
+                        const new_video_input = document.createElement('input');
+                        new_video_input.setAttribute('type', 'text');
+                        new_video_input.setAttribute('name', 'trick_edition[videos][]');
+                        new_video_input.setAttribute('class','input-txt ml-4');
+                        new_video_input.setAttribute('placeholder','<iframe>');
+
+                        return new_video_input;
+                    },
+                    checkImage(event) {
+                        const files = event.target.files;
+                        const lists = document.querySelectorAll('ul.listable')
+                        const list = lists[3];
+                        let li = document.createElement('li')
+                        li.setAttribute('class',"text-xl font-medium mb-2")
+                        li.innerText = "Choix de l'image principale :"
+                        list.insertAdjacentElement('beforeend', li)
+                        Array.from(files).forEach(file => {
+                            let li = this.createRadio(file)
+                            list.insertAdjacentElement('beforeend', li)
+                        })
+                    },
+                    createRadio(file) {
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                        <input type="radio" id="${file.name}" name="img_banner" value="${file.name}" checked>
+                        <label for="img_banner" class="text-lg font-medium ml-2">${file.name}</label>
+                        `;
+
+                        return li
+                    },
+                    createInput(files) {
+                        const form = document.getElementsByTagName('form')[0];
+                        const file_input = document.createElement('input');
+                        file_input.setAttribute('type',files[0].type);
+                        file_input.setAttribute('class','input-uploaded');
+                        file_input.setAttribute('value', files[0].name);
+                        file_input.setAttribute('name', 'trick_edition[images][]');
+                        form.appendChild(file_input);
+                    },
+                    uniqueInputFileName() {
+                        const inputs = document.getElementsByClassName('input-uploaded');
+                        if (inputs.length > 0) {
+                            return inputs.length + 1;
+                        } else {
+                            return 0;
+                        }
+                    },
+                }
+        }
+        window.manageForm = manageForm;
+    </script>
+{% endblock %}

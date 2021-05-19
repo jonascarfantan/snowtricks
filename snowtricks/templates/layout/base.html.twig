@@ -1,12 +1,23 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
+        <title>{% block title %}{{ title }}{% endblock %}</title>
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('tailwind') }}
+        {% endblock %}
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+        {% endblock %}
+        {% block head '' %}
     </head>
-    <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.0/dist/alpine.min.js" defer></script>
+    <script src="https://kit.fontawesome.com/898f10838d.js" crossorigin="anonymous"></script>
+    <body class="flex flex-col min-h-screen body" id="body">
+    {% include 'layout/header.html.twig' %}
+        <div class="flex-grow">{% block body %}{% endblock %}</div>
+    {% include 'layout/partials/flash_messages.html.twig' %}
+    {% include 'layout/footer.html.twig' %}
+
     </body>
 </html>

@@ -1,5 +1,6 @@
 # IDE
 /.idea
+
 # Infra
 /infra/.env
 /infra/logs/*
@@ -9,9 +10,18 @@
 /snowtricks/var/cache/*
 /snowtricks/var/log/*
 !snowtricks/var/log/.gitkeep
+
 # env
 /snowtricks/.env
 /snowtricks/.env.test
+
 #vendor node_module
 /snowtricks/vendor/*
 /snowtricks/node_modules/*
+#bin
+/snowtricks/bin/.phpunit
+/snowtricks/bin/phpunit
+
+# webpack
+/snowtricks/public/build/*
+!snowtricks/public/build/.gitkeep

@@ -1,0 +1,131 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block body %}
+	<style xmlns:x-transition="http://www.w3.org/1999/xhtml">
+		.example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+		.example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+	</style>
+	<main x-data="interact()" x-init="init()" class="grid grid-rows-col grid-cols-12">
+		<section class="col-span-12">
+			<div id="banner" class="w-full show-img-banner relative z-0">
+				<a href="#trick-card-container" class="bottom-0 absolute right-0 mr-6 mb-6">
+					<i class="fas fa-3x fa-arrow-down  animate-bounce text-white"></i>
+				</a>
+			</div>
+		</section>
+		<section class="col-start-2 col-span-10 mt-8 mx-auto">
+			<div class="mb-8 md:pl-36">
+				<h1 class="text-8xl lg:text-9xl font-snowtricks italic text-indigo-900 font-black tracking-tight z-50">LES TRICKS</h1>
+				<div class="py-4">
+					<p>Ces figures sont publiés par la communotée, si vous voyez une correction à apporter<br> connectez-vous et contribuez au partage de connaissance !<br><br></p>
+					<a href="/tricks/create" class="submit_btn text-green-100 text-center py-2 px-4">Ajouter un trick</a>
+				</div>
+			</div>
+			<div class="mt-8 md:pl-24 relative">
+				<div id="trick-card-container" class="flex flex-wrap content-start justify-start mt-8">
+				{# Tricks appear here ! #}
+				</div>
+				<a href="#banner" class="bottom-0 right-0 mr-6 mb-6 md:absolute">
+					<i class="fas fa-3x fa-arrow-up float-right md:float-none  animate-bounce"></i>
+				</a>
+			</div>
+		</section>
+	</main>
+
+		<script>
+			const container = document.getElementById('trick-card-container');
+			const loader = document.getElementById('loader');
+			let target;
+            let nbSteps = 4.0;
+            let prevRatio = 0.0;
+            window.nb_iteration = 0;
+            window.tricks = [];
+
+            function interact()
+            {
+                return {
+                    'visible': true,
+
+	                init() {
+						fetchTricks();
+	                },
+                }
+            }
+
+            window.addEventListener("load", function(event) {
+                createObserver();
+            }, false);
+
+            function createObserver() {
+                let options = {
+                    root: null,
+                    rootMargin: "0px",
+                    threshold: 0.01
+                };
+
+                window.observer = new IntersectionObserver(handleIntersect, options);
+                window.observer.observe(container);
+            }
+
+            function handleIntersect(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.intersectionRatio > prevRatio) {
+                        fetchTricks();
+                    }
+                    prevRatio = entry.intersectionRatio;
+                });
+            }
+
+            function fetchTricks() {
+                document.getElementById('body').classList.add('cursor-wait');
+
+                fetch('http://snowtricks.local/feed/' + window.nb_iteration + '/tricks')
+                    .then(response => response.json())
+                    .then(function(data) {
+	                    let to_display = data.tricks.filter(function (trick) {
+	                        if ( !window.tricks.includes(JSON.stringify(trick)) ) {
+                                window.tricks.push(JSON.stringify(trick));
+
+                                return true;
+	                        }
+	                    });
+
+	                    let old_last_child = container.lastElementChild;
+	                    window.observer.unobserve(old_last_child ? old_last_child : container);
+                        to_display.map((x) => displayTrick(x, container));
+
+                        let last_child = container.lastElementChild;
+                        window.observer.observe(last_child);
+                        document.getElementById('body').classList.remove('cursor-wait');
+                        window.nb_iteration ++;
+                    })
+            }
+
+            function displayTrick(current_trick, container) {
+                const slug = current_trick.slug;
+                const div = document.createElement('div');
+
+                div.setAttribute('class','trick-card flex-none  mx-4 md:mx-8 mb-8 rounded-t-md h-52 w-96 md:w-72 shadow-sm '+
+                    'transition duration-200 ease-out bg-gray-50 hover:bg-gray-200 hover:shadow-xl transform hover:-translate-y-1 hover:scale-110 hover:rotate-1');
+                div.innerHTML = '<div id="card-img-container" class="tricks_img rounded-t-md h-40 w-96 md:w-72"' +
+                    'style="background-image:url(' + current_trick.preview_path + ')">' +
+                    '</div>'+
+                    '<div class="flex justify-between pt-2 px-2">'+
+	                    '<a href="tricks/'+ slug +'">' +
+	                        '<h3 class="mx-2 text-xl font-medium font-mono">' + current_trick.title + '</h3>'+
+	                    '</a>' +
+	                    '<div>' +
+	                    '<a href="tricks/'+ slug +'/delete" class="" data-a="'+ slug +'">' +
+	                        '<i class="far fa-1x fa-trash-alt mt-2 mr-4 text-gray-300 hover:text-gray-400"></i>' +
+	                    '</a>' +
+                        '<a href="tricks/'+ slug +'/update" class="" data-a="'+ slug +'">' +
+                            '<i id="edit-ico-'+ slug + ' "' +
+                            'class="far fa-edit fa-1x float-right mt-2 mr-2 text-gray-300 hover:text-gray-400" data-i="'+ slug +'"></i>' +
+                        '</a>' +
+	                    '</div>' +
+                    '</div>';
+                container = document.getElementById('trick-card-container');
+                container.appendChild(div)
+            }
+		</script>
+{% endblock %}

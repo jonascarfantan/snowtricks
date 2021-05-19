@@ -14,6 +14,15 @@ Encore
     // only needed for CDN's or sub-directory deploy
     //.setManifestKeyPrefix('build/')
 
+    .copyFiles({
+        from: './assets/images',
+        // optional target path, relative to the output dir
+        to: 'images/[path][name].[ext]',
+        // if versioning is enabled, add the file hash too
+        //to: 'images/[path][name].[hash:8].[ext]',
+        // only copy files matching this pattern
+        //pattern: /\.(png|jpg|jpeg)$/
+    })
     /*
      * ENTRY CONFIG
      *
@@ -21,6 +30,8 @@ Encore
      * and one CSS file (e.g. app.css) if your JavaScript imports CSS.
      */
     .addEntry('app', './assets/app.js')
+    .addStyleEntry('tailwind', './assets/styles/tailwind.css')
+    // .addEntry('tailwind','./assets/styles/tailwind.css')
 
     // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
     .enableStimulusBridge('./assets/controllers.json')
@@ -40,6 +51,14 @@ Encore
      * https://symfony.com/doc/current/frontend.html#adding-more-features
      */
     .cleanupOutputBeforeBuild()
+    .enablePostCssLoader()
+    // Not working for the moment
+    // .enablePostCssLoader(function(options) {
+    //     options.config = {
+    //         path: 'postcss.config.js'
+    //     }
+    // })
+
     .enableBuildNotifications()
     .enableSourceMaps(!Encore.isProduction())
     // enables hashed filenames (e.g. app.abc123.css)

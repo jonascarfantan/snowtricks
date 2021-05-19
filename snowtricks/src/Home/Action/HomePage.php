@@ -2,16 +2,18 @@
 
 namespace App\Home\Action;
 
-use App\_Core\Action\ActionInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
-class HomePage extends AbstractController implements ActionInterface {
-
-    public function __invoke(): Response {
-        return $this->render('base/index.html.twig', [
-            'action_name' => 'HomePage',
+final class HomePage extends AbstractController {
+    
+    #[Route(path: '/', name: 'home', methods: ['GET'])]
+    public function __invoke(Request $request, EntityManagerInterface $em): Response {
+        return $this->render('public/index.html.twig', [
+            'title' => 'Snowtricks - Communoté de Free Rider',
         ]);
     }
 }

@@ -1,0 +1,17 @@
+{% for type, messages in app.flashes %}
+	{% for message in messages %}
+		<message-flash type="{{ type }}">{{ message }}</message-flash>
+	{% endfor %}
+{% endfor %}
+{% block javascripts %}
+	<script type="text/javascript">
+        function flash() {
+            return {
+                show: true,
+                colors: ['#2196F3', '#009688', '#9c27b0', '#e9cd18', '#afbbc9', '#4CAF50', '#2d3748', '#f56565', '#ed64a6'],
+                colorSelected: '#2196F3'
+            }
+        }
+	</script>
+{% endblock %}
+

@@ -1,0 +1,33 @@
+<footer class="footer col-span-12 w-full bg-gray-200 relative pt-1 border-b-2 border-blue-700 z-0">
+	<div class="container mx-auto px-6">
+
+		<div class="md:flex md:mt-8 ">
+			<div class="mt-8 md:mt-0 md:w-full md:px-8 flex flex-col md:flex-row justify-around">
+				<div class="flex flex-col">
+					<span class="font-bold text-gray-700 uppercase mb-2">Tricks</span>
+					<span class="my-2"><a href="/" class="text-blue-700  text-md hover:text-blue-500">Tricks</a></span>
+					<span class="my-2"><a href="/" class="text-blue-700  text-md hover:text-blue-500">Acceuil</a></span>
+					<span class="my-2"><a href="/" class="text-blue-700  text-md hover:text-blue-500">Sponsor</a></span>
+				</div>
+				<div class="flex flex-col">
+					<span class="font-bold text-gray-700 uppercase mt-4 md:mt-0 mb-2">Utilisateur</span>
+					{% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+						<span class="my-2"><a href="/register" class="text-blue-700  text-md hover:text-blue-500">inscription</a></span>
+						<span class="my-2"><a href="/login" class="text-blue-700  text-md hover:text-blue-500">connexion</a></span>
+					{% endif %}
+					<span class="my-2"><a href="/password/update" class="text-blue-700  text-md hover:text-blue-500">modifier le mot de passe</a></span>
+					<span class="my-2"><a href="/password/forgot" class="text-blue-700  text-md hover:text-blue-500">mot de passe oublié</a></span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container mx-auto px-6">
+		<div class="mt-16 border-t-2 border-gray-300 flex flex-col items-center">
+			<div class="md:2/3 text-center py-6">
+				<p class="text-sm text-blue-700 font-bold mb-2">
+					SNOWTRICKS © 2020 by Jimmy Sweat, developed with Jonas Carfantan
+				</p>
+			</div>
+		</div>
+	</div>
+</footer>

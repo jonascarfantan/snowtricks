@@ -1,0 +1,405 @@
+{% extends 'layout/base.html.twig' %}
+{% block title %}{{ title }}{% endblock %}
+{#{% block head %}#}
+{#	<script src="https://cdn.tiny.cloud/1/gxt8mgcppsvtooif8gfa2v01p3y4wrupwb4r7ubgg10m803t/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>#}
+{#{% endblock %}#}
+{% block body %}
+	<div class="grid grid-cols-12 grid-rows-2">
+		{% include 'trick/aside_show.html.twig' %}
+		<div class="row-span-2 col-start-1 col-span-12 md:col-span-10">
+			<header class="">
+				<input id="csrf-token" type="hidden" name="token" value="{{ csrf_token('update_part') }}"/>
+				<div alt="Snowboard trick" class="banner bg-no-repeat bg-cover mx-auto" style="height:600px;background-image:url({{ trick.preview_path }}); background-position: 0% 40%;">
+					<div class="w-full pt-56 relative">
+						<div class="absolute right-0 top-0 mt-4">
+							<a href="{{ path('delete.trick', {slug: trick.slug}) }}" class="mr-4">
+								<button class="submit_btn text-red-400 hover:text-red-100">Supprimer le brouillon</button>
+							</a>
+							<a href="{{ path('publish.draft.trick', {slug: trick.slug}) }}" class="mr-4 ">
+								<button class="submit_btn text-green-400 hover:text-green-100">Publier !</button>
+							</a>
+						</div>
+						<h1 id="title" class="mr-12 text-right text-7xl font-black font-snowtricks">{{ trick.title }}</h1>
+						<ul class="absolute right-0 mr-12 mt-2 flex text-lg justify-start">
+							<li id="category" class="badge badge-warning mr-2">{{ trick.category }}</li>
+						</ul>
+					</div>
+				</div>
+			</header>
+			<main class="grid grid-flow-row">
+				<div class=" w-11/12 mb-6 mx-auto">
+					<h2 class="mt-6 mb-4 text-3xl font-bold tracking-wide">Description</h2>
+						<div id="description" class="mx-6 text-justify ">
+							{% autoescape false %}
+								{{ trick.description }}
+							{%  endautoescape %}
+						</div>
+				</div>
+					<div class="flex flex-wrap w-11/12 md:grid md:grid-cols-2 mx-auto gap-3 md:gap-4">
+						<div>
+							<h2 class="mt-4 mb-2 text-3xl font-bold tracking-wide">images</h2>
+							<h4 class="mb-4 text-lg font-medium">Cliquer sur l'image à mettre en banière.</h4>
+							<div id="img-wrapper" class="w-full flex flex-wrap justify-items-start">
+								{% for img in trick.img %}
+									<div id="container-{{ img.id }}" class="img-container media-img grid grid-row-2">
+										<div class="removable w-10/12 align-items-end cursor-pointer pl-2" ><i id="{{ img.id }}" class="fas fa-times outline-none"></i></div>
+										<div id="{{ img.id }}" style="background-image: url({{ img.path }});" class="tricks_img bg-contain rounded-md mr-6 mb-6 w-48 h-40"></div>
+									</div>
+								{% endfor %}
+								<div id="uploader-btn" class="media-img grid grid-row-2">
+									<div class="removable w-10/12 align-items-end font-medium pl-2" >ajouter une image</div>
+									<div class="bg-gray-100 border-gray-700 rounded-md mr-6 mb-6 w-48 h-40 pt-11 pl-14">
+										<i class="fas fa-plus-circle fa-4x text-gray-500 hover:text-gray-800"></i>
+									</div>
+								</div>
+								<ul class="listable">
+								{# Banner img input radio hapend here#}
+								</ul>
+							</div>
+						</div>
+						<div>
+							<h2 class="my-4 text-3xl font-bold tracking-wide">vidéos</h2>
+							<div id="iframe-wrapper" class="w-full flex flex-wrap justify-items-start">
+								{% for mov in trick.mov %}
+									<div id="container-{{ mov.id }}" class="iframe-container media-mov mr-6 mb-6">
+										<div id="{{ mov.id }}" class="removable w-10/12 align-items-end cursor-pointer pl-2"><i class="fas fa-times outline-none"></i></div>
+										{{ mov.iframe|raw }}
+									</div>
+								{% endfor %}
+								<label id="iframe-label justify-self-center" for="iframe">
+									<span class="block" >Ajouter une vidéo :</span>
+									<input id="iframe-input" type="text" name="iframe" class="block input-txt" placeholder="<iframe>"/>
+								</label>
+							</div>
+						</div>
+					</div>
+			</main>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', () => {
+            // TITLE
+            const title_target = document.getElementById('title')
+            setInputable(title_target, 'title',  'text', '{{ trick.title }}')
+	        // CATEGORY
+	        const category_target = document.getElementById('category')
+            setInputable(category_target, 'category',  'text', '{{ trick.category }}')
+	        // DESCRIPTION
+            const description_target = document.getElementById('description')
+            setInputable(description_target, 'description', 'wysiwyg')
+
+	        // MOVIE IFRAME
+            const iframe_input = document.getElementById('iframe-input')
+	        iframe_input.addEventListener('change', (event) => {
+                event.target.setAttribute('value', event.target.value)
+            }, true)
+			iframe_input.addEventListener('focusout', () => {
+			    const value = iframe_input.getAttribute('value')
+                const regex = new RegExp('<iframe*', 'g');
+                if(regex.test(value)) {
+			        send()
+			    } else {
+				const msg_flash = document.createElement('message-flash')
+	                msg_flash.innerText = 'Le texte inséré ne représente pas un format de vidéo correct.'
+                }
+            }, true)
+
+			// CHOOSE BANNER IMAGE BY CLIKING ON IT
+	        let div_img = document.querySelectorAll('div.tricks_img')
+			div_img.forEach(img => {
+                addChooseBannerListener(img)
+            })
+
+            // IMAGE UPLOAD
+	        const img_uploader_btn = document.getElementById('uploader-btn')
+	        img_uploader_btn.addEventListener('click', (e) => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.onchange = e => {
+					uploadImage(e.target)
+                }
+                input.click();
+	        }, true)
+	        removableMedia()
+        });
+
+        function addChooseBannerListener(img) {
+            img.addEventListener('click', () => {
+                const img_id = img.getAttribute('id')
+                const url = "{{ path('update.trick.json', {slug: trick.slug}) }}"
+                const data = {
+                    name: ('is_banner'),
+                    value: (img_id),
+                    token: (getToken()),
+                }
+                fetch(url, {
+                    method: 'PATCH',
+                    body: JSON.stringify(data),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(res => res.json())
+                    .then(response => {
+                        if(response.datatype == 'is_banner' && response.code == 200) {
+                            if(response.data.src) {
+                                swapBanner(response.data.src)
+                            }
+                        }
+                    })
+                    .catch(error => console.error('Error:', error))
+            }, false)
+        }
+
+        function swapBanner(src) {
+            const banner = document.querySelector('div.banner')
+	        banner.setAttribute('style','height:600px;background-image:url('+src+'); background-position: 0% 40%;')
+        }
+
+        // ADD VIDEO
+        function handleAddIframe() {
+            const iframe_input = document.getElementById('iframe-input')
+            iframe_input.addEventListener('focusout', () => {
+                send()
+            }, true)
+        }
+
+        function uploadImage(target) {
+            const file = target.files[0];
+            const formData = new FormData()
+            formData.append('file', file)
+            formData.append('trick', "{{ trick.id }}")
+            formData.append('token', getToken())
+            var url = "{{ url('media.upload.json', {id: trick.id}) }}"
+
+            fetch(url, {
+                method: 'POST',
+                body: formData,
+            }).then(res => res.json())
+                .then(response => {
+                    addUploaded(response.data)
+                })
+                .catch(error => console.error('Error:', error))
+        }
+
+        function getToken() {
+            return document.getElementById('csrf-token').getAttribute('value')
+        }
+
+		function addUploaded(image) {
+		    const uploader_btn = document.getElementById('uploader-btn')
+			const img_container = document.createElement('div')
+			img_container.setAttribute('id','container-'+image.id)
+			img_container.setAttribute('class','img-container media-img grid grid-row-2')
+			img_container.innerHTML =
+				`<div class="removable w-10/12 align-items-end cursor-pointer pl-2" ><i class="fas fa-times outline-none"></i></div><div id="${image.id}" style="background-image: url(${image.path});" class="tricks_img bg-contain rounded-md mr-6 mb-6 w-48 h-40"></div>`;
+			uploader_btn.insertAdjacentElement('beforebegin', img_container)
+			removableMedia()
+            let img = document.getElementById(image.id)
+			addChooseBannerListener(img)
+        }
+
+        function addIframe(iframe) {
+            const iframe_label = document.getElementById('iframe-label')
+            const img_container = document.createElement('div')
+            img_container.setAttribute('id','container-'+iframe.id)
+            img_container.setAttribute('class','iframe-container media-mov mr-6 mb-6')
+            img_container.innerHTML =
+                '<div id="'+iframe.id+'" class="removable w-10/12 align-items-end cursor-pointer pl-2" ><i class="fas fa-times outline-none"></i></div>'+
+                iframe.iframe
+            iframe_label.insertAdjacentElement('beforebegin', img_container)
+            removableMedia()
+        }
+
+		function removableMedia() {
+            const remove_img = document.querySelectorAll('.removable')
+			remove_img.forEach((icon) => {
+			    icon.addEventListener('click', (e) => {
+				    const unknown_target = e.target
+				    if(unknown_target.getAttribute('id') === null) {
+				        var target = unknown_target.parentElement
+				    } else {
+				        var target = unknown_target
+				    }
+                    const media_id = target.getAttribute('id')
+                    removeMedia(media_id, 'img')
+
+                }, true)
+			})
+		}
+
+		function removeMedia(media_id, media_type) {
+            const url = "{{ url('home') }}medias/"+ media_id
+            const data = {
+                type: (media_type),
+                trick_id: ({{ trick.id }}),
+                token: (getToken()),
+            }
+
+            fetch(url, {
+                method: 'DELETE',
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+
+            }).then(res => res.json())
+                .then(response => {
+	                if(response.code === 200) {
+	                    const deleted_item = document.getElementById('container-'+response.media_id)
+		                deleted_item.remove()
+	                }
+                })
+                .catch(error => console.error('Error:', error))
+		}
+
+		function setInputable(element, name, type, value = null)
+		{
+		    if(type === 'text') {
+                element.addEventListener('click', () => {replaceByInput(name, value)}, true)
+                element.addEventListener('focusout', () => {
+                    send()
+                }, true)
+		    } else if (type === 'wysiwyg') {
+                element.addEventListener('click', () => {
+                    replaceByWysiwig()
+                }, true)
+		    }
+
+		}
+
+		const replaceByInput = function (name, value)
+		{
+			if(document.getElementById('ephemeral-input')) {
+			    return;
+            }
+			const target = document.getElementById(name)
+            const input = document.createElement('input')
+            input.setAttribute('type', 'text')
+            input.setAttribute('style', '-webkit-appearance: none; box-shadow: none; outline: none; background-color: transparent !important;')
+            input.setAttribute('class', 'text-right font-black')
+            input.setAttribute('id', 'ephemeral-input')
+            input.setAttribute('name', name)
+            input.setAttribute('value', value)
+            target.innerHTML = ''
+            target.insertAdjacentElement('beforeend', input)
+			input.focus()
+            input.addEventListener('change', (event) => {
+                event.target.setAttribute('value', event.target.value)
+            }, true)
+		}
+
+		function replaceByWysiwig()
+		{
+		    const textarea = document.querySelector('textarea')
+			if (textarea) {
+                return
+            }
+            const description = document.getElementById('description')
+            description.removeEventListener('click', () => {}, )
+            const input = document.createElement('textarea')
+            input.setAttribute('type', 'textarea')
+            input.setAttribute('style', '-webkit-appearance: none; box-shadow: none; outline: none; background-color: transparent !important;')
+            input.setAttribute('id', 'ephemeral-input')
+            input.setAttribute('name', 'description')
+            description.innerHTML = ''
+            description.insertAdjacentElement('beforeend', input)
+            setUpTinyMce()
+
+        }
+		// LOAD DESCRIPTION FROM API & SET EVENT LISTENER
+		async function setUpTinyMce()
+		{
+		    let trick_id = {{ trick.id }}
+			await tinymce.init({
+                forced_root_block : "",
+                selector: 'textarea',
+                plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+                toolbar_mode: 'floating',
+            });
+			const ephemeral_input = document.getElementById('ephemeral-input')
+			const input_name = ephemeral_input.getAttribute('name')
+			const url = "/tricks/"+trick_id+"/"+input_name
+
+			// Retrieve the description of the tricks
+            fetch(url, {
+                method: 'GET',
+	            headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => res.json())
+                .then(response => {
+                    const tiny = tinymce.get('ephemeral-input')
+                    tiny.setContent(response.data);
+                })
+                .catch(error => console.error('Error:', error))
+
+			// Add send button
+			const submit = document.getElementById('submit-change')
+			if (submit) {
+				return;
+            }
+                const button = document.createElement('button')
+                const container = document.getElementById('description')
+                button.setAttribute('class','submit_btn mt-4 ml-2 lg:ml-8')
+                button.setAttribute('id','submit-change')
+                button.innerHTML = `Enregistrer`
+                container.insertAdjacentElement('afterend', button)
+
+                // Send Updated content
+                button.addEventListener('click', () => {
+                    send(tinymce.get('ephemeral-input').getContent())
+                }, true)
+		}
+
+        function send(wysiwyg_value)
+        {
+            const url = "{{ path('update.trick.json', {slug: trick.slug}) }}"
+            const ephemeral_input = (document.getElementById('ephemeral-input') ?? document.getElementById('iframe-input'))
+            const data = {
+                name: (ephemeral_input.getAttribute('name')),
+                value: (wysiwyg_value ?? ephemeral_input.getAttribute('value')),
+                token: (getToken()),
+            }
+            fetch(url, {
+                method: 'PATCH',
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => res.json())
+	            .then(response => {
+	                if(response.datatype == 'iframe' && response.code == 200) {
+						addIframe(response.data)
+	                }
+	                 reset(response.data, response.datatype)
+	                })
+	            .catch(error => console.error('Error:', error))
+        }
+
+		//Reset as initial state
+		function reset(data, datatype)
+		{
+            const input = (document.getElementById('ephemeral-input') ?? document.getElementById('iframe-input'))
+            if(datatype === 'title' || datatype === 'category') {
+			    const container = input.parentElement
+                container.innerHTML = data
+		    } else if (datatype === 'description') {
+		        //TODO handle wysiwyg cleaning
+		    } else if (datatype === 'iframe') {
+		        input.setAttribute('value','')
+		    }
+		}
+		// TODO handle clean wysiwig in reset
+        function cleanContainer(target)
+        {
+            const name = target.getAttribute('name')
+            const value = target.getAttribute('value')
+            const parent = target.parentElement
+            const clean_container = parent.cloneNode()
+            parent.insertAdjacentElement('beforeend', clean_container)
+            target.remove()
+            clean_container.addEventListener('click', () => {replaceByInput(name, value)}, true)
+        }
+	</script>
+{% endblock %}
