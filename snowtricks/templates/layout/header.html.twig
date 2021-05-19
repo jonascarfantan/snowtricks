@@ -45,14 +45,11 @@
                 <li class="md:mr-8 mb-4 relative" id="auth-toggle">
                     {% if user %}
                         <user-avatar username="{{ user.username }}" url="{{ user.avatar ? user.avatar.path : null }}"></user-avatar>
+                        <a href="{{ path('logout') }}" class="block py-2"><i class="fas fa-2x fa-sign-out-alt mt-2"></i></a>
                         <div id="auth-dropdown" class="absolute z-50 top-0 right-0 -mr-8 mt-12 w-80" hidden>
                             <ul class="bg-white font-medium text-center">
                                 <li class="">
-                                    <a href="{{ path('logout') }}" class="block py-2">mon compte</a>
-                                    <hr class="block h-1 bg-gray-300">
-                                </li>
-                                <li class="">
-                                    <a href="{{ path('logout') }}" class="block py-2">déconnexion</a>
+                                    <a href="{{ path('logout') }}" class="block py-2"><i class="fas fa-2x fa-sign-out-alt"></i></a>
                                     <hr class="block h-1 bg-gray-400">
                                 </li>
                             </ul>
@@ -65,18 +62,4 @@
     <!--END NAV MENU -->
 </header>
 {% block javascripts %}
-    <script type="text/javascript">
-        // Add event on avatar circle if user is connected
-        {% if user %}
-        const user_avatar = document.querySelector('user-avatar')
-        user_avatar.addEventListener('click', () => {
-            toggleAuthDropdown()
-        })
-        function toggleAuthDropdown() {
-            const auth_toggle = document.getElementById('auth-dropdown')
-
-            auth_toggle.toggleAttribute('hidden')
-        }
-        {% endif %}
-    </script>
 {% endblock %}

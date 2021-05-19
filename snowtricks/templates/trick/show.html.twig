@@ -1,69 +1,92 @@
 {% extends 'layout/base.html.twig' %}
 {% block title %}{{ title }}{% endblock %}
 {% block body %}
-	<div class="grid grid-cols-12 grid-rows-2">
-		{% include 'trick/aside_show.html.twig' %}
-		<div class="row-span-2 col-start-1 col-span-12 md:col-span-10">
-			<header class="">
-				<div alt="Snowboard trick" class="bg-no-repeat bg-cover mx-auto" style="height:600px;background-image:url({{ trick.preview_path }}); background-position: 0% 40%;">
-					<div class="w-full pt-56 relative">
-						<div class="absolute right-0 top-0 mt-4">
-							<a href="{{ path('delete.trick', {slug: trick.slug}) }}" class="mr-4">
-								<i class="far fa-2x fa-trash-alt text-gray-400 hover:text-gray-100"></i>
-							</a>
-							<a href="{{ path('show.update.trick', {slug: trick.slug}) }}" class="mr-4 ">
-								<i class="far fa-edit fa-2x text-gray-400 hover:text-gray-100"></i>
-							</a>
-						</div>
 
-						<h1 class="mr-12 text-right text-7xl font-black font-snowtricks">{{ trick.title }}</h1>
-						<ul class="absolute right-0 mr-12 mt-2 flex text-lg justify-start">
-							<li class="badge badge-warning mr-2">{{ trick.category }}</li>
-						</ul>
+<div class="grid grid-cols-12 grid-rows-2">
+	{% include 'trick/aside_show.html.twig' %}
+	<div class="row-span-2 col-start-1 col-span-12 md:col-span-10">
+		<header class="">
+			<div alt="Snowboard trick" class="bg-no-repeat bg-cover mx-auto" style="height:600px;background-image:url({{ trick.preview_path }}); background-position: 0% 40%;">
+				<div class="w-full pt-56 relative">
+					<div class="absolute right-0 top-0 mt-4">
+						<a href="{{ path('delete.trick', {slug: trick.slug}) }}" class="mr-4">
+							<i class="far fa-2x fa-trash-alt text-gray-400 hover:text-gray-100"></i>
+						</a>
+						<a href="{{ path('show.update.trick', {slug: trick.slug}) }}" class="mr-4 ">
+							<i class="far fa-edit fa-2x text-gray-400 hover:text-gray-100"></i>
+						</a>
 					</div>
+
+					<h1 class="mr-12 text-right text-7xl font-black font-snowtricks">{{ trick.title }}</h1>
+					<ul class="absolute right-0 mr-12 mt-2 flex text-lg justify-start">
+						<li class="badge badge-warning mr-2">{{ trick.category }}</li>
+					</ul>
 				</div>
-			</header>
-			<main class="grid grid-flow-row">
-				<div class=" w-11/12 mb-6 mx-auto">
-					<h2 class="mt-6 mb-4 text-3xl font-bold tracking-wide">Description</h2>
-					<div class="">
-						<p class="mx-6 text-justify ">
-							{% autoescape false %}
-								{{ trick.description }}
-							{%  endautoescape %}
-						</p>
-					</div>
-				</div>
-				<div>
-					<div class="flex flex-wrap w-11/12 md:grid md:grid-cols-2 mx-auto md:gap-4">
-						<div class="class">
-							<h2 class="my-4 text-3xl font-bold tracking-wide">images</h2>
-							<div class="w-full flex flex-wrap justify-items-start ">
-								{% for img in trick.img %}
-									<div class="media-img">
-										<div style="background-image: url({{ img.path }});" class="tricks_img bg-contain rounded-md mr-6 mb-6 w-48 h-40"></div>
-									</div>
-								{% endfor %}
-							</div>
+			</div>
+		</header>
+		<main class="grid grid-flow-row">
+
+			<div class="mx-auto mt-2">
+				<button id="toggle-media-btn" class="submit_btn text-gray-50 hover:text-indigo-400 mt-6">
+					Voir contenu associé
+				</button>
+			</div>
+
+			<div id="medias" class="hidden">
+				<div class="flex flex-wrap w-11/12 md:grid md:grid-cols-2 mx-auto md:gap-4">
+					<div class="class">
+						<h2 class="my-4 text-3xl font-bold tracking-wide">images</h2>
+						<div class="w-full flex flex-wrap justify-items-start ">
+							{% for img in trick.img %}
+								<div class="media-img">
+									<div style="background-image: url({{ img.path }});" class="tricks_img bg-contain rounded-md mr-6 mb-6 w-48 h-40"></div>
+								</div>
+							{% endfor %}
 						</div>
-						<div class="class">
-							<h2 class="my-4 text-3xl font-bold tracking-wide">vidéos</h2>
-							<div class="w-full flex flex-wrap justify-items-start">
-								{% for mov in trick.mov %}
-									<div class="media-mov mr-6 mb-6">
-										{{ mov.iframe|raw }}
-									</div>
-								{% endfor %}
-							</div>
+					</div>
+					<div class="class">
+						<h2 class="my-4 text-3xl font-bold tracking-wide">vidéos</h2>
+						<div class="w-full flex flex-wrap justify-items-start">
+							{% for mov in trick.mov %}
+								<div class="media-mov mr-6 mb-6">
+									{{ mov.iframe|raw }}
+								</div>
+							{% endfor %}
 						</div>
 					</div>
 				</div>
-				<section>
-					{% include 'trick/commentaire.html.twig' %}
-				</section>
-			</main>
+			</div>
+
+			<div class=" w-11/12 mb-6 mx-auto">
+				<h2 class="mt-6 mb-4 text-3xl font-bold tracking-wide">Description</h2>
+				<div class="">
+					<p class="mx-6 text-justify ">
+						{% autoescape false %}
+							{{ trick.description }}
+						{%  endautoescape %}
+					</p>
+				</div>
+			</div>
+
+			<section>
+				{% include 'trick/commentaire.html.twig' %}
+			</section>
+		</main>
 	</div>
 <script type="text/javascript">
 
+	document.addEventListener('DOMContentLoaded', () => {
+
+        const toggle_btn = document.querySelector('#toggle-media-btn')
+        toggle_btn.addEventListener('click', () => {
+            const medias = document.querySelector('#medias')
+            if(medias.style.display === 'none') {
+                medias.style.display = 'block'
+            } else {
+                medias.style.display = "none"
+            }
+        })
+
+	})
 </script>
 {% endblock %}

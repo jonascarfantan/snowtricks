@@ -77,6 +77,18 @@ class TricksFixtures extends Fixture implements DependentFixtureInterface
             '<iframe src="https://www.youtube.com/embed/yK5GFfqeYfU" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
             '<iframe src="https://www.youtube.com/embed/h0UtyOX9p90" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
         ];
+        
+        $trick_description = [
+            'Un grand classique des rotations tête en bas qui se fait en backside, sur un mur backside de pipe. Le Mc Twist est généralement fait en japan, un grab très tweaké (action d\'accentuer un grab en se contorsionnant).',
+            'Une autre rotation tête en bas classique qui s\'apparente à un backflip sur un mur frontside de pipe ou un quarter.',
+            'Une rotation tête en bas backside tournant dans le sens d\'un backflip qui peut se faire aussi bien sur un kicker, un pipe ou un hip.',
+            'En pipe, sur un quarter ou un hip, ce terme désigne un saut sans rotation où le rider retombe dans le sens inverse.',
+            'Un trick inspiré du skate qui consiste à tenir en équilibre sur une ou deux mains au sommet d\'une courbe. Existe avec de nombreuses variantes dans les grabs et les rotations.',
+            'Le diminutif de corkscrew qui signifie littéralement tire-bouchon et désignait les premières simples rotations têtes en bas en frontside. Désormais, on utilise le mot cork à toute les sauces pour qualifier les figures où le rider passe la tête en bas, peu importe le sens de rotation. Et dorénavant en compétition, on parle souvent de double cork, triple cork et certains riders vont jusqu\'au quadruple cork !',
+            'Désigne le degré de rotation, soit 3/4 de tour, fait en entrée ou en sortie sur un jib. Certains riders font également des rotations en 450 degrés avant ou après les jibs.',
+            'Un revert n\'est pas une figure à part entière mais c\'est le fait de continuer à tourner sur la neige après une rotation aérienne. Cela montre ainsi que la rotation n\'est pas contrôlée et ça fait perdre des points en compétition.',
+        ];
+        
         $type = ['img','mov'];
         for ($count = 0; $count < 25; $count++) {
             $now = $carbon->now();
@@ -85,7 +97,7 @@ class TricksFixtures extends Fixture implements DependentFixtureInterface
             $trick->setCategory($categories[rand(0, count($categories) - 1)]);
             $trick->setVersion(1);
             $trick->setSlug(Manager::slugable($trick->getTitle(), $trick->getVersion()));
-            $trick->setDescription($faker->word());
+            $trick->setDescription($trick_description[rand(0, count($trick_description) - 1)]);
             $trick->setState('current');
             $trick->setCreatedAt($now);
             $trick->setContributor($this->getReference(UsersFixtures::USER_REFERENCE));
